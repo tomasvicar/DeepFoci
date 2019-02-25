@@ -2,8 +2,6 @@
 
 DNA double strand breaks (DSB) are the most serious DNA lesions, dangerous to human health. In this script, we introduce a custom semi-/fully-automatic method for DSB quantification (by means of H2AX+53BP1 fluorescence detection) that employs **nucleus segmentation based on deep learning, MSER 3D focus segmentation, and logistic regression classification to discriminate foci from the noise**. 
 
-The results of manual nuclei segmentation differed between experts with SEG=0.80. Comparable difference (SEG=0.77) was then observed also for manual approach and newly developed fully-automatic analysis. Regarding the foci quantification, the semi-automatic approach reduced the between-expert bias significantly, with F1-score=0.87, as compared to 0.71 for semi-automatic and manual approach.
-
 Our software thus offers fast semi-automated quantification of DSB repair foci with high reproducibility. Unlike published approaches, it allows 3D-image analysis and can be trained for specific data. Hence, precision of expert manual analysis can be reached and additional information on DSB focus properties extracted. Moreover, focus soft-classification by logistic regression overcomes the problems related to uncertainty of threshold setting. The developed software improves DSB quantification for various practical applications and opens door to better understanding of DSB focus biology.
 
 ## Description
