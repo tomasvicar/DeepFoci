@@ -1,2 +1,2 @@
 # LearnFoci
-Code will be available soon.
+Final version of the code will be available soon.
