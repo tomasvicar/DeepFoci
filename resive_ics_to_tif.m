@@ -47,7 +47,7 @@ for folder_num=1:length(folders)
             tline = fgetl(fid);
         end
         fclose(fid);
-        chanel_names=chanel_names{2,1,3};
+        chanel_names=chanel_names([2,1,3]);
         chanel_names=chanel_names(color_order);
         
         
