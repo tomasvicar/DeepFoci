@@ -7,7 +7,7 @@ color_order=[1 2 3];
 for folder_num=1:length(folders)
     folder=folders{folder_num};
     
-    folder_save=[folder '_tif'];
+    folder_save=[folder '_tif'];    
     mkdir(folder_save)
 
     names=subdir([folder filesep '*01.ics']);
