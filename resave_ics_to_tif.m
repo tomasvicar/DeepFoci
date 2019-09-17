@@ -1,7 +1,19 @@
 clc;clear al;close all force;
 addpath('utils')
 
-folders={'Y:\CELL_MUNI\foky\clanek\dalsi_data\Pacient 314 (2-16,5-16,9-16)'};
+folders={};
+
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 122 (31-17)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 130 (36-17)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 132 (30-17)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 156 (41-17)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 309 (1-16,18-16)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 314 (2-16,5-16,9-16)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 315 (3-16,10-16,11-16)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 316 (4-16,6-16,8-16)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 318 (7-16,12-16,14-16)'];
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 321 (20-16, 21-16)'];
+
 color_order=[1 2 3];
 
 for folder_num=1:length(folders)
