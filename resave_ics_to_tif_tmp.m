@@ -81,8 +81,8 @@ folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsic
 
 
 
-% color_order=[1 2 3];
-color_order=[2 1 3];
+color_order=[1 2 3];
+% color_order=[2 1 3];
 
 
 for folder_num=1:length(folders)
