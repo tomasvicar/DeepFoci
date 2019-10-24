@@ -74,6 +74,11 @@ folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsic
 
 
 
+% folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 371 (72-18, 73-18)'];
+% folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 374 (76-18, 79-18)'];
+% folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 375 (75-18, 77-18)'];
+
+
 
 
 % color_order=[1 2 3];
@@ -91,12 +96,17 @@ for folder_num=1:length(folders)
     sub1=sub1(3:end);
     sub1={sub1([sub1(:).isdir]).name};
     
+    
+    sub1=sub1(1);
+    
+    
+    
     for q=1:length(sub1)
         
         sub2=dir([folder0 filesep sub1{q}]);
         sub2=sub2(3:end);
         sub2={sub2([sub2(:).isdir]).name};
-        
+        sub2=sub2(9);
         
         for qq=1:length(sub2)
             
