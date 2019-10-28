@@ -61,7 +61,7 @@ folders={};
 
 
 
-folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 317 (13-16,19-16)'];
+% folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 317 (13-16,19-16)'];
 % 
 % folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 337 (34-17, 35-17)'];
 
@@ -79,10 +79,13 @@ folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsic
 % folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 375 (75-18, 77-18)'];
 
 
+% folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 358 (63-17)'];
+
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 309 (1-16,18-16)'];
 
 
-color_order=[1 2 3];
-% color_order=[2 1 3];
+% color_order=[1 2 3];
+color_order=[2 1 3];
 
 
 for folder_num=1:length(folders)
@@ -97,7 +100,7 @@ for folder_num=1:length(folders)
     sub1={sub1([sub1(:).isdir]).name};
     
     
-    sub1=sub1(1);
+    sub1=sub1(2);
     
     
     
@@ -106,7 +109,7 @@ for folder_num=1:length(folders)
         sub2=dir([folder0 filesep sub1{q}]);
         sub2=sub2(3:end);
         sub2={sub2([sub2(:).isdir]).name};
-        sub2=sub2(9);
+        sub2=sub2(10);
         
         for qq=1:length(sub2)
             
@@ -115,7 +118,7 @@ for folder_num=1:length(folders)
             
             names=subdir([folder filesep '*01.ics']);
             if isempty(names)
-                break;
+                continue;
             end
             names={names(:).name};
             

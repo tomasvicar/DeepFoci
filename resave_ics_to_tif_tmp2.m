@@ -109,6 +109,9 @@ for folder_num=1:length(folders)
                 
                 aaa=1;
                 continue;
+            elseif aaa
+                drawnow;
+                
             else
                 continue;
                 
@@ -182,3 +185,4 @@ for folder_num=1:length(folders)
     end
     
 end
+
