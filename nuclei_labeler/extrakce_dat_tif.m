@@ -2,8 +2,8 @@ clc;clear all; close all;
 addpath('utils')
 
 
-% % 
-% names=subdir('Y:\CELL_MUNI\foky\clanek\dalsi_data\*01.ics');
+% 
+% names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif\*.tif');
 % 
 % names={names(:).name};
 % 
@@ -13,13 +13,13 @@ addpath('utils')
 % 
 % names=names(r);
 % 
-% save('names.mat','names')
+% save('names2.mat','names')
 
 
 
 
-load('names.mat')
-cesta_save='Y:/CELL_MUNI/foky/clanek/3d_segmentace/data_na_labely';
+load('names2.mat')
+cesta_save='../../../3d_segmentace_data/data_na_labely2';
 
 % for k=1:300/10
 %     mkdir(['data_na_labely/' num2str(k,'%03d')])
@@ -33,23 +33,16 @@ for name=names
     
     citac2=floor(citac/10)+1;
     
-    name=name{1};
+    name=name{1}
     
     
-    [a,b,c]=nacteni_puvodni(name);
-
-%     load(name{1});
 
     
+    [a,b,c]=read_3d_rgb_tif(name);
 
-
-    cesta_save
     
     for k=1:size(a,3)
     
-%         name_save=[cesta_save '/' num2str(citac2,'%03d') '/data_' num2str(citac,'%03d') '_' num2str(k,'%03d') '.tif'];
-%         imwrite_single(name_save,single(cat(3,a(:,:,k),b(:,:,k),c(:,:,k))))
-
         name_save=[cesta_save '/data_' num2str(citac,'%03d') '.tif'];
         tiff_stack_single_color(name_save,single(cat(3,a(:,:,k),b(:,:,k),c(:,:,k))),k)
         
@@ -72,20 +65,28 @@ for name=names
     
     for k=1:size(a,3)
     
-        
-%         figure(1)
-%         imshow(single(cat(3,a(:,:,k),b(:,:,k),c(:,:,k))),[0 1])
-%         hold off
-%         name_save=[cesta_save '/' num2str(citac2,'%03d') '_norm/data_' num2str(citac,'%03d') '_' num2str(k,'%03d') '.tif'];
-%         imwrite_single(name_save,single(cat(3,a(:,:,k),b(:,:,k),c(:,:,k))))
-
         name_save=[cesta_save '/data_norm_' num2str(citac,'%03d') '.tif'];
         tiff_stack_single_color(name_save,single(cat(3,a(:,:,k),b(:,:,k),c(:,:,k))),k)
         
     end
     
-    if citac==4
-        fasdfs=fsddsf
+end
+
+
+
+
+
+function [a,b,c]=read_3d_rgb_tif(name)
+
+    info=imfinfo(name);
+    a=zeros(info(1).Height,info(1).Width,length(info));
+    b=zeros(info(1).Height,info(1).Width,length(info));
+    c=zeros(info(1).Height,info(1).Width,length(info));
+    for k=1:length(info)
+        rgb=imread(name,k);
+        a(:,:,k)=rgb(:,:,1);
+        b(:,:,k)=rgb(:,:,2);
+        c(:,:,k)=rgb(:,:,3);
     end
-    
+
 end

@@ -2,3 +2,4 @@
 *.asv
 *.mat
 !dice_rot_fast.mat
+!*names*.mat
