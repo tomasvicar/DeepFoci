@@ -2,55 +2,102 @@ clc;clear all;close all;
 addpath('utils')
 addpath('3DNucleiSegmentation_training')
 
-names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 19 (38-17)_tif/*3D*.tif');
-names={names(:).name};
+path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif';
+folders=dir(path);
+folders_new={};
+for k=3:length(folders)
+    folders_new=[folders_new [path '/' folders(k).name]];
+end
+folders=folders_new;
 
+for folder_num=8:length(folders)
 
-load('dice_rot_fast.mat')
-
-
-for img_num=1:length(names)
+    folder=folders{folder_num};
     
-   name=names{img_num};
-   
+    disp([num2str(folder_num) '/' num2str(length(folders))])
 
-   [a,b,c]=read_3d_rgb_tif(name);
+    disp(folder)
 
-   
-   [af,bf,cf]=preprocess_filters(a,b,c);
-   
-   [a,b,c]=preprocess_norm_resize(af,bf,cf);
-   
-   mask=predict_by_parts(a,b,c,net);
-   
-   
-   save_name=strrep(name,'3D_','mask');
-   
-   
-   imwrite_binary_3D(save_name,mask)
 
-   
-   rgb2d=cat(3,norm_percentile(mean(a,3),0.005),norm_percentile(mean(b,3),0.005),norm_percentile(mean(c,3),0.005));
-   
-   
-   mask=split_nuclei(mask);
-   tic
-   mask=balloon(mask,[26 26 10]);
-   toc
+    names=subdir([folder '/*3D*.tif']);
+    names={names(:).name};
+
+
+    load('dice_rot_fast.mat')
+
+
+    for img_num=1:length(names)
+
+       name=names{img_num};
+
+
+       [a,b,c]=read_3d_rgb_tif(name);
+
+
+       [af,bf,cf]=preprocess_filters(a,b,c);
+
+       [a,b,c]=preprocess_norm_resize(af,bf,cf);
+
+       mask=predict_by_parts(a,b,c,net);
+
+
+       save_name=strrep(name,'3D_','mask_');
+       
+       save_control_seg=strrep(name,'3D_','control_seg_');
+       save_control_seg=strrep(save_control_seg,'.tif','');
+
+
+       imwrite_binary_3D(save_name,mask)
+
+
+
+
+       mask=split_nuclei(mask);
+       tic
+       mask=balloon(mask,[26 26 10]);
+       toc
+
+       s = regionprops3(mask,"Centroid");
+       centers = s.Centroid;
+
+
+       mask2d=squeeze(sum(mask,3))>0;
+       rgb2d=cat(3,norm_percentile(mean(a,3),0.005),norm_percentile(mean(b,3),0.005),norm_percentile(mean(c,3),0.005));
+       
+       mask2d2=squeeze(sum(mask,2))>0;
+       rgb2d2=cat(3,norm_percentile(squeeze(mean(a,2)),0.005),norm_percentile(squeeze(mean(b,2)),0.005),norm_percentile(squeeze(mean(c,2)),0.005));
+       
+       
+       mask2d1=squeeze(sum(mask,1))>0;
+       rgb2d1=cat(3,norm_percentile(squeeze(mean(a,1)),0.005),norm_percentile(squeeze(mean(b,1)),0.005),norm_percentile(squeeze(mean(c,1)),0.005));
+
+       n=size(a,3);
+       mask_corner=zeros([n,n]);
+       rgb2d_corner=zeros([n,n,3]);
+       
+       tmp=cat(2,mask2d,mask2d2 );
+       tmp2=cat(2,mask2d1',mask_corner);
+       mask2d=cat(1,tmp,tmp2);
+       
+       
+       tmp=cat(2,rgb2d,rgb2d2 );
+       tmp2=cat(2,permute(rgb2d1,[2 1 3]),rgb2d_corner);
+       rgb2d=cat(1,tmp,tmp2);
+       
+       
+       imshow(rgb2d)
+       hold on
+       visboundaries(mask2d)
+       if ~isempty(centers)
+           plot(centers(:,1),centers(:,2),'y*');
+           plot(centers(:,1),centers(:,2),'kx');
+       end
+       drawnow()
+       print(save_control_seg,'-dpng')
+
+
+    end
     
-   s = regionprops3(mask,"Centroid");
-   centers = s.Centroid;
-   
-   
-   mask2d=sum(mask,3)>0;
-   
-   imshow(rgb2d)
-   hold on
-   visboundaries(mask2d)
-   plot(centers(:,1),centers(:,2),'y*');
-   plot(centers(:,1),centers(:,2),'kx');
-   
-   
 end
 
 
