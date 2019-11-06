@@ -1,6 +1,6 @@
 clc;clear all; close all force;
 addpath('utils')
-slozka='data_na_labely';
+slozka='../../data_na_labely2';
 
 
 names=subdir([slozka '/data_norm_*']);
@@ -8,7 +8,7 @@ names={names.name};
 
 
 
-for kk=171:length(names)
+for kk=111:130%length(names)
     
     name=names{kk};
     
@@ -71,7 +71,7 @@ for kk=171:length(names)
     [mask,drop]=superpix_labeler(c,mask,num2str(kk));
 
     name_mask=name;
-    name_mask=strrep(name_mask,'\data_','\mask_');
+    name_mask=strrep(name_mask,'\data_norm','\mask_norm');
     
 %     name_mask=strrep(name_mask,'.tif','.png');
 %     imwrite(uint8((maska>0)*255),name_mask)
