@@ -1,7 +1,24 @@
 clc;clear all; close all force;
 addpath('utils')
-folder='../trenovaci_data_3';
-folder_save='../trenovaci_data_preprocess_3';
+folder1='../../data_na_labely';
+folder2='../../data_na_labely2';
+
+names1=subdir([folder1 '/mask_norm_*']);
+names1={names1.name};
+
+names2=subdir([folder2 '/mask_norm_*']);
+names2={names2.name};
+
+names=[names1 names2];
+
+rng(1)
+
+p = randperm(length(names));
+
+names=names(p);
+
+
+folder_save='D:/vicar/foci_3d_seg/trenovaci_data_preprocess';
 slozka=folder_save;
 
 
@@ -12,17 +29,16 @@ mkdir([folder_save '/test/lbl'])
 
 
 test_id=1:20;
-train_id=21:1000;
+valid_id=21:30;
+train_id=41:1000;
 
 
 
 
-names=subdir([folder '/mask_norm_*']);
-names={names.name};
 
 for kk=1:length(names)
 
-    
+    kk
     name_mask=names{kk};
     name=strrep(name_mask,'\mask_norm_','\data_');
     
@@ -63,7 +79,6 @@ for kk=1:length(names)
     info=imfinfo(name_mask);
     mask=zeros(info(1).Height,info(1).Width,length(info));
     for k=1:length(info)
-        k
         rgb=imread(name_mask,k);
         mask(:,:,k)=rgb;
     end
@@ -105,7 +120,7 @@ for kk=1:length(names)
 %         save(name_mask_save,'mask');
 
     img_size=[96 96 48];
-    data=c;
+    data=cat(4,a,b,c);
     clear a b c
 
     if sum(kk==train_id)>0
