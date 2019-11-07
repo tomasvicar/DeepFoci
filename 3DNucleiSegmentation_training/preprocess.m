@@ -119,7 +119,7 @@ for kk=1:length(names)
 %         save(name_onlyc,'c');
 %         save(name_mask_save,'mask');
 
-    img_size=[96 96 48];
+    img_size=[128 128 48];
     data=cat(4,a,b,c);
     clear a b c
 
