@@ -3,34 +3,34 @@ clc;clear all;close all force;
 
 
 
-volLoc='../trenovaci_data_preprocess_3/train/img';
+volLoc='D:\vicar\foci_3d_seg\trenovaci_data_preprocess/train/img';
 volds = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderDataC);
 
-lblLoc = '../trenovaci_data_preprocess_3/train/lbl';
+lblLoc = 'D:\vicar\foci_3d_seg\trenovaci_data_preprocess/train/lbl';
 classNames = ["background","cell"];
 pixelLabelID = [0 1];
 pxds = pixelLabelDatastore(lblLoc,classNames,pixelLabelID, 'FileExtensions','.mat','ReadFcn',@matReaderMask);
 
 
 
-volLoc='../trenovaci_data_preprocess_3/test/img';
+volLoc='D:\vicar\foci_3d_seg\trenovaci_data_preprocess/valid/img';
 volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderDataC);
 
-lblLoc = '../trenovaci_data_preprocess_3/test/lbl';
+lblLoc = 'D:\vicar\foci_3d_seg\trenovaci_data_preprocess/valid/lbl';
 classNames = ["background","cell"];
 pixelLabelID = [0 1];
 pxds_val = pixelLabelDatastore(lblLoc,classNames,pixelLabelID, 'FileExtensions','.mat','ReadFcn',@matReaderMask);
 
 
 
-tbl = countEachLabel(pxds);
+% tbl = countEachLabel(pxds);
 
 % volume = preview(volds);
 % label = preview(pxds);
 
-totalNumberOfPixels = sum(tbl.PixelCount);
-frequency = tbl.PixelCount / totalNumberOfPixels;
-classWeights = 1./frequency;
+% totalNumberOfPixels = sum(tbl.PixelCount);
+% frequency = tbl.PixelCount / totalNumberOfPixels;
+% classWeights = 1./frequency;
 
 % img=pxds.readimage(2);
 % im=zeros(size(img));
@@ -38,9 +38,9 @@ classWeights = 1./frequency;
 % imshow4(im);
 
 
-patchSize = [96 96 48];
+patchSize = [128 128 48 3];
 patchPerImage = 1;
-miniBatchSize = 6;
+miniBatchSize = 8;
 patchds = randomPatchExtractionDatastore(volds,pxds,patchSize,'PatchesPerImage',patchPerImage);
 patchds.MiniBatchSize = miniBatchSize;
 
@@ -73,7 +73,7 @@ patchds.MiniBatchSize = miniBatchSize;
 % end
 
 
-% dsTrain = transform(patchds,@augment3dPatch);
+dsTrain = transform(patchds,@augment3dPatch);
 
 lgraph = createUnet3d(patchSize);
 
@@ -110,10 +110,10 @@ options = trainingOptions('adam', ...
     'MiniBatchSize',miniBatchSize);
 
 
-[net,info] = trainNetwork(patchds,lgraph,options);
+[net,info] = trainNetwork(dsTrain ,lgraph,options);
 
 
-save('dice_rot_fast.mat','net')
+save('dice_rot_new.mat','net')
 
 
 

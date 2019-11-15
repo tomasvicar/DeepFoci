@@ -26,7 +26,8 @@ mkdir([folder_save '/train/img'])
 mkdir([folder_save '/train/lbl'])
 mkdir([folder_save '/test/img'])
 mkdir([folder_save '/test/lbl'])
-
+mkdir([folder_save '/valid/img'])
+mkdir([folder_save '/valid/lbl'])
 
 test_id=1:20;
 valid_id=21:30;
@@ -36,9 +37,13 @@ train_id=41:1000;
 
 
 
-for kk=1:length(names)
-
+for kk=274:length(names)
     kk
+    if kk==274
+       disp('preskakuju')%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+       continue
+    end
+    
     name_mask=names{kk};
     name=strrep(name_mask,'\mask_norm_','\data_');
     
