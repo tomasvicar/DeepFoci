@@ -1,8 +1,6 @@
 clc;clear all;close all force;
 
 
-
-
 volLoc='D:\vicar\foci_3d_seg\trenovaci_data_preprocess/train/img';
 volds = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderDataC);
 
@@ -38,7 +36,7 @@ pxds_val = pixelLabelDatastore(lblLoc,classNames,pixelLabelID, 'FileExtensions',
 % imshow4(im);
 
 
-patchSize = [128 128 48 3];
+patchSize = [128 128 48];
 patchPerImage = 1;
 miniBatchSize = 8;
 patchds = randomPatchExtractionDatastore(volds,pxds,patchSize,'PatchesPerImage',patchPerImage);
@@ -68,14 +66,15 @@ patchds.MiniBatchSize = miniBatchSize;
 %     rr=zeros(size(i),'like',i);
 %     rr(r=="cell")=1;
 % 
-%     imshow4(cat(2,i,rr))
+% %     imshow4(cat(2,i,rr))
+%     imshow5(i)
 %     drawnow;
 % end
 
 
 dsTrain = transform(patchds,@augment3dPatch);
 
-lgraph = createUnet3d(patchSize);
+lgraph = createUnet3d([patchSize 3]);
 
 % lgraph = replaceLayer(lgraph,'output',weightedClassification3DLayer(classWeights,'output'));
 
@@ -136,7 +135,7 @@ save('dice_rot_new.mat','net')
 
 function dataa=matReaderDataC(filename)
     load(filename);
-
+    dataa=reshape(dataa,[128,128,48,3]);
 
 end
 

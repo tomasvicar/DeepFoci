@@ -37,13 +37,18 @@ train_id=41:1000;
 
 
 
-for kk=274:length(names)
+for kk=1:length(names)
     kk
     if kk==274
        disp('preskakuju')%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
        continue
     end
     
+    if sum(kk==train_id)>0
+        disp('trenovaci')
+        continue
+    end
+        
     name_mask=names{kk};
     name=strrep(name_mask,'\mask_norm_','\data_');
     
@@ -178,13 +183,13 @@ for kk=274:length(names)
             save([slozka '/train/lbl/' num2str(kk,'%03.f') '_' num2str(kkk,'%03.f') '.mat'],'lbll');
             
         end
-
+        
 
         
     else
         
         shape=size(data);
-        patch_size=96;
+        patch_size=128;
         
         
         
