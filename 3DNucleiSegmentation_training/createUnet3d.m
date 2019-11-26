@@ -6,15 +6,15 @@ function lgraph = createUnet3d(inputSize)
 inputL = image3dInputLayer(inputSize,'Normalization','none','Name','input');
 
 % Create the contracting path of the 3-D U-Net
-encoder_d1 = createUnet3dEncoderModule(1,[16 32 ]);
-encoder_d2 = createUnet3dEncoderModule(2,[32 64 ]);
-encoder_d3 = createUnet3dEncoderModule(3,[64 128 ]);
+encoder_d1 = createUnet3dEncoderModule(1,[16 16 ]);
+encoder_d2 = createUnet3dEncoderModule(2,[32 32 ]);
+encoder_d3 = createUnet3dEncoderModule(3,[64 64 ]);
 
 % Create the expanding path of the 3-D U-Net
-decoder_l4 = createUnet3dDecoderModule(4,[128 128]);
-decoder_l3 = createUnet3dDecoderModule(3,[128 128]);
-decoder_l2 = createUnet3dDecoderModule(2,[64 64]);
-decoder_l1 = createUnet3dFinalDecoderModule(1,[32 32]);
+decoder_l4 = createUnet3dDecoderModule(4,[64 64]);
+decoder_l3 = createUnet3dDecoderModule(3,[64 64]);
+decoder_l2 = createUnet3dDecoderModule(2,[32 32]);
+decoder_l1 = createUnet3dFinalDecoderModule(1,[16 16]);
 
 % layers = [inputL;preluLayer; encoder_d1; encoder_d2; encoder_d3; decoder_l4];
 layers = [inputL; encoder_d1; encoder_d2; encoder_d3; decoder_l4];

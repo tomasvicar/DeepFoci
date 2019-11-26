@@ -2,11 +2,9 @@ clc;clear all; close all force;
 addpath('utils')
 folder='D:\foky\3d_segmentace_data\trenovaci_data_3';
 
-
-
 test_id=1:20;
 valid_id=21:30;
-train_id=31:146;
+train_id=41:1000;
 
 
 
@@ -15,7 +13,9 @@ train_id=31:146;
 
 % load('ce_rot_fast.mat')
 
-load('dice_rot_fast.mat')
+% load('dice_rot_fast.mat')
+
+load('dice_rot_new.mat')
 
 
 
