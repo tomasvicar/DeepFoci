@@ -1,10 +1,28 @@
 clc;clear all; close all force;
 addpath('utils')
-folder='D:\foky\3d_segmentace_data\trenovaci_data_3';
+folder1='../../data_na_labely';
+folder2='../../data_na_labely2';
+
+names1=subdir([folder1 '/mask_norm_*']);
+names1={names1.name};
+
+names2=subdir([folder2 '/mask_norm_*']);
+names2={names2.name};
+
+names=[names1 names2];
+
+rng(1)
+
+p = randperm(length(names));
+
+names=names(p);
+
 
 test_id=1:20;
 valid_id=21:30;
 train_id=41:1000;
+
+
 
 
 
@@ -19,9 +37,6 @@ load('dice_rot_new.mat')
 
 
 
-
-names=subdir([folder '/mask_norm_*']);
-names={names.name};
 
 dices0=[];
 
@@ -121,11 +136,11 @@ for kkk=test_id
     mask_tmp2(mask_tmp>0)=1;
     mask=mask_tmp2;
     
-    data=c;
+    data=cat(4,a,b,c);
     clear a b c
 
 
-    patchSize=[96 96];
+    patchSize=[128 128];
     
     border=24;
     
@@ -168,7 +183,7 @@ for kkk=test_id
             yy=posy_end(kk);
 
 
-            imgg = data(x:xx,y:yy,:);
+            imgg = data(x:xx,y:yy,:,:);
 
 
 %             [img_out_tmp,~,scores] = semanticseg(imgg,net);
@@ -343,6 +358,8 @@ segsssss6=mean(segs6)
 
 % dice_rot_fast 0.8509 0.6792   - to pouzij vole ;)
 
+
+% dice_rot_new 0.8510 0.7002   - to pouzij vole ;)
 
 
 
