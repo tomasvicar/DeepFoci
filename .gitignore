@@ -3,3 +3,4 @@
 *.mat
 !dice_rot_fast.mat
 !*names*.mat
+!dice_rot_new.mat
