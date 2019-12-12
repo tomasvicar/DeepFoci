@@ -2,6 +2,7 @@ clc;clear all;close all;
 addpath('utils')
 addpath('3DNucleiSegmentation_training')
 
+
 path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif';
 folders=dir(path);
 folders_new={};
@@ -10,7 +11,8 @@ for k=3:length(folders)
 end
 folders=folders_new;
 
-for folder_num=8:length(folders)
+
+for folder_num=11:length(folders)
 
     folder=folders{folder_num};
     
@@ -23,10 +25,11 @@ for folder_num=8:length(folders)
     names={names(:).name};
 
 
-    load('dice_rot_fast.mat')
+    load('dice_rot_new.mat')
 
 
     for img_num=1:length(names)
+       img_num
 
        name=names{img_num};
 
@@ -84,7 +87,7 @@ for folder_num=8:length(folders)
        tmp2=cat(2,permute(rgb2d1,[2 1 3]),rgb2d_corner);
        rgb2d=cat(1,tmp,tmp2);
        
-       
+       close all;
        imshow(rgb2d)
        hold on
        visboundaries(mask2d)
@@ -149,14 +152,16 @@ end
 
 function mask=predict_by_parts(a,b,c,net)
 
-    patchSize=[96 96];
+%     patchSize=[96 96];
+    patchSize=[128 128];
     
     border=24;
 
 
     img_size=size(a);
     
-    data=c;
+%     data=c;
+    data=cat(4,a,b,c);
     
     
     poskladany=zeros(img_size);
@@ -195,7 +200,7 @@ function mask=predict_by_parts(a,b,c,net)
             yy=posy_end(kk);
 
 
-            imgg = data(x:xx,y:yy,:);
+            imgg = data(x:xx,y:yy,:,:);
 
 
             img_out=predict(net,imgg);
