@@ -43,7 +43,7 @@ for img_num=3:length(names)
     
     ab=a.*b;
     
-    ab_percentile=prctile(ab(:),0.95*100);
+    
     
     abb=imgaussfilt3(ab,[10,10,10/3]) ;
     foreground=ab>abb;
@@ -52,7 +52,10 @@ for img_num=3:length(names)
     
     
     ab_uint=uint8(mat2gray(ab)*255);
+    ab_percentile=prctile(ab_uint(:),0.95*100);
+    ab_uint(ab_uint<ab_percentile)=ab_percentile;
     ab_uint=ab_uint.*uint8(mask);
+    
     
     tic
     %    try
@@ -80,7 +83,10 @@ for img_num=3:length(names)
     visboundaries(sum(M,3)>0)
     
     
-    drawnow
+    drawnow;
+    
+    
+    fdfsdfsdfdfsdf
     
 end
 
