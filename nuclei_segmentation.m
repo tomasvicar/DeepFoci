@@ -56,9 +56,8 @@ for folder_num=11:length(folders)
 
 
        mask=split_nuclei(mask);
-       tic
        mask=balloon(mask,[26 26 10]);
-       toc
+
 
        s = regionprops3(mask,"Centroid");
        centers = s.Centroid;
@@ -106,21 +105,6 @@ end
 
 
 
-function [a,b,c]=read_3d_rgb_tif(name)
-
-    info=imfinfo(name);
-    a=zeros(info(1).Height,info(1).Width,length(info));
-    b=zeros(info(1).Height,info(1).Width,length(info));
-    c=zeros(info(1).Height,info(1).Width,length(info));
-    for k=1:length(info)
-        rgb=imread(name,k);
-        a(:,:,k)=rgb(:,:,1);
-        b(:,:,k)=rgb(:,:,2);
-        c(:,:,k)=rgb(:,:,3);
-    end
-
-end
-
 
 function [a,b,c]=preprocess_norm_resize(a,b,c)
 
@@ -137,17 +121,6 @@ function [a,b,c]=preprocess_norm_resize(a,b,c)
 
 end
 
-
-function [a,b,c]=preprocess_filters(a,b,c)
-    a=medfilt3(double(a),[5 5 1]);
-    b=medfilt3(double(b),[5 5 1]);
-    c=medfilt3(double(c),[5 5 1]);
-    
-    a=imgaussfilt3(double(a),[2 2 1]);
-    b=imgaussfilt3(double(b),[2 2 1]);
-    c=imgaussfilt3(double(c),[2 2 1]);
-    
-end
 
 
 function mask=predict_by_parts(a,b,c,net)
@@ -228,46 +201,4 @@ function mask=predict_by_parts(a,b,c,net)
 end
 
 
-function mask=split_nuclei(mask)
 
-    vys=mask>0.5;
-    vel=[13 13 5];
-    [X,Y,Z] = meshgrid(linspace(-1,1,vel(1)),linspace(-1,1,vel(2)),linspace(-1,1,vel(3)));
-    sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
-    
-    D = -bwdist(vys==0);
-    D = imhmin(D,5);
-    D=watershed(D)>0;
-    vys=(vys.*D)>0;
-    vys=imclose(vys,sphere);
-    vys = bwareaopen(vys,6000);
-    mask=imfill(vys,'holes');
-    
-    
-end
-
-
-
-function mask=balloon(mask,shape)
-
-    [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
-    sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
-    
-    mask_conected=imdilate(mask,sphere);
-    
-    D = bwdistgeodesic(mask_conected,mask,'quasi-euclidean');
-    
-    D(isnan(D))=-5;
-    
-    D=-D;
-    
-    D = imimposemin(D,mask);
-    
-    
-    mask=(watershed(D)>0)&mask_conected;
-    
-    
-    
-
-
-end
