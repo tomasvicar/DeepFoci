@@ -3,7 +3,7 @@ addpath('utils')
 addpath('3DNucleiSegmentation_training')
 
 
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif';
+path='D:\tmp\test';
 
 
 
@@ -65,7 +65,7 @@ for folder_num=1:length(folders)
        [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
        sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
        mask_conected=imerode(mask,sphere);
-       mask=imresize3(uint8(mask),size(a),'nearest')>0;
+       mask=imresize3(uint8(mask),size(af),'nearest')>0;
        
        
        
