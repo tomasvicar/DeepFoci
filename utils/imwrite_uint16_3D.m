@@ -1,4 +1,4 @@
-function imwrite_single_3D(name,data)
+function imwrite_uint16_3D(name,data)
 
 % data=single(data);
 data=uint16(data);

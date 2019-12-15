@@ -5,12 +5,13 @@ addpath('3DNucleiSegmentation_training')
 load('names_foci_sample.mat')
 names_orig=names;
 
-names=subdir('..\example_folder\*3D_*.tif');
+% names=subdir('..\example_folder\*3D_*.tif');
+names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
 names={names(:).name};
 
 
 
-for img_num=5:length(names)
+for img_num=1:length(names)
     
     img_num
     
@@ -112,16 +113,7 @@ for img_num=5:length(names)
     toc
     
     
-    mask_2d=sum(mask,3)>0;
-    s = regionprops(mask_2d,'Centroid');
-    maxima = round(cat(1, s.Centroid));
-    mask_maxima=false([size(mask_2d,1),size(mask_2d,2)]) ;
-    for k=1:size(maxima,1)
-        mask_maxima(maxima(k,2),maxima(k,1)) =1;
-    end
-    D = bwdistgeodesic(mask_2d,mask_maxima);
-    D(isnan(D))=Inf;
-    mask_2d_split=mask_2d.*(watershed(D)>0);
+    mask_2d_split=mask_2d_split(mask,3);
     
     
     
@@ -144,11 +136,9 @@ for img_num=5:length(names)
     print(save_control_seg,'-dpng')
     
     
-    imwrite_binary_3D(name_mask_foci,wab_krajeny)
-    
-    
-    
-    
+    imwrite_uint16_3D(name_mask_foci,wab_krajeny)
+
+
 end
 
 

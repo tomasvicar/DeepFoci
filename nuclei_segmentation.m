@@ -4,6 +4,9 @@ addpath('3DNucleiSegmentation_training')
 
 
 path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif';
+
+
+
 folders=dir(path);
 folders_new={};
 for k=3:length(folders)
@@ -12,7 +15,7 @@ end
 folders=folders_new;
 
 
-for folder_num=11:length(folders)
+for folder_num=1:length(folders)
 
     folder=folders{folder_num};
     
@@ -45,33 +48,44 @@ for folder_num=11:length(folders)
 
 
        save_name=strrep(name,'3D_','mask_');
+       save_name_split=strrep(name,'3D_','mask_split');
        
        save_control_seg=strrep(name,'3D_','control_seg_');
        save_control_seg=strrep(save_control_seg,'.tif','');
 
 
-       imwrite_binary_3D(save_name,mask)
+       imwrite_uint16_3D(save_name,mask)
 
 
 
 
        mask=split_nuclei(mask);
-       mask=balloon(mask,[26 26 10]);
+       mask=balloon(mask,[20 20 8]);
+       shape=[5,5,2];
+       [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
+       sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
+       mask_conected=imerode(mask,sphere);
+       mask=imresize3(uint8(mask),size(a),'nearest')>0;
+       
+       
+       
+       imwrite_uint16_3D(save_name_split,mask)
 
 
        s = regionprops3(mask,"Centroid");
        centers = s.Centroid;
 
 
-       mask2d=squeeze(sum(mask,3))>0;
-       rgb2d=cat(3,norm_percentile(mean(a,3),0.005),norm_percentile(mean(b,3),0.005),norm_percentile(mean(c,3),0.005));
+       mask2d=mask_2d_split(mask,3);
+       rgb2d=cat(3,norm_percentile(mean(af,3),0.001),norm_percentile(mean(bf,3),0.001),norm_percentile(mean(cf,3),0.001));
+    
        
-       mask2d2=squeeze(sum(mask,2))>0;
-       rgb2d2=cat(3,norm_percentile(squeeze(mean(a,2)),0.005),norm_percentile(squeeze(mean(b,2)),0.005),norm_percentile(squeeze(mean(c,2)),0.005));
+       mask2d2=mask_2d_split(mask,2);
+       rgb2d2=cat(3,norm_percentile(squeeze(mean(af,2)),0.001),norm_percentile(squeeze(mean(bf,2)),0.001),norm_percentile(squeeze(mean(cf,2)),0.001));
        
        
-       mask2d1=squeeze(sum(mask,1))>0;
-       rgb2d1=cat(3,norm_percentile(squeeze(mean(a,1)),0.005),norm_percentile(squeeze(mean(b,1)),0.005),norm_percentile(squeeze(mean(c,1)),0.005));
+       mask2d1=mask_2d_split(mask,1);
+       rgb2d1=cat(3,norm_percentile(squeeze(mean(af,1)),0.001),norm_percentile(squeeze(mean(bf,1)),0.001),norm_percentile(squeeze(mean(cf,1)),0.001));
 
        n=size(a,3);
        mask_corner=zeros([n,n]);
@@ -89,11 +103,7 @@ for folder_num=11:length(folders)
        close all;
        imshow(rgb2d)
        hold on
-       visboundaries(mask2d)
-       if ~isempty(centers)
-           plot(centers(:,1),centers(:,2),'y*');
-           plot(centers(:,1),centers(:,2),'kx');
-       end
+       visboundaries(mask2d,'LineWidth',0.5,'Color','g','EnhanceVisibility',0)
        drawnow()
        print(save_control_seg,'-dpng')
 
