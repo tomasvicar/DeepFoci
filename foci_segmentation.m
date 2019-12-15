@@ -113,7 +113,7 @@ for img_num=1:length(names)
     toc
     
     
-    mask_2d_split=mask_2d_split(mask,3);
+    mask_2d_split1=mask_2d_split(mask,3);
     
     
     
@@ -121,7 +121,7 @@ for img_num=1:length(names)
     imshow(rgb_2d)
     hold on
     visboundaries(sum(wab_krajeny,3)>0,'LineWidth',0.5,'Color','r','EnhanceVisibility',0)
-    visboundaries(mask_2d_split,'LineWidth',0.5,'Color','g','EnhanceVisibility',0)
+    visboundaries(mask_2d_split1,'LineWidth',0.5,'Color','g','EnhanceVisibility',0)
     s = regionprops(wab_krajeny>0,'Centroid');
     maxima = round(cat(1, s.Centroid));
     if ~isempty(maxima)
