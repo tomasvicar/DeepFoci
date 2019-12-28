@@ -1,4 +1,4 @@
-clc;clear all;close all;
+clc;clear all;close all force;
 addpath('utils')
 addpath('3DNucleiSegmentation_training')
 addpath('semiauto_klicker')
@@ -54,9 +54,6 @@ for img_num=1:length(names)
     fdsfsdfds 
     
 end
-    
-    
-    
     
     
     
