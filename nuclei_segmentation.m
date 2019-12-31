@@ -3,7 +3,7 @@ addpath('utils')
 addpath('3DNucleiSegmentation_training')
 
 
-path='D:\tmp\test';
+path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
 
 
 
@@ -13,6 +13,8 @@ for k=3:length(folders)
     folders_new=[folders_new [path '/' folders(k).name]];
 end
 folders=folders_new;
+
+
 
 
 for folder_num=1:length(folders)
