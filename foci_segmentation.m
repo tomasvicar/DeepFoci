@@ -15,9 +15,10 @@ for k=3:length(folders)
 end
 folders=folders_new;
 
+folders=sort(folders);
 
 
-for img_num=1:length(names)
+for folder_num=1:25
     
     folder=folders{folder_num};
     
@@ -36,7 +37,6 @@ for img_num=1:length(names)
     
         name=names{img_num};
 
-        name_orig=names_orig{img_num};
 
         name_mask=strrep(name,'3D_','mask_');
         mask_name_split=strrep(name,'3D_','mask_split');
@@ -50,14 +50,6 @@ for img_num=1:length(names)
 
         [a,b,c]=read_3d_rgb_tif(name);
 
-%         mask=read_mask(name_mask);
-%         mask=split_nuclei(mask);
-%         mask=balloon(mask,[20 20 8]);
-%         shape=[5,5,2];
-%         [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
-%         sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
-%         mask_conected=imerode(mask,sphere);
-%         mask=imresize3(uint8(mask),size(a),'nearest')>0;
 
         mask=imread(mask_name_split);
 
@@ -77,15 +69,15 @@ for img_num=1:length(names)
 
         result=zeros(size(ab_uint_whole),'uint16');
 
-
+        
         s = regionprops(mask>0,'BoundingBox');
         bbs = cat(1,s.BoundingBox);
 
 
         for cell_num =1:size(bbs,1)
 
-            bb=bbs(cell_num,:);
-            ab_uint = ab_uint_whole(bb(2):bb(2)+bb(5),bb(1):bb(1)+bb(4),bb(3):bb(3)+bb(6));
+            bb=round(bbs(cell_num,:));
+            ab_uint = ab_uint_whole(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
 
             tic
             %    try
@@ -126,7 +118,7 @@ for img_num=1:length(names)
 
             toc
 
-            result(bb(2):bb(2)+bb(5),bb(1):bb(1)+bb(4),bb(3):bb(3)+bb(6))=wab_krajeny;
+            result(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)=wab_krajeny;
 
 
         end
@@ -148,7 +140,7 @@ for img_num=1:length(names)
             plot(maxima(:,1), maxima(:,2), 'k+')
             plot(maxima(:,1), maxima(:,2), 'yx')
         end
-        name_orig_tmp=split(name_orig,'\');
+        name_orig_tmp=split(name,'\');
         name_orig_tmp=join(name_orig_tmp(end-3:end),'\');
         title(name_orig_tmp)
         drawnow;
