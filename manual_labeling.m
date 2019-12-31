@@ -10,9 +10,10 @@ names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
 names={names(:).name};
 
+gpu=1;
 
 
-for img_num=1:length(names)
+for img_num=84:length(names)
     
     img_num
     
@@ -45,8 +46,8 @@ for img_num=1:length(names)
 %     mask_conected=imerode(mask,sphere);
 %     mask=imresize3(uint8(mask),size(a),'nearest')>0;
     
-    
-    [a,b,c]=preprocess_filters(a,b,c);
+
+    [a,b,c]=preprocess_filters(a,b,c,gpu);
     
     rgb_2d=cat(3,norm_percentile(mean(a,3),0.001),norm_percentile(mean(b,3),0.001),norm_percentile(mean(c,3),0.001));
     
@@ -55,7 +56,7 @@ for img_num=1:length(names)
     
     clear labels
     clear positions
-    semiauto_appdes(a, b, c, zeros(size(mask_foci)), mask_foci)
+    semiauto_appdes(a, b, c, zeros(size(mask_foci)), mask_foci,names_orig{img_num})
     
     save(save_manual_label,'labels','positions')
     

@@ -1,10 +1,40 @@
-function [a,b,c]=preprocess_filters(a,b,c)
-    a=medfilt3(double(a),[5 5 1]);
-    b=medfilt3(double(b),[5 5 1]);
-    c=medfilt3(double(c),[5 5 1]);
+function [a,b,c]=preprocess_filters(a,b,c,gpu)
+
+%     a=single(a);
+%     b=single(b);
+%     c=single(c);
+
+    a=double(a);
+    b=double(b);
+    c=double(c);
     
-    a=imgaussfilt3(double(a),[2 2 1]);
-    b=imgaussfilt3(double(b),[2 2 1]);
-    c=imgaussfilt3(double(c),[2 2 1]);
+    if gpu
+        a=gpuArray(a);
+        b=gpuArray(b);
+        c=gpuArray(c);
+    end 
+
+
+%     a=medfilt3(a,[5 5 1],'symmetric');
+%     b=medfilt3(b,[5 5 1],'symmetric');
+%     c=medfilt3(c,[5 5 1],'symmetric');
+    
+    for k=1:size(a,3)
+        a(:,:,k)=medfilt2(a(:,:,k),[5 5]);
+        b(:,:,k)=medfilt2(b(:,:,k),[5 5]);
+        c(:,:,k)=medfilt2(c(:,:,k),[5 5]);
+    end
+    
+    
+    a=imgaussfilt3(a,[2 2 1]);
+    b=imgaussfilt3(b,[2 2 1]);
+    c=imgaussfilt3(c,[2 2 1]);
+    
+    if gpu
+        a=gather(a);
+        b=gather(b);
+        c=gather(c);
+    end
+    
     
 end
