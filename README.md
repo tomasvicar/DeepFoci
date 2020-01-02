@@ -21,5 +21,5 @@ The annotated confocal microscopy dataset used for the training of this method i
 [DOI 10.5281/zenodo.2564980](https://doi.org/10.5281/zenodo.2564980).
 - Part 2/3: U-87 and NHDF Cells exposed to 1-4 Gy confocal microscopy data of head and neck tumor primocultures immunostained with gH2AX/53BP1,[DOI 10.5281/zenodo.2572450](https://doi.org/10.5281/zenodo.2572450). 174 TIFFs
 - Part 3/3: training dataset for nuclei and gH2AX foci with ground truth annotation masks. 
-[DOI 10.5281/zenodo.2576241](https://doi.org/10.5281/zenodo.2576241). 150 TIFFs for nuclei learning incl 150 png masks + 
+[DOI 10.5281/zenodo.2576241](https://doi.org/10.5281/zenodo.2576241). 150 TIFFs for nuclei learning incl 150 png masks
 
