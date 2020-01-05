@@ -16,7 +16,7 @@ gpu=1;
 
 features_cell={};
 labels_cell={};
-for img_num=1:170
+for img_num=84:170
     
     img_num
     
@@ -42,19 +42,6 @@ for img_num=1:170
     
     ab=a.*b;
     
-%     mask=read_mask(name_mask);
-%     mask=split_nuclei(mask);
-%     mask=balloon(mask,[20 20 8]);
-%     shape=[5,5,2];
-%     [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
-%     sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
-%     mask_conected=imerode(mask,sphere);
-%     mask=imresize3(uint8(mask),size(a),'nearest')>0;
-%     
-    
-    
-    
-%      mask=imread(mask_name_split);
      
      
      
@@ -167,13 +154,13 @@ for img_num=1:170
      
      toc
      
-     tic
+
      
      stats_filters=array2table(zeros(N,0));
      
      
      tic
-     sigmas=[6,12,20,40];
+     sigmas=[6,9,15,25];
      
      for sigma = sigmas
      
@@ -183,7 +170,15 @@ for img_num=1:170
          
          tmp=window_operator(a,lbl_foci,hsize,@(x) sum(h(:).*x(:)));
 
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueaG' num2str(sigma)]);
+         
+         tmp=window_operator(b,lbl_foci,hsize,@(x) sum(h(:).*x(:)));
+
          stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValuebG' num2str(sigma)]);
+         
+         tmp=window_operator(ab,lbl_foci,hsize,@(x) sum(h(:).*x(:)));
+
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueabG' num2str(sigma)]);
         
      end
      
@@ -193,15 +188,64 @@ for img_num=1:170
      
      
 
-     gfdgdf=gdfgdfg
+     tic
+     sigmas=[6,9,15,25];
+     
+     for sigma = sigmas
+     
+         sigma3=[sigma,sigma,round(sigma/3)];
+         hsize=2*ceil(2*sigma3)+1;
+         h = fspecial3('log',hsize,sigma3);
+         
+         tmp=window_operator(a,lbl_foci,hsize,@(x) corrcoef(h(:).*x(:)));
+
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueaLoG' num2str(sigma)]);
+         
+         tmp=window_operator(b,lbl_foci,hsize,@(x) corrcoef(h(:).*x(:)));
+
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValuebLoG' num2str(sigma)]);
+         
+         tmp=window_operator(ab,lbl_foci,hsize,@(x) corrcoef(h(:).*x(:)));
+
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueabLoG' num2str(sigma)]);
+        
+     end
+     
+
+     toc
      
      
      
      
      
      
+     tic
+     sigmas=[6,9,15,25];
      
+     for sigma = sigmas
      
+         sigma3=[sigma,sigma,round(sigma/3)];
+         hsize=2*ceil(2*sigma3)+1;
+         [X,Y,Z] = meshgrid(linspace(-1,1,hsize(1)),linspace(-1,1,hsize(2)),linspace(-1,1,hsize(3)));
+         h=double(sqrt(X.^2+Y.^2+Z.^2)<1);
+         h(h==0)=nan;
+         
+         tmp=window_operator(a,lbl_foci,hsize,@(x) nanmin(h(:).*x(:)));
+
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueaMin' num2str(sigma)]);
+         
+         tmp=window_operator(b,lbl_foci,hsize,@(x) nanmin(h(:).*x(:)));
+
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValuebMin' num2str(sigma)]);
+         
+         tmp=window_operator(ab,lbl_foci,hsize,@(x) nanmin(h(:).*x(:)));
+
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueabMin' num2str(sigma)]);
+        
+     end
+     
+
+     toc
 
 end
     

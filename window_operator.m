@@ -17,18 +17,24 @@ c1=c(:,2);
 c2=c(:,1);
 c3=c(:,3);
 
-c1(c1<(rs(1)+1))=(rs(1)+1);
-c2(c2<(rs(2)+1))=(rs(2)+1);
-c3(c3<(rs(3)+1))=(rs(3)+1);
-
-c1(c1>(size(img,1)-rs(1)))=(size(img,1)-rs(1));
-c2(c2>(size(img,2)-rs(2)))=(size(img,2)-rs(2));
-c3(c3>(size(img,3)-rs(3)))=(size(img,3)-rs(3));
-
 
 values=zeros(size(c,1),1);
 for k=1:size(c,1)
-    window=img(c1(k)-rs(1):c1(k)+rs(1),c2(k)-rs(2):c2(k)+rs(2),c3(k)-rs(3):c3(k)+rs(3));
+    
+    cc1=c1(k)-rs(1):c1(k)+rs(1);
+    cc2=c2(k)-rs(2):c2(k)+rs(2);
+    cc3=c3(k)-rs(3):c3(k)+rs(3);
+    
+    cc1(cc1<1)=1;
+    cc2(cc2<1)=1;
+    cc3(cc3<1)=1;
+
+    cc1(cc1>size(img,1))=size(img,1);
+    cc2(cc2>size(img,2))=size(img,2);
+    cc3(cc3>size(img,3))=size(img,3);
+    
+    
+    window=img(cc1,cc2,cc3);
     
     values(k)=fcn_handle(window);
     
