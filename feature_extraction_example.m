@@ -7,8 +7,8 @@ names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
-names=subdir('F:\example_folder\*3D_*.tif');
+names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+% names=subdir('F:\example_folder\*3D_*.tif');
 names={names(:).name};
 
 gpu=1;
@@ -82,8 +82,8 @@ for img_num=1:170
      clear lbl_foci_resize
      
      
-     
-     
+
+     tic
           
      N=size(stats_shape,1);
      
@@ -124,104 +124,128 @@ for img_num=1:170
      stats_values = addvars(stats_values,get_centroid_value(lbl_foci,ab),'NewVariableNames','CentroidValueab');
     
      
+     toc
+     tic
+
+     if gpu
+        a_gpu=gpuArray(a);
+     else
+        a_gpu=a;
+     end  
+     p=99;    
+     mediana=repmat(gather(median(a_gpu(:))),[N,1]);    
+     meana=repmat(gather(mean(a_gpu(:))),[N,1]);  
+     percentile99a=repmat(gather(prctile(a_gpu(:),p)),[N,1]);
+     clear a_gpu
+         
      
-     mediana=repmat(median(a(:)),[N,1]);
-     medianb=repmat(median(b(:)),[N,1]);
-     medianab=repmat(median(ab(:)),[N,1]);
+     if gpu
+        b_gpu=gpuArray(b);
+     else
+        b_gpu=b;
+     end  
+     p=99; 
+     medianb=repmat(gather(median(b_gpu(:))),[N,1]);
+     meanb=repmat(gather(mean(b_gpu(:))),[N,1]);
+     percentile99b=repmat(gather(prctile(b_gpu(:),p)),[N,1]);
+     clear b_gpu
      
-     meana=repmat(mean(a(:)),[N,1]);
-     meanb=repmat(mean(b(:)),[N,1]);
-     meanab=repmat(mean(ab(:)),[N,1]);
      
-     p=99;
-     percentile99a=repmat(prctile(a(:),p),[N,1]);
-     percentile99b=repmat(prctile(b(:),p),[N,1]);
-     percentile99ab=repmat(prctile(ab(:),p),[N,1]);
-     
+     if gpu
+        ab_gpu=gpuArray(ab);
+     else
+        ab_gpu=ab;
+     end  
+     p=99; 
+     medianab=repmat(gather(median(ab_gpu(:))),[N,1]);
+     meanab=repmat(gather(mean(ab_gpu(:))),[N,1]);
+     percentile99ab=repmat(gather(prctile(ab_gpu(:),p)),[N,1]);
+     clear ab_gpu
+
      
      stats_values = addvars(stats_values,mediana,medianb,medianab,meana,meanb,meanab,percentile99a,percentile99b,percentile99ab);
      
+     toc
      
+     tic
      
      stats_filters=array2table(zeros(N,0));
      
-          
-     for sigma =[6,12,20,34]
      
-         tmp = imgaussfilt3(a,[sigma,sigma,sigma/3]);
+     sigmas=[6,12,20,40];
+     
+     
+     if gpu
+        a_gpu=gpuArray(a);
+     else
+        a_gpu=a;
+     end  
 
-         stats_tmp = regionprops3(lbl_foci,tmp,'MaxIntensity','MeanIntensity');
+     for sigma = sigmas
+     
+         tmp = gather(imgaussfilt3(a_gpu,[sigma,sigma,sigma/3],'FilterDomain','spatial'));
+
+         stats_tmp = regionprops3(lbl_foci,gather(tmp),'MaxIntensity','MeanIntensity');
      
          stats_tmp.Properties.VariableNames={['meanIntensityaG' num2str(sigma)],['MaxIntensityaG' num2str(sigma)]};
 
          stats_filters=[stats_filters,stats_tmp];
          
-         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,tmp),'NewVariableNames',['CentroidValueaG' num2str(sigma)]);
+         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,gather(tmp)),'NewVariableNames',['CentroidValueaG' num2str(sigma)]);
          
+     end
+     clear a_gpu
+     
+     
+     
+     if gpu
+        b_gpu=gpuArray(b);
+     else
+        b_gpu=b;
+     end  
+     
+     for sigma = sigmas    
+         
+         tmp = gather(imgaussfilt3(b_gpu,[sigma,sigma,sigma/3],'FilterDomain','spatial'));
 
-         tmp = imgaussfilt3(b,[sigma,sigma,sigma/3]);
-
-         stats_tmp = regionprops3(lbl_foci,tmp,'MaxIntensity','MeanIntensity');
+         stats_tmp = regionprops3(lbl_foci,gather(tmp),'MaxIntensity','MeanIntensity');
      
          stats_tmp.Properties.VariableNames={['meanIntensitybG' num2str(sigma)],['MaxIntensitybG' num2str(sigma)]};
 
          stats_filters=[stats_filters,stats_tmp];
          
-         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,tmp),'NewVariableNames',['CentroidValuebG' num2str(sigma)]);
+         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,gather(tmp)),'NewVariableNames',['CentroidValuebG' num2str(sigma)]);
+        
          
+     end 
+     clear b_gpu
+     
+     
+     
+      if gpu
+        ab_gpu=gpuArray(ab);
+     else
+        ab_gpu=ab;
+     end  
+     
+     for sigma = sigmas
          
-         tmp = imgaussfilt3(ab,[sigma,sigma,sigma/3]);
+         tmp = gather(imgaussfilt3(ab_gpu,[sigma,sigma,sigma/3],'FilterDomain','spatial'));
 
-         stats_tmp = regionprops3(lbl_foci,tmp,'MaxIntensity','MeanIntensity');
+         stats_tmp = regionprops3(lbl_foci,gather(tmp),'MaxIntensity','MeanIntensity');
      
          stats_tmp.Properties.VariableNames={['meanIntensityabG' num2str(sigma)],['MaxIntensityabG' num2str(sigma)]};
 
          stats_filters=[stats_filters,stats_tmp];
          
-         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,tmp),'NewVariableNames',['CentroidValueabG' num2str(sigma)]);
+         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,gather(tmp)),'NewVariableNames',['CentroidValueabG' num2str(sigma)]);
  
      end
+     clear ab_gpu
      
      
      
-     
-     
-     
-     for sigma =[6,12,20,40]
-     
-         tmp = imgaussfilt3(a,[sigma,sigma,sigma/3]);
 
-         stats_tmp = regionprops3(lbl_foci,tmp,'MaxIntensity','MeanIntensity');
-     
-         stats_tmp.Properties.VariableNames={['meanIntensityaT' num2str(sigma)],['MaxIntensityaT' num2str(sigma)]};
-
-         stats_filters=[stats_filters,stats_tmp];
-         
-         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,tmp),'NewVariableNames',['CentroidValueaT' num2str(sigma)]);
-         
-
-         tmp = imgaussfilt3(b,[sigma,sigma,sigma/3]);
-
-         stats_tmp = regionprops3(lbl_foci,tmp,'MaxIntensity','MeanIntensity');
-     
-         stats_tmp.Properties.VariableNames={['meanIntensitybT' num2str(sigma)],['MaxIntensitybT' num2str(sigma)]};
-
-         stats_filters=[stats_filters,stats_tmp];
-         
-         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,tmp),'NewVariableNames',['CentroidValuebT' num2str(sigma)]);
-         
-         
-         tmp = imgaussfilt3(ab,[sigma,sigma,sigma/3]);
-
-         stats_tmp = regionprops3(lbl_foci,tmp,'MaxIntensity','MeanIntensity');
-     
-         stats_tmp.Properties.VariableNames={['meanIntensityabT' num2str(sigma)],['MaxIntensityabT' num2str(sigma)]};
-
-         stats_filters=[stats_filters,stats_tmp];
-         
-         stats_filters = addvars(stats_filters,get_centroid_value(lbl_foci,tmp),'NewVariableNames',['CentroidValueabT' num2str(sigma)]);
- 
-     end
      
      
      
