@@ -7,8 +7,8 @@ names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
-names=subdir('F:\example_folder\*3D_*.tif');
+names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+% names=subdir('F:\example_folder\*3D_*.tif');
 names={names(:).name};
 
 gpu=1;
@@ -196,19 +196,19 @@ for img_num=1:170
      
          sigma3=[sigma,sigma,round(sigma/3)];
          hsize=2*ceil(2*sigma3)+1;
-         h = fspecial3('log',hsize,sigma3);
+         h = fspecial3('gaussian',hsize,sigma3);
          
-         tmp=window_operator(a,lbl_foci,hsize,@(x) corrcoef(h(:).*x(:)));
+         tmp=window_operator(a,lbl_foci,hsize,@(x) corr(h(:),x(:)));
 
-         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueaLoG' num2str(sigma)]);
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueaGcorr' num2str(sigma)]);
          
-         tmp=window_operator(b,lbl_foci,hsize,@(x) corrcoef(h(:).*x(:)));
+         tmp=window_operator(b,lbl_foci,hsize,@(x) corr(h(:),x(:)));
 
-         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValuebLoG' num2str(sigma)]);
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValuebGcorr' num2str(sigma)]);
          
-         tmp=window_operator(ab,lbl_foci,hsize,@(x) corrcoef(h(:).*x(:)));
+         tmp=window_operator(ab,lbl_foci,hsize,@(x) corr(h(:),x(:)));
 
-         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueabLoG' num2str(sigma)]);
+         stats_filters = addvars(stats_filters,tmp,'NewVariableNames',['CentroidValueabGcorr' num2str(sigma)]);
         
      end
      
