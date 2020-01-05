@@ -7,16 +7,16 @@ names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
-% names=subdir('F:\example_folder\*3D_*.tif');
+% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+names=subdir('F:\example_folder\*3D_*.tif');
 names={names(:).name};
 
 gpu=1;
 
 
-features_cell={};
-labels_cell={};
-for img_num=84:170
+
+
+for img_num=1:170
     
     img_num
     
@@ -38,6 +38,10 @@ for img_num=84:170
     save_manual_label=strrep(save_manual_label,'.tif','.mat');
     
     
+    save_features=strrep(name,'3D_','features_');
+    save_features=strrep(save_features,'.tif','.mat');
+    
+    
     [a,b,~]=read_3d_rgb_tif(name);
     
     ab=a.*b;
@@ -51,9 +55,6 @@ for img_num=84:170
      
      clear mask foci
      
-     load(save_manual_label);
-     
-     labels_cell=[labels_cell,labels];
      
      
      lbl_foci_resize=imresize3(lbl_foci,[size(lbl_foci,1),size(lbl_foci,2),size(lbl_foci,3)*3],'nearest');
@@ -245,7 +246,13 @@ for img_num=84:170
      end
      
 
-     toc
+    toc
+    
+    features=[stats_shape,stats_values,stats_filters];
+    
+     
+    save(save_features,'features')
+     
 
 end
     
