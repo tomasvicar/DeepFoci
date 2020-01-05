@@ -1,6 +1,5 @@
 clc;clear al;close all force;
 addpath('utils')
-
 folders={};
 
 % folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 19 (38-17)'];
