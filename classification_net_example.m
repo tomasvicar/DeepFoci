@@ -104,7 +104,7 @@ volds_train = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReader
 
 
 
-volLoc='../tmp/train';
+volLoc='../tmp/test';
 volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderData,'LabelSource','foldernames','IncludeSubfolders',1);
 
 
@@ -153,6 +153,7 @@ layers = [
     batchNormalizationLayer
     convolution3dLayer(3,filters*2,'Padding','same')
     reluLayer
+    dropoutLayer(0.5)
     batchNormalizationLayer
     convolution3dLayer(3,filters*2,'Padding','same')
     reluLayer
@@ -169,19 +170,23 @@ layers = [
     reluLayer
     batchNormalizationLayer
     convolution3dLayer(3,filters*4,'Padding','same')
+    dropoutLayer(0.5)
     reluLayer
     batchNormalizationLayer
     
-    
-    fullyConnectedLayer(2)
+    fullyConnectedLayer(100)
     reluLayer
+    dropoutLayer(0.5)
+    fullyConnectedLayer(100)
+    reluLayer
+    fullyConnectedLayer(2)
     softmaxLayer
     classificationLayer];
 
 
 checkpointPath='../tmp2';
 mkdir(checkpointPath);
-miniBatchSize=128;
+miniBatchSize=64;
 
 
 options = trainingOptions('adam', ...
@@ -194,7 +199,7 @@ options = trainingOptions('adam', ...
     'L2Regularization', 1e-8, ...
     'Shuffle', 'every-epoch', ...
     'CheckpointPath',checkpointPath,...
-    'ValidationData',volds_train, ...
+    'ValidationData',volds_val, ...
     'Plots','training-progress', ...
     'GradientDecayFactor',0.9, ...
     'ValidationFrequency',200, ...
@@ -204,6 +209,8 @@ options = trainingOptions('adam', ...
 
 [net,info] = trainNetwork(volds_train,layers,options);
 
-
+% print('nonorm', '-depsc' ) 
+% print('nonorm', '-dpng' ) 
+% savefig('nonorm.fig' )
 
 

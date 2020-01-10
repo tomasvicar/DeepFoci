@@ -13,7 +13,7 @@ names={names(:).name};
 gpu=1;
 
 
-for img_num=84:length(names)
+for img_num=182:length(names)
     
     img_num
     
