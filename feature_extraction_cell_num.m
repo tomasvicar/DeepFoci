@@ -38,13 +38,20 @@ for img_num=170:300
     save_manual_label=strrep(save_manual_label,'.tif','.mat');
     
     
-    save_features=strrep(name,'3D_','features_window_');
+    save_features=strrep(name,'3D_','features_cellnum_');
     save_features=strrep(save_features,'.tif','.mat');
     
     
     [a,b,~]=read_3d_rgb_tif(name);
     
-
+    mask=read_mask(name_mask);
+    mask=split_nuclei(mask);
+    mask=balloon(mask,[20 20 8]);
+    shape=[5,5,2];
+    [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
+    sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
+    mask_conected=imerode(mask,sphere);
+    mask=imresize3(uint8(mask),size(a),'nearest')>0;
      
      
      mask_foci=imread(name_mask_foci)>0;
@@ -53,14 +60,16 @@ for img_num=170:300
      
      clear mask_foci
      
+     lbl_mask=bwlabeln(mask);
      
-    sizes=[71 71 19];
      
-    widnowa=get_window(a,lbl_foci,sizes);
-    widnowb=get_window(b,lbl_foci,sizes);
+     cell_num = regionprops3(lbl_foci,lbl_mask,'MaxIntensity');
+     cell_num.Properties.VariableNames={'cellNum'};
 
-    save(save_features,'widnowa','widnowb')
-     
+    save(save_features,'cell_num')
+    
+    
+    
 
 end
     

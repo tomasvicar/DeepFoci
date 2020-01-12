@@ -1,100 +1,100 @@
 clc;clear all;close all force;
-% addpath('utils')
-% addpath('3DNucleiSegmentation_training')
-% 
-% load('names_foci_sample.mat')
-% names_orig=names;
-% 
-% % names=subdir('..\example_folder\*3D_*.tif');
-% % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
-% % names=subdir('F:\example_folder\*3D_*.tif');
-% names={names(:).name};
-% 
-% gpu=1;
-% 
-% 
-% 
-% 
-% 
-% try
-%     
-%     rmdir('../tmp', 's')
-% catch
-%     
-% end
-% 
-% 
-% mkdir('../tmp')
-% mkdir('../tmp/train')
-% mkdir('../tmp/test')
-% mkdir('../tmp/train/0')
-% mkdir('../tmp/train/1')
-% mkdir('../tmp/test/0')
-% mkdir('../tmp/test/1')
-% 
-% 
-% train_counter=0;
-% test_counter=0;
-% 
-% for img_num=1:170
-%     
-%     img_num
-%     
-%     name=names{img_num};
-%     
-%     name_orig=names_orig{img_num};
-%     
-%     name_mask=strrep(name,'3D_','mask_');
-%     mask_name_split=strrep(name,'3D_','mask_split');
-%     
-%     
-%     name_mask_foci=strrep(name,'3D_','mask_foci_');
-%     
-%     
-%     save_control_seg=strrep(name,'3D_','control_seg_foci');
-%     save_control_seg=strrep(save_control_seg,'.tif','');
-%     
-%     save_manual_label=strrep(name,'3D_','manual_label_');
-%     save_manual_label=strrep(save_manual_label,'.tif','.mat');
-%     
-%     
-%     save_features=strrep(name,'3D_','features_window_');
-%     save_features=strrep(save_features,'.tif','.mat');
-%     
-%     
-%     
-%     
-%     load(save_manual_label)
-%     
-%     load(save_features)
-%     
-%     if img_num<120
-%         
-%         for k=1:length(widnowa)
-%             train_counter=train_counter+1;
-%             
-%             window_k=cat(4,widnowa{k},widnowb{k});
-%             
-%             save(['../tmp/train/' num2str(labels(k)) '/' num2str(train_counter,'%06.f') '.mat'],'window_k')
-%             
-%             
-%         end
-%         
-%     else
-%         for k=1:length(widnowa)
-%             test_counter=test_counter+1;
-%             
-%             window_k=cat(4,widnowa{k},widnowa{k});
-%             
-%             save(['../tmp/test/' num2str(labels(k)) '/' num2str(test_counter,'%06.f') '.mat'],'window_k')
-%             
-%         end
-%     end
-%     
-%     
-% end
-% 
+addpath('utils')
+addpath('3DNucleiSegmentation_training')
+
+load('names_foci_sample.mat')
+names_orig=names;
+
+% names=subdir('..\example_folder\*3D_*.tif');
+% names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
+names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+% names=subdir('F:\example_folder\*3D_*.tif');
+names={names(:).name};
+
+gpu=1;
+
+
+
+
+
+try
+    
+    rmdir('../tmp', 's')
+catch
+    
+end
+
+
+mkdir('../tmp')
+mkdir('../tmp/train')
+mkdir('../tmp/test')
+mkdir('../tmp/train/0')
+mkdir('../tmp/train/1')
+mkdir('../tmp/test/0')
+mkdir('../tmp/test/1')
+
+
+train_counter=0;
+test_counter=0;
+
+for img_num=1:300
+    
+    img_num
+    
+    name=names{img_num};
+    
+    name_orig=names_orig{img_num};
+    
+    name_mask=strrep(name,'3D_','mask_');
+    mask_name_split=strrep(name,'3D_','mask_split');
+    
+    
+    name_mask_foci=strrep(name,'3D_','mask_foci_');
+    
+    
+    save_control_seg=strrep(name,'3D_','control_seg_foci');
+    save_control_seg=strrep(save_control_seg,'.tif','');
+    
+    save_manual_label=strrep(name,'3D_','manual_label_');
+    save_manual_label=strrep(save_manual_label,'.tif','.mat');
+    
+    
+    save_features=strrep(name,'3D_','features_window_');
+    save_features=strrep(save_features,'.tif','.mat');
+    
+    
+    
+    
+    load(save_manual_label)
+    
+    load(save_features)
+    
+    if img_num<240
+        
+        for k=1:length(widnowa)
+            train_counter=train_counter+1;
+            
+            window_k=cat(4,widnowa{k},widnowb{k});
+            
+            save(['../tmp/train/' num2str(labels(k)) '/' num2str(train_counter,'%06.f') '.mat'],'window_k')
+            
+            
+        end
+        
+    else
+        for k=1:length(widnowa)
+            test_counter=test_counter+1;
+            
+            window_k=cat(4,widnowa{k},widnowa{k});
+            
+            save(['../tmp/test/' num2str(labels(k)) '/' num2str(test_counter,'%06.f') '.mat'],'window_k')
+            
+        end
+    end
+    
+    
+end
+
 
 
 
@@ -191,7 +191,7 @@ miniBatchSize=64;
 
 options = trainingOptions('adam', ...
     'MaxEpochs',50, ...
-    'InitialLearnRate',1e-5, ...
+    'InitialLearnRate',1e-4, ...
     'LearnRateSchedule','piecewise', ...
     'LearnRateDropPeriod',15, ...
     'LearnRateDropFactor',0.1, ...

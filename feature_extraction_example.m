@@ -16,7 +16,7 @@ gpu=1;
 
 
 
-for img_num=1:170
+for img_num=170:300
     
     img_num
     
