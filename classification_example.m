@@ -15,7 +15,7 @@ gpu=1;
 
 
 
-for img_num=1:170
+for img_num=1:300
     
     img_num
     
@@ -40,6 +40,9 @@ for img_num=1:170
     save_features=strrep(name,'3D_','features_');
     save_features=strrep(save_features,'.tif','.mat');
     
+    save_features_cellnum=strrep(name,'3D_','features_cellnum_');
+    save_features_cellnum=strrep(save_features_cellnum,'.tif','.mat');
+    
     
     
     
@@ -47,14 +50,17 @@ for img_num=1:170
     
     load(save_features)
     
+    load(save_features_cellnum)
     
     
     
     features_new=features(:,[1,2,3,4]);
     
+%     features_new=[features_new,features(:,5:13)];
+%     
 %     features_new=[features_new,features(:,35:46)];
-
-    
+% 
+%     
 %     
 %     features_new = addvars(features_new,features.MaxIntensitya./features.mediana,'NewVariableNames','MaxDMedA');
 %     features_new = addvars(features_new,features.MaxIntensityb./features.medianb,'NewVariableNames','MaxDMedB');
@@ -64,7 +70,7 @@ for img_num=1:170
 %     features_new = addvars(features_new,features.MeanIntensitya./features.mediana,'NewVariableNames','MeanDMedA');
 %     features_new = addvars(features_new,features.MeanIntensityb./features.medianb,'NewVariableNames','MeanDMedB');
 %     features_new = addvars(features_new,features.MeanIntensityab./features.medianab,'NewVariableNames','MeanDMedAB');
-
+% 
 % 
 % 
 %     features_new = addvars(features_new,features.MaxIntensitya./features.percentile99a,'NewVariableNames','MaxDpercentileA');
@@ -75,11 +81,11 @@ for img_num=1:170
 %     features_new = addvars(features_new,features.MeanIntensitya./features.percentile99a,'NewVariableNames','MeanDpercentileA');
 %     features_new = addvars(features_new,features.MeanIntensityb./features.percentile99b,'NewVariableNames','MeanDpercentileB');
 %     features_new = addvars(features_new,features.MeanIntensityab./features.percentile99ab,'NewVariableNames','MeanDpercentileAB');    
-
-
-
-
-
+% 
+% 
+% 
+% 
+% 
 %      sigmas=[6,9,15,25];
 %      for sigma = sigmas
 %   
@@ -88,8 +94,8 @@ for img_num=1:170
 %          features_new = addvars(features_new,features.(['CentroidValueabG' num2str(sigma)])./features.CentroidValueab,'NewVariableNames',['CentroidValueabG' num2str(sigma) 'DCentroidValue']);
 %  
 %      end
-     
-     
+%      
+%      
 %      sigmas=[6,9,15,25];
 %      for sigma = sigmas
 %   
@@ -98,10 +104,10 @@ for img_num=1:170
 %          features_new = addvars(features_new,features.(['CentroidValueabG' num2str(sigma)])-features.CentroidValueab,'NewVariableNames',['CentroidValueabG' num2str(sigma) 'MCentroidValue']);
 %  
 %      end     
-     
-
-
-
+%      
+% 
+% 
+% 
 %      sigmas=[6,9,15,25];
 %      for sigma = sigmas
 %   
@@ -110,8 +116,8 @@ for img_num=1:170
 %          features_new = addvars(features_new,features.(['CentroidValueabMin' num2str(sigma)])./features.CentroidValueab,'NewVariableNames',['CentroidValueabMin' num2str(sigma) 'DCentroidValue']);
 %  
 %      end
-    
-
+%     
+% 
 %      sigmas=[6,9,15,25];
 %      for sigma = sigmas
 %   
@@ -120,12 +126,108 @@ for img_num=1:170
 %          features_new = addvars(features_new,(features.CentroidValueab-features.(['CentroidValueabMin' num2str(sigma)]))./features.CentroidValueab,'NewVariableNames',['CentroidValueabMin' num2str(sigma) 'MDCentroidValue']);
 %  
 %      end
-
-
+% 
+%      
+%      
+%     cell_num=cell_num{:,:};
+%     cell_nums=unique(cell_num)';
+% 
+%     tmp=features.MaxIntensitya;
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/median(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MaxaCellMedNorm');
+%     
+%     tmp=features.MaxIntensityb;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/median(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MaxbCellMedNorm');
+%     
+%     tmp=features.MaxIntensityab;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/median(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MaxabCellMedNorm');
+% 
+%     
+%     
+%     tmp=features.MeanIntensitya;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/median(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MeanaCellMedNorm');
+%     
+%     tmp=features.MaxIntensityb;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/median(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MeanbCellMedNorm');
+%     
+%     tmp=features.MaxIntensityab;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/median(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MeanabCellMedNorm');
+%     
+% 
+%     
+%     tmp=features.MaxIntensitya;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/mean(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MaxaCellmeanNorm');
+%     
+%     tmp=features.MaxIntensityb;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/mean(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MaxbCellmeanNorm');
+%     
+%     tmp=features.MaxIntensityab;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/mean(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MaxabCellmeanNorm');
+% 
+%     
+%     
+%     tmp=features.MeanIntensitya;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/mean(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MeanaCellmeanNorm');
+%     
+%     tmp=features.MaxIntensityb;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/mean(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MeanbCellmeanNorm');
+%     
+%     tmp=features.MaxIntensityab;
+%     
+%     for k = cell_nums
+%         tmp(cell_num==k)=tmp(cell_num==k)/mean(tmp(cell_num==k));
+%     end
+%     features_new = addvars(features_new,tmp,'NewVariableNames','MeanabCellmeanNorm');
+%     
+    
+    
+    
     
     features=features_new;
     
-    if img_num<120
+    if img_num<240
         
         if ~exist('features_train','var')
         

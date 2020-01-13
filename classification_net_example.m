@@ -59,9 +59,9 @@ for img_num=1:300
     save_manual_label=strrep(save_manual_label,'.tif','.mat');
     
     
-    save_features=strrep(name,'3D_','features_window_');
+%     save_features=strrep(name,'3D_','features_window_');
+    save_features=strrep(name,'3D_','features_window2_');
     save_features=strrep(save_features,'.tif','.mat');
-    
     
     
     
@@ -131,57 +131,138 @@ volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderDa
 
 % countEachLabel(volds_train)
 
+% filters=16;
+% layers = [
+%     image3dInputLayer([64 64 16 2],'Normalization','none')
+%     
+%     convolution3dLayer(3,filters,'Padding','same')
+%     reluLayer
+%     batchNormalizationLayer
+%     convolution3dLayer(3,filters,'Padding','same')
+%     reluLayer
+%     batchNormalizationLayer
+%     convolution3dLayer(3,filters,'Padding','same')
+%     reluLayer
+%     batchNormalizationLayer
+%     
+%     maxPooling3dLayer(2,'Stride',2)
+%     
+%    
+%     convolution3dLayer(3,filters*2,'Padding','same')
+%     reluLayer
+%     batchNormalizationLayer
+%     convolution3dLayer(3,filters*2,'Padding','same')
+%     reluLayer
+%     dropoutLayer(0.5)
+%     batchNormalizationLayer
+%     convolution3dLayer(3,filters*2,'Padding','same')
+%     reluLayer
+%     batchNormalizationLayer
+%     
+%     
+%     maxPooling3dLayer(2,'Stride',2)
+%     
+%     
+%     convolution3dLayer(3,filters*4,'Padding','same')
+%     reluLayer
+%     batchNormalizationLayer
+%     convolution3dLayer(3,filters*4,'Padding','same')
+%     reluLayer
+%     batchNormalizationLayer
+%     convolution3dLayer(3,filters*4,'Padding','same')
+%     dropoutLayer(0.5)
+%     reluLayer
+%     batchNormalizationLayer
+%     
+%     fullyConnectedLayer(100)
+%     reluLayer
+%     dropoutLayer(0.5)
+%     fullyConnectedLayer(100)
+%     reluLayer
+%     fullyConnectedLayer(2)
+%     softmaxLayer
+%     classificationLayer];
+
+
+
 filters=16;
 layers = [
-    image3dInputLayer([64 64 16 2],'Normalization','none')
+    image3dInputLayer([96 96 16 2],'Normalization','none','Name','input')
     
-    convolution3dLayer(3,filters,'Padding','same')
-    reluLayer
-    batchNormalizationLayer
-    convolution3dLayer(3,filters,'Padding','same')
-    reluLayer
-    batchNormalizationLayer
-    convolution3dLayer(3,filters,'Padding','same')
-    reluLayer
-    batchNormalizationLayer
+    convolution3dLayer(3,filters,'Padding','same','Name','c11')
+    reluLayer('Name','relu11')
+    batchNormalizationLayer('Name','bn11')
+    convolution3dLayer(3,filters,'Padding','same','Name','c12')
+    reluLayer('Name','relu12')
+    batchNormalizationLayer('Name','bn12')
+    convolution3dLayer(3,filters,'Padding','same','Name','c13')
+    reluLayer('Name','relu13')
+    batchNormalizationLayer('Name','bn13')
+    additionLayer(2,'Name','add1')
     
-    maxPooling3dLayer(2,'Stride',2)
+    maxPooling3dLayer(2,'Stride',2,'Name','pool1')
+    
+    
+    convolution3dLayer(3,filters,'Padding','same','Name','c21')
+    reluLayer('Name','relu21')
+    batchNormalizationLayer('Name','bn21')
+    convolution3dLayer(3,filters,'Padding','same','Name','c22')
+    reluLayer('Name','relu22')
+    batchNormalizationLayer('Name','bn22')
+    convolution3dLayer(3,filters,'Padding','same','Name','c23')
+    reluLayer('Name','relu23')
+    batchNormalizationLayer('Name','bn23')
+    additionLayer(2,'Name','add2')
+    
+    maxPooling3dLayer(2,'Stride',2,'Name','pool2')
     
    
-    convolution3dLayer(3,filters*2,'Padding','same')
-    reluLayer
-    batchNormalizationLayer
-    convolution3dLayer(3,filters*2,'Padding','same')
-    reluLayer
-    dropoutLayer(0.5)
-    batchNormalizationLayer
-    convolution3dLayer(3,filters*2,'Padding','same')
-    reluLayer
-    batchNormalizationLayer
+    convolution3dLayer(3,filters,'Padding','same','Name','c31')
+    reluLayer('Name','relu31')
+    batchNormalizationLayer('Name','bn31')
+    convolution3dLayer(3,filters,'Padding','same','Name','c32')
+    reluLayer('Name','relu32')
+    batchNormalizationLayer('Name','bn32')
+    convolution3dLayer(3,filters,'Padding','same','Name','c33')
+    reluLayer('Name','relu33')
+    batchNormalizationLayer('Name','bn33')
+    additionLayer(2,'Name','add3')
+    
+    maxPooling3dLayer(2,'Stride',2,'Name','pool3')
     
     
-    maxPooling3dLayer(2,'Stride',2)
     
+    convolution3dLayer(3,filters,'Padding','same','Name','c41')
+    reluLayer('Name','relu41')
+    batchNormalizationLayer('Name','bn41')
+    convolution3dLayer(3,filters,'Padding','same','Name','c42')
+    reluLayer('Name','relu42')
+    batchNormalizationLayer('Name','bn42')
+    convolution3dLayer(3,filters,'Padding','same','Name','c43')
+    reluLayer('Name','relu43')
+    batchNormalizationLayer('Name','bn43')
+    additionLayer(2,'Name','add4')
     
-    convolution3dLayer(3,filters*4,'Padding','same')
-    reluLayer
-    batchNormalizationLayer
-    convolution3dLayer(3,filters*4,'Padding','same')
-    reluLayer
-    batchNormalizationLayer
-    convolution3dLayer(3,filters*4,'Padding','same')
-    dropoutLayer(0.5)
-    reluLayer
-    batchNormalizationLayer
+    maxPooling3dLayer(2,'Stride',2,'Name','pool4')
     
-    fullyConnectedLayer(100)
-    reluLayer
-    dropoutLayer(0.5)
-    fullyConnectedLayer(100)
-    reluLayer
-    fullyConnectedLayer(2)
-    softmaxLayer
-    classificationLayer];
+    fullyConnectedLayer(100,'Name','fc1')
+    reluLayer('Name','relufc1')
+    dropoutLayer(0.5,'Name','dofc1')
+    fullyConnectedLayer(100,'Name','fc2')
+    reluLayer('Name','relufc2')
+    fullyConnectedLayer(2,'Name','fc3')
+    softmaxLayer('Name','sm')
+    classificationLayer('Name','class')];
+
+layers=layerGraph(layers);
+layers = connectLayers(layers,'input','add1/in2');
+layers = connectLayers(layers,'pool1','add2/in2');
+layers = connectLayers(layers,'pool2','add3/in2');
+layers = connectLayers(layers,'pool3','add4/in2');
+
+
+
+
 
 
 checkpointPath='../tmp2';
@@ -191,9 +272,9 @@ miniBatchSize=64;
 
 options = trainingOptions('adam', ...
     'MaxEpochs',50, ...
-    'InitialLearnRate',1e-4, ...
+    'InitialLearnRate',1e-3, ...
     'LearnRateSchedule','piecewise', ...
-    'LearnRateDropPeriod',15, ...
+    'LearnRateDropPeriod',10, ...
     'LearnRateDropFactor',0.1, ...
     'SquaredGradientDecayFactor',0.99, ...
     'L2Regularization', 1e-8, ...

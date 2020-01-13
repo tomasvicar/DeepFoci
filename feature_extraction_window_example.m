@@ -16,7 +16,7 @@ gpu=1;
 
 
 
-for img_num=170:300
+for img_num=1:300
     
     img_num
     
@@ -38,7 +38,8 @@ for img_num=170:300
     save_manual_label=strrep(save_manual_label,'.tif','.mat');
     
     
-    save_features=strrep(name,'3D_','features_window_');
+    save_features=strrep(name,'3D_','features_window2_');
+%     save_features=strrep(name,'3D_','features_window_');
     save_features=strrep(save_features,'.tif','.mat');
     
     
@@ -54,7 +55,8 @@ for img_num=170:300
      clear mask_foci
      
      
-    sizes=[71 71 19];
+    sizes=[101 101 19];
+%     sizes=[71 71 19];
      
     widnowa=get_window(a,lbl_foci,sizes);
     widnowb=get_window(b,lbl_foci,sizes);
