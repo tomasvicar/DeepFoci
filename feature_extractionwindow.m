@@ -30,13 +30,13 @@ for folder_num=1:25
     names=subdir([folder '/*3D*.tif']);
     names={names(:).name};
 
-    for img_num=1:170
+    for img_num=1:length(names)
 
         img_num
 
         name=names{img_num};
 
-        name_orig=names_orig{img_num};
+%         name_orig=names_orig{img_num};
 
         name_mask=strrep(name,'3D_','mask_');
         mask_name_split=strrep(name,'3D_','mask_split');
@@ -52,7 +52,8 @@ for folder_num=1:25
         save_manual_label=strrep(save_manual_label,'.tif','.mat');
 
 
-        save_features=strrep(name,'3D_','features_window_');
+%         save_features=strrep(name,'3D_','features_window_');
+        save_features=strrep(name,'3D_','features_window2_');
         save_features=strrep(save_features,'.tif','.mat');
 
 
@@ -70,7 +71,8 @@ for folder_num=1:25
               clear mask_foci
      
      
-    sizes=[71 71 19];
+%     sizes=[71 71 19];
+    sizes=[101 101 19];
      
     widnowa=get_window(a,lbl_foci,sizes);
     widnowb=get_window(b,lbl_foci,sizes);
