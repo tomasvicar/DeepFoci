@@ -14,86 +14,86 @@ names={names(:).name};
 gpu=1;
 
 
-
-
-
-try
-    
-    rmdir('../tmp', 's')
-catch
-    
-end
-
-
-mkdir('../tmp')
-mkdir('../tmp/train')
-mkdir('../tmp/test')
-mkdir('../tmp/train/0')
-mkdir('../tmp/train/1')
-mkdir('../tmp/test/0')
-mkdir('../tmp/test/1')
-
-
-train_counter=0;
-test_counter=0;
-
-for img_num=1:300
-    
-    img_num
-    
-    name=names{img_num};
-    
-    name_orig=names_orig{img_num};
-    
-    name_mask=strrep(name,'3D_','mask_');
-    mask_name_split=strrep(name,'3D_','mask_split');
-    
-    
-    name_mask_foci=strrep(name,'3D_','mask_foci_');
-    
-    
-    save_control_seg=strrep(name,'3D_','control_seg_foci');
-    save_control_seg=strrep(save_control_seg,'.tif','');
-    
-    save_manual_label=strrep(name,'3D_','manual_label_');
-    save_manual_label=strrep(save_manual_label,'.tif','.mat');
-    
-    
-%     save_features=strrep(name,'3D_','features_window_');
-    save_features=strrep(name,'3D_','features_window2_');
-    save_features=strrep(save_features,'.tif','.mat');
-    
-    
-    
-    load(save_manual_label)
-    
-    load(save_features)
-    
-    if img_num<240
-        
-        for k=1:length(widnowa)
-            train_counter=train_counter+1;
-            
-            window_k=cat(4,widnowa{k},widnowb{k});
-            
-            save(['../tmp/train/' num2str(labels(k)) '/' num2str(train_counter,'%06.f') '.mat'],'window_k')
-            
-            
-        end
-        
-    else
-        for k=1:length(widnowa)
-            test_counter=test_counter+1;
-            
-            window_k=cat(4,widnowa{k},widnowa{k});
-            
-            save(['../tmp/test/' num2str(labels(k)) '/' num2str(test_counter,'%06.f') '.mat'],'window_k')
-            
-        end
-    end
-    
-    
-end
+% 
+% 
+% 
+% try
+%     
+%     rmdir('../tmp', 's')
+% catch
+%     
+% end
+% 
+% 
+% mkdir('../tmp')
+% mkdir('../tmp/train')
+% mkdir('../tmp/test')
+% mkdir('../tmp/train/0')
+% mkdir('../tmp/train/1')
+% mkdir('../tmp/test/0')
+% mkdir('../tmp/test/1')
+% 
+% 
+% train_counter=0;
+% test_counter=0;
+% 
+% for img_num=1:300
+%     
+%     img_num
+%     
+%     name=names{img_num};
+%     
+%     name_orig=names_orig{img_num};
+%     
+%     name_mask=strrep(name,'3D_','mask_');
+%     mask_name_split=strrep(name,'3D_','mask_split');
+%     
+%     
+%     name_mask_foci=strrep(name,'3D_','mask_foci_');
+%     
+%     
+%     save_control_seg=strrep(name,'3D_','control_seg_foci');
+%     save_control_seg=strrep(save_control_seg,'.tif','');
+%     
+%     save_manual_label=strrep(name,'3D_','manual_label_');
+%     save_manual_label=strrep(save_manual_label,'.tif','.mat');
+%     
+%     
+% %     save_features=strrep(name,'3D_','features_window_');
+%     save_features=strrep(name,'3D_','features_window2_');
+%     save_features=strrep(save_features,'.tif','.mat');
+%     
+%     
+%     
+%     load(save_manual_label)
+%     
+%     load(save_features)
+%     
+%     if img_num<240
+%         
+%         for k=1:length(widnowa)
+%             train_counter=train_counter+1;
+%             
+%             window_k=cat(4,widnowa{k},widnowb{k});
+%             
+%             save(['../tmp/train/' num2str(labels(k)) '/' num2str(train_counter,'%06.f') '.mat'],'window_k')
+%             
+%             
+%         end
+%         
+%     else
+%         for k=1:length(widnowa)
+%             test_counter=test_counter+1;
+%             
+%             window_k=cat(4,widnowa{k},widnowa{k});
+%             
+%             save(['../tmp/test/' num2str(labels(k)) '/' num2str(test_counter,'%06.f') '.mat'],'window_k')
+%             
+%         end
+%     end
+%     
+%     
+% end
 
 
 
@@ -105,7 +105,7 @@ volds_train = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReader
 
 
 volLoc='../tmp/test';
-volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderData,'LabelSource','foldernames','IncludeSubfolders',1);
+volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderData_test,'LabelSource','foldernames','IncludeSubfolders',1);
 
 
 % max_val=-Inf;
@@ -198,7 +198,6 @@ layers = [
     convolution3dLayer(3,filters,'Padding','same','Name','c13')
     reluLayer('Name','relu13')
     batchNormalizationLayer('Name','bn13')
-    additionLayer(2,'Name','add1')
     
     maxPooling3dLayer(2,'Stride',2,'Name','pool1')
     
@@ -247,7 +246,7 @@ layers = [
     
     fullyConnectedLayer(100,'Name','fc1')
     reluLayer('Name','relufc1')
-    dropoutLayer(0.5,'Name','dofc1')
+%     dropoutLayer(0.5,'Name','dofc1')
     fullyConnectedLayer(100,'Name','fc2')
     reluLayer('Name','relufc2')
     fullyConnectedLayer(2,'Name','fc3')
@@ -255,7 +254,6 @@ layers = [
     classificationLayer('Name','class')];
 
 layers=layerGraph(layers);
-layers = connectLayers(layers,'input','add1/in2');
 layers = connectLayers(layers,'pool1','add2/in2');
 layers = connectLayers(layers,'pool2','add3/in2');
 layers = connectLayers(layers,'pool3','add4/in2');
