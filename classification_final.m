@@ -4,8 +4,8 @@ addpath('3DNucleiSegmentation_training')
 
 gpu=1;
 
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-% path='D:\Users\vicar\foci_part';
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
+path='D:\Users\vicar\foci_part';
 
 
 folders=dir(path);
@@ -18,7 +18,7 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=1:25
+for folder_num=1:50
     
     folder=folders{folder_num};
     
@@ -61,21 +61,34 @@ for folder_num=1:25
         save_features_cellnum=strrep(save_features_cellnum,'.tif','.mat');
         
         
-        save_features_window=strrep(name,'3D_','features_');
+        save_features_window=strrep(name,'3D_','features_window_');
         save_features_widnow=strrep(save_features_window,'.tif','.mat');
         
-        save_features_window2=strrep(name,'3D_','features_');
+        save_features_window2=strrep(name,'3D_','features_window2_');
         save_features_widnow2=strrep(save_features_window2,'.tif','.mat');
         
+        
+        save_control_final=strrep(name,'3D_','control_final_rf_fall_');
+%         save_control_final=strrep(name,'3D_','control_final_rf_fhalf_');
+%         save_control_final=strrep(name,'3D_','control_final_rf_fnrom_');
+%         save_control_final=strrep(name,'3D_','control_final_net_norm_');
+%         save_control_final=strrep(name,'3D_','control_final_net_nonorm_');
+        save_control_final=strrep(save_control_final,'.tif','');
+        
+        
+        save_results_final=strrep(save_results_final,'control_','results_');
+        save_results_final=[save_results_final '.mat'];
+        
+
         
         
         load()
         
         
+       
         
         
-        
-        
+        mask=imread(mask_name_split);
         
         rgb_2d=imread(name_2D);
         
@@ -91,7 +104,6 @@ for folder_num=1:25
         visboundaries(sum( mask_foci,3)>0,'LineWidth',0.5,'Color','r','EnhanceVisibility',0)
         visboundaries(mask_2d_split1,'LineWidth',0.5,'Color','g','EnhanceVisibility',0)
         s = regionprops( mask_foci>0,'Centroid');
-        
         maxima = round(cat(1, s.Centroid));
         if ~isempty(maxima)
             plot(maxima(:,1), maxima(:,2), 'b*')
