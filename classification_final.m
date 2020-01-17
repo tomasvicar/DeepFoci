@@ -141,6 +141,8 @@ for folder_num=1:50
 
         
         
+        save(save_results_final,'binaryResuslts')
+        
     end
     
 end
