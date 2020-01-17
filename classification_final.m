@@ -69,7 +69,7 @@ for folder_num=1:50
         
         
         save_control_final=strrep(name,'3D_','control_final_rf_fall_');
-%         save_control_final=strrep(name,'3D_','control_final_rf_fhalf_');
+        save_control_final=strrep(name,'3D_','control_final_rf_fhalf_');
 %         save_control_final=strrep(name,'3D_','control_final_rf_fnrom_');
 %         save_control_final=strrep(name,'3D_','control_final_net_norm_');
 %         save_control_final=strrep(name,'3D_','control_final_net_nonorm_');
