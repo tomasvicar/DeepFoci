@@ -56,9 +56,9 @@ for img_num=1:300
   
     
     
-%     [features_new] = get_features_all(features,cell_num);
+    [features_new] = get_features_all(features,cell_num);
 %     [features_new] = get_features_half(features,cell_num);
-    [features_new] = get_features_norm(features,cell_num);
+%     [features_new] = get_features_norm(features,cell_num);
     
     
     

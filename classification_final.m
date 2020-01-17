@@ -8,6 +8,18 @@ gpu=1;
 path='D:\Users\vicar\foci_part';
 
 
+
+
+load('rf_all_06860.mat');
+
+% load('rf_half_06778.mat');
+
+% load('rf_norm_06883.mat');
+
+
+
+
+
 folders=dir(path);
 folders_new={};
 for k=3:length(folders)
@@ -69,24 +81,33 @@ for folder_num=1:50
         
         
         save_control_final=strrep(name,'3D_','control_final_rf_fall_');
-        save_control_final=strrep(name,'3D_','control_final_rf_fhalf_');
+%         save_control_final=strrep(name,'3D_','control_final_rf_fhalf_');
 %         save_control_final=strrep(name,'3D_','control_final_rf_fnrom_');
 %         save_control_final=strrep(name,'3D_','control_final_net_norm_');
 %         save_control_final=strrep(name,'3D_','control_final_net_nonorm_');
         save_control_final=strrep(save_control_final,'.tif','');
         
         
-        save_results_final=strrep(save_results_final,'control_','results_');
+        save_results_final=strrep(save_control_final,'control_','results_');
         save_results_final=[save_results_final '.mat'];
         
 
+        clear features cell_num
+        
+        load(save_features)
+    
+        load(save_features_cellnum)
         
         
-        load()
+
+        [features_new] = get_features_all(features,cell_num);
+%     [features_new] = get_features_half(features,cell_num);
+%     [features_new] = get_features_norm(features,cell_num);
+
         
-        
-       
-        
+       binaryResuslts = str2double(predict(Mdl,features_new{:,:}));
+
+
         
         mask=imread(mask_name_split);
         
@@ -99,9 +120,9 @@ for folder_num=1:50
         
         
         close all
-        imshow(rgb_2d)
+        imshow(mat2gray(double(rgb_2d)))
         hold on
-        visboundaries(sum( mask_foci,3)>0,'LineWidth',0.5,'Color','r','EnhanceVisibility',0)
+%         visboundaries(sum( mask_foci,3)>0,'LineWidth',0.5,'Color','r','EnhanceVisibility',0)
         visboundaries(mask_2d_split1,'LineWidth',0.5,'Color','g','EnhanceVisibility',0)
         s = regionprops( mask_foci>0,'Centroid');
         maxima = round(cat(1, s.Centroid));

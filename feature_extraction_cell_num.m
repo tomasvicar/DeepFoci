@@ -4,8 +4,8 @@ addpath('3DNucleiSegmentation_training')
 
 gpu=1;
 
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-% path='D:\Users\vicar\foci_part';
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
+path='D:\Users\vicar\foci_part';
 
 
 folders=dir(path);
