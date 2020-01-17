@@ -119,6 +119,8 @@ for folder_num=1:50
 
         
         
+        rgb_2d=cat(3,norm_percentile(rgb_2d(:,:,1),0.005),norm_percentile(rgb_2d(:,:,2),0.005),norm_percentile(rgb_2d(:,:,3),0.005));
+        
         close all
         imshow(mat2gray(double(rgb_2d)))
         hold on
@@ -127,18 +129,16 @@ for folder_num=1:50
         s = regionprops( mask_foci>0,'Centroid');
         maxima = round(cat(1, s.Centroid));
         if ~isempty(maxima)
-            plot(maxima(:,1), maxima(:,2), 'b*')
-            plot(maxima(find(binaryResuslts),1), maxima(find(binaryResuslts),2), 'ro')
-            plot(maxima(find(binaryResuslts),1), maxima(find(binaryResuslts),2), 'g*')
+            plot(maxima(:,1), maxima(:,2), 'b*','MarkerSize',3)
+            plot(maxima(find(binaryResuslts),1), maxima(find(binaryResuslts),2), 'ro','MarkerSize',3)
+            plot(maxima(find(binaryResuslts),1), maxima(find(binaryResuslts),2), 'g*','MarkerSize',3)
         end
         name_orig_tmp=split(name,'\');
         name_orig_tmp=join(name_orig_tmp(end-3:end),'\');
         title(name_orig_tmp)
         drawnow;
+        print(save_control_final,'-dpng')
 
-        
-        
-        
         
         
     end
