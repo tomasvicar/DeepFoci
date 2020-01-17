@@ -4,13 +4,13 @@ addpath('3DNucleiSegmentation_training')
 
 gpu=1;
 
-% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-path='D:\Users\vicar\foci_part';
+path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
+% path='D:\Users\vicar\foci_part';
 
 
+load('velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
 
-
-load('rf_all_06860.mat');
+% load('rf_all_06860.mat');
 
 % load('rf_half_06778.mat');
 
@@ -92,20 +92,43 @@ for folder_num=1:50
         save_results_final=[save_results_final '.mat'];
         
 
-        clear features cell_num
+%         clear features cell_num
         
-        load(save_features)
+%         load(save_features)
     
-        load(save_features_cellnum)
+%         load(save_features_cellnum)
+
+
+        load(save_features_widnow2)
+        
+        binaryResuslts=zeros(1,length(widnowa));
+        for k=1:length(widnowa)
+
+%             
+            window_k=cat(4,widnowa{k},widnowb{k});
+            
+            
+            window_k=window_k(3:end-3,3:end-3,2:end-2,:);
+    
+   
+%             window_k=single(mat2gray(double(window_k),[90,600])-0.5);
+
+            window_k=single((window_k-mean(window_k(:)))/std(window_k(:))) ;
+
+            YPred = predict(net,window_k);
+            
+            drawnow;
+            
+        end
         
         
 
-        [features_new] = get_features_all(features,cell_num);
+%         [features_new] = get_features_all(features,cell_num);
 %     [features_new] = get_features_half(features,cell_num);
 %     [features_new] = get_features_norm(features,cell_num);
 
         
-       binaryResuslts = str2double(predict(Mdl,features_new{:,:}));
+%        binaryResuslts = str2double(predict(Mdl,features_new{:,:}));
 
 
         
@@ -137,11 +160,11 @@ for folder_num=1:50
         name_orig_tmp=join(name_orig_tmp(end-3:end),'\');
         title(name_orig_tmp)
         drawnow;
-        print(save_control_final,'-dpng')
+%         print(save_control_final,'-dpng')
 
         
         
-        save(save_results_final,'binaryResuslts')
+%         save(save_results_final,'binaryResuslts')
         
     end
     
