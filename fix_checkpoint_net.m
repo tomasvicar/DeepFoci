@@ -30,7 +30,9 @@ volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderDa
 
 
 
-load('velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat')
+% load('velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat')
+load('velke_aug_nonorm_net_checkpoint__19000__2020_01_15__13_39_47.mat')
+
 
 net=layerGraph(net);
 
@@ -61,4 +63,7 @@ options = trainingOptions('sgdm', ...
 % savefig('nonorm.fig' )
 
 
-save('fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat','net')
+% save('fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat','net')
+save('fix_velke_aug_nonorm_net_checkpoint__19000__2020_01_15__13_39_47.mat','net')
+
+
