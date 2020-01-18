@@ -30,7 +30,7 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=1:50
+for folder_num=35:50
     
     folder=folders{folder_num};
     
