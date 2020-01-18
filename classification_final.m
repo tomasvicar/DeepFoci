@@ -4,13 +4,13 @@ addpath('3DNucleiSegmentation_training')
 
 gpu=1;
 
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-% path='D:\Users\vicar\foci_part';
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
+path='D:\Users\vicar\foci_part';
 
 
-load('fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
+% load('fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
 
-% load('rf_all_06860.mat');
+load('rf_all_06860.mat');
 
 % load('rf_half_06778.mat');
 
@@ -30,7 +30,7 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=35:50
+for folder_num=1:50
     
     folder=folders{folder_num};
     
@@ -80,10 +80,10 @@ for folder_num=35:50
         save_features_widnow2=strrep(save_features_window2,'.tif','.mat');
         
         
-%         save_control_final=strrep(name,'3D_','control_final_rf_fall_');
+        save_control_final=strrep(name,'3D_','control_final_rf_fall_');
 %         save_control_final=strrep(name,'3D_','control_final_rf_fhalf_');
 %         save_control_final=strrep(name,'3D_','control_final_rf_fnrom_');
-        save_control_final=strrep(name,'3D_','control_final_net_norm_');
+%         save_control_final=strrep(name,'3D_','control_final_net_norm_');
 %         save_control_final=strrep(name,'3D_','control_final_net_nonorm_');
         save_control_final=strrep(save_control_final,'.tif','');
         
@@ -92,42 +92,46 @@ for folder_num=35:50
         save_results_final=[save_results_final '.mat'];
         
 
-%         clear features cell_num
+        clear features cell_num
         
-%         load(save_features)
+        load(save_features)
     
-%         load(save_features_cellnum)
+        load(save_features_cellnum)
 
 
-        load(save_features_widnow2)
-        
-        binaryResuslts=zeros(1,length(widnowa));
-        for k=1:length(widnowa)
-
+%         load(save_features_widnow2)
+%         
+%         binaryResuslts=zeros(1,length(widnowa));
+%         for k=1:length(widnowa)
+% 
+% %             
+%             window_k=cat(4,widnowa{k},widnowb{k});
 %             
-            window_k=cat(4,widnowa{k},widnowb{k});
-            
-            
-            window_k=window_k(3:end-3,3:end-3,2:end-2,:);
-    
-   
-%             window_k=single(mat2gray(double(window_k),[90,600])-0.5);
-
-            window_k=single((window_k-mean(window_k(:)))/std(window_k(:))) ;
-
-            YPred = predict(net,window_k);
-            
-            binaryResuslts(k)=double(YPred(2));
-            
-        end
+%             
+%             window_k=window_k(3:end-3,3:end-3,2:end-2,:);
+%     
+%    
+% %             window_k=single(mat2gray(double(window_k),[90,600])-0.5);
+% 
+%             window_k=single((window_k-mean(window_k(:)))/std(window_k(:))) ;
+% 
+%             YPred = predict(net,window_k);
+%             
+%             binaryResuslts(k)=double(YPred(2));
+%             
+%         end
         
 
-%         [features_new] = get_features_all(features,cell_num);
+        [features_new] = get_features_all(features,cell_num);
 %     [features_new] = get_features_half(features,cell_num);
 %     [features_new] = get_features_norm(features,cell_num);
 
         
-%        binaryResuslts = str2double(predict(Mdl,features_new{:,:}));
+if ~isempty(features_new)
+       binaryResuslts = str2double(predict(Mdl,features_new{:,:}));
+else
+    binaryResuslts=zeros(0);
+end
 
 
         
