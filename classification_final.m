@@ -4,13 +4,13 @@ addpath('3DNucleiSegmentation_training')
 
 gpu=1;
 
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-% path='D:\Users\vicar\foci_part';
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
+path='D:\Users\vicar\foci_part';
 
 
-load('velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
+% load('fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
 
-% load('rf_all_06860.mat');
+load('rf_all_06860.mat');
 
 % load('rf_half_06778.mat');
 
@@ -92,43 +92,46 @@ for folder_num=1:50
         save_results_final=[save_results_final '.mat'];
         
 
-%         clear features cell_num
+        clear features cell_num
         
-%         load(save_features)
+        load(save_features)
     
-%         load(save_features_cellnum)
+        load(save_features_cellnum)
 
 
-        load(save_features_widnow2)
-        
-        binaryResuslts=zeros(1,length(widnowa));
-        for k=1:length(widnowa)
-
+%         load(save_features_widnow2)
+%         
+%         binaryResuslts=zeros(1,length(widnowa));
+%         for k=1:length(widnowa)
+% 
+% %             
+%             window_k=cat(4,widnowa{k},widnowb{k});
 %             
-            window_k=cat(4,widnowa{k},widnowb{k});
-            
-            
-            window_k=window_k(3:end-3,3:end-3,2:end-2,:);
-    
-   
-%             window_k=single(mat2gray(double(window_k),[90,600])-0.5);
-
-            window_k=single((window_k-mean(window_k(:)))/std(window_k(:))) ;
-
-            YPred = predict(net,window_k);
-            
-            drawnow;
-            
-        end
-        
+%             
+%             window_k=window_k(3:end-3,3:end-3,2:end-2,:);
+%     
+%    
+% %             window_k=single(mat2gray(double(window_k),[90,600])-0.5);
+% 
+%             window_k=single((window_k-mean(window_k(:)))/std(window_k(:))) ;
+% 
+%             YPred = predict(net,window_k);
+%             
+%             binaryResuslts(k)=double(YPred(2));
+%             
+%         end
         
 
-%         [features_new] = get_features_all(features,cell_num);
+        [features_new] = get_features_all(features,cell_num);
 %     [features_new] = get_features_half(features,cell_num);
 %     [features_new] = get_features_norm(features,cell_num);
 
         
-%        binaryResuslts = str2double(predict(Mdl,features_new{:,:}));
+if ~isempty(features_new)
+       binaryResuslts = str2double(predict(Mdl,features_new{:,:}));
+else
+    binaryResuslts=zeros(0);
+end
 
 
         
@@ -153,18 +156,18 @@ for folder_num=1:50
         maxima = round(cat(1, s.Centroid));
         if ~isempty(maxima)
             plot(maxima(:,1), maxima(:,2), 'b*','MarkerSize',3)
-            plot(maxima(find(binaryResuslts),1), maxima(find(binaryResuslts),2), 'ro','MarkerSize',3)
-            plot(maxima(find(binaryResuslts),1), maxima(find(binaryResuslts),2), 'g*','MarkerSize',3)
+            plot(maxima(find(binaryResuslts>0.5),1), maxima(find(binaryResuslts>0.5),2), 'ro','MarkerSize',3)
+            plot(maxima(find(binaryResuslts>0.5),1), maxima(find(binaryResuslts>0.5),2), 'g*','MarkerSize',3)
         end
         name_orig_tmp=split(name,'\');
         name_orig_tmp=join(name_orig_tmp(end-3:end),'\');
         title(name_orig_tmp)
         drawnow;
-%         print(save_control_final,'-dpng')
+        print(save_control_final,'-dpng')
 
         
         
-%         save(save_results_final,'binaryResuslts')
+        save(save_results_final,'binaryResuslts')
         
     end
     
