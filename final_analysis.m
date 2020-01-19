@@ -22,10 +22,10 @@ for k=1:length(pac_num)
     res_struc(k).path=folders{k};
     res_struc(k).pac_num=pac_num(k);
     
-    res_struc(k).t_noIR=[];
-    res_struc(k).t_30m=[];
-    res_struc(k).t_8h=[];
-    res_struc(k).t_24h=[];
+    res_struc(k).t_noIR=nan;
+    res_struc(k).t_30m=nan;
+    res_struc(k).t_8h=nan;
+    res_struc(k).t_24h=nan;
     
 end
 
@@ -61,8 +61,6 @@ for folder_num=1:length(folders)
 
     for img_num=1:length(names)
 
-        img_num
-
         name=names{img_num};
 
 
@@ -97,10 +95,10 @@ for folder_num=1:length(folders)
         save_features_widnow2=strrep(save_features_window2,'.tif','.mat');
         
         
-        save_control_final=strrep(name,'3D_','control_final_rf_fall_');
+%         save_control_final=strrep(name,'3D_','control_final_rf_fall_');
 %         save_control_final=strrep(name,'3D_','control_final_rf_fhalf_');
 %         save_control_final=strrep(name,'3D_','control_final_rf_fnrom_');
-%         save_control_final=strrep(name,'3D_','control_final_net_norm_');
+        save_control_final=strrep(name,'3D_','control_final_net_norm_');
 %         save_control_final=strrep(name,'3D_','control_final_net_nonorm_');
         save_control_final=strrep(save_control_final,'.tif','');
         
@@ -111,22 +109,80 @@ for folder_num=1:length(folders)
 
         
         load(save_results_final)
+        load(save_features_cellnum)
+        cell_num=cell_num{:,:};
+        for cell_num_k=1:max(cell_num)
+            results=[results, sum((binaryResuslts>0.5)'.*(cell_num_k==cell_num))];
+            
+        end
         
         
         
     end
     
     if contains(sub_folder,'8h')||contains(sub_folder,'8 h')
-    
+        res_struc(folder_num).t_8h=results;
     elseif contains(sub_folder,'24h')||contains(sub_folder,'24 h')
-        
+        res_struc(folder_num).t_24h=results;
     elseif contains(sub_folder,'30m')||contains(sub_folder,'30PI')||contains(sub_folder,'30 m')||contains(sub_folder,'30 PI')
-        
+        res_struc(folder_num).t_30m=results;
     elseif contains(sub_folder,'nonIR')||contains(sub_folder,'KO')||contains(sub_folder,'kontrola')||contains(sub_folder,'non IR')
-        
+        res_struc(folder_num).t_noIR=results;
     else
         error('neobsahuje nic')
         
     end
     end
 end
+
+
+% mean([res_struc.t_noIR])
+% mean([res_struc.t_30m])
+% mean([res_struc.t_8h])
+% mean([res_struc.t_24h])
+
+res_cell = squeeze(struct2cell(res_struc))';
+
+data_cell=res_cell(:,3:6);
+
+
+
+% data_cell=cellfun(@mean,data_cell);
+
+% boxplot(data_cell)
+
+
+data=data_cell{1,2};
+
+
+
+
+fit_fun=@(data,a,f1,f2) f1*exp(-a)*(a.^data./factorial(data))+ f2*exp(-2*a)*((2*a).^data./factorial(data));
+
+best_val=-Inf;
+best_a=0;
+best_f1=0;
+best_f2=0;
+for a=linspace(0,100,1000)
+    a
+    for f1=linspace(0,1,1000)
+        f2=1-f1;
+        logML=sum(log(fit_fun(data,a,f1,f2)));
+        if logML>best_val
+            best_val=logML;
+            best_a=a;
+            best_f1=f1;
+            best_f2=f2;
+        end
+    end
+end
+
+
+figure;
+histogram(data,100,'Normalization','probability')
+hold on
+x=0:100;
+plot(x,fit_fun(x,best_a,best_f1,best_f2))
+
+
+
