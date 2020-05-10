@@ -7,6 +7,7 @@ function seg=seg_3d(data,gt)
 
     ll=bwlabeln(data);
     l=bwlabeln(gt);
+    seg_all=zeros(1,max(l(:)));
     for k=1:max(l(:))
         counter=counter+1;
         b=k==l;
