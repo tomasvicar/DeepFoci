@@ -8,6 +8,13 @@ function [window_k] = matReaderData(filename)
     r=randi(3)-2;
     window_k=window_k(3+p:end-3+p,3+q:end-3+q,2+r:end-2+r,:);
     
+    if strcmp(filename,'C:\Users\Tom\Desktop\tmp\foci\tmp\train\0\000002.mat')
+    filename
+    p
+    q
+    r
+    end
+    
     if rand()>0.5
         window_k=fliplr(window_k);
     end
@@ -23,8 +30,8 @@ function [window_k] = matReaderData(filename)
     end
     
 %     window_k=window_k(4:end-4,4:end-4,2:end-2,:);
-window_k=single(mat2gray(double(window_k),[90,600])-0.5);
+%     window_k=single(mat2gray(double(window_k),[90,600])-0.5);
 %     window_k=single(mat2gray(window_k,[90,600])-0.5);
-%     window_k=single((window_k-mean(window_k(:)))/std(window_k(:))) ;
+    window_k=single((window_k-mean(window_k(:)))/std(window_k(:))) ;
 end
 

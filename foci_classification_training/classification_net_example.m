@@ -1,8 +1,8 @@
 clc;clear all;close all force;
-addpath('utils')
-addpath('3DNucleiSegmentation_training')
+addpath('../utils')
+addpath('../3DNucleiSegmentation_training')
 
-load('names_foci_sample.mat')
+load('../names_foci_sample.mat')
 names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
@@ -12,26 +12,27 @@ names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
 names={names(:).name};
 
 gpu=1;
+data_tmp_dir='../../tmp';
+checkpointPath='../../tmp2';
 
 
-% 
-% 
-% 
+
+
 % try
 %     
-%     rmdir('../tmp', 's')
+%     rmdir(data_tmp_dir, 's')
 % catch
 %     
 % end
 % 
 % 
-% mkdir('../tmp')
-% mkdir('../tmp/train')
-% mkdir('../tmp/test')
-% mkdir('../tmp/train/0')
-% mkdir('../tmp/train/1')
-% mkdir('../tmp/test/0')
-% mkdir('../tmp/test/1')
+% mkdir(data_tmp_dir)
+% mkdir([data_tmp_dir '/train'])
+% mkdir([data_tmp_dir '/test'])
+% mkdir([data_tmp_dir '/train/0'])
+% mkdir([data_tmp_dir '/train/1'])
+% mkdir([data_tmp_dir '/test/0'])
+% mkdir([data_tmp_dir '/test/1'])
 % 
 % 
 % train_counter=0;
@@ -76,7 +77,7 @@ gpu=1;
 %             
 %             window_k=cat(4,widnowa{k},widnowb{k});
 %             
-%             save(['../tmp/train/' num2str(labels(k)) '/' num2str(train_counter,'%06.f') '.mat'],'window_k')
+%             save([data_tmp_dir '/train/' num2str(labels(k)) '/' num2str(train_counter,'%06.f') '.mat'],'window_k')
 %             
 %             
 %         end
@@ -87,24 +88,24 @@ gpu=1;
 %             
 %             window_k=cat(4,widnowa{k},widnowa{k});
 %             
-%             save(['../tmp/test/' num2str(labels(k)) '/' num2str(test_counter,'%06.f') '.mat'],'window_k')
+%             save([data_tmp_dir '/test/' num2str(labels(k)) '/' num2str(test_counter,'%06.f') '.mat'],'window_k')
 %             
 %         end
 %     end
 %     
 %     
 % end
+% 
+% 
 
 
 
-
-
-volLoc='../tmp/train';
+volLoc=[data_tmp_dir '/train'];
 volds_train = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderData,'LabelSource','foldernames','IncludeSubfolders',1);
 
 
 
-volLoc='../tmp/test';
+volLoc=[data_tmp_dir '/test'];
 volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderData_test,'LabelSource','foldernames','IncludeSubfolders',1);
 
 
@@ -263,7 +264,7 @@ layers = connectLayers(layers,'pool3','add4/in2');
 
 
 
-checkpointPath='../tmp2';
+
 mkdir(checkpointPath);
 miniBatchSize=64;
 
