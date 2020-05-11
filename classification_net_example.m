@@ -292,4 +292,3 @@ options = trainingOptions('adam', ...
 % print('nonorm', '-dpng' ) 
 % savefig('nonorm.fig' )
 
-
