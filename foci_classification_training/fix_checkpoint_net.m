@@ -15,9 +15,6 @@ gpu=1;
 
 
 
-
-
-
 volLoc='../tmp/train';
 volds_train = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderData,'LabelSource','foldernames','IncludeSubfolders',1);
 
