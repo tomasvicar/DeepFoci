@@ -14,8 +14,8 @@ names={names(:).name};
 gpu=1;
 
 
-load('foci_classification_training/fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
-% load('foci_classification_training/fix_velke_aug_nonorm_net_checkpoint__19000__2020_01_15__13_39_47.mat');
+% load('foci_classification_training/fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
+load('foci_classification_training/fix_velke_aug_nonorm_net_checkpoint__19000__2020_01_15__13_39_47.mat');
 
 res=[];
 gt=[];
@@ -71,7 +71,7 @@ for img_num=1:300
         end
         for k=1:length(widnowa)
             
-            window_k=cat(4,widnowa{k},widnowa{k});
+            window_k=cat(4,widnowa{k},widnowb{k});
             
             window_k=window_k(3:end-3,3:end-3,2:end-2,:);
             
@@ -95,14 +95,14 @@ for img_num=1:300
     
     
 end
-% 
-% avg_acc=[];
-% for k = 1:max(cels_nums)
-%     
-%     tmp_res=res(cels_nums==k);
-%     tmp_gt=gt(cels_nums==k);
-%     avg_acc=[avg_acc,sum((tmp_res>0.5)==tmp_gt)/numel(tmp_gt)];
-%     
-% end
-% 
-% nanmean(avg_acc)
+
+avg_acc=[];
+for k = 1:max(cels_nums)
+    
+    tmp_res=res(cels_nums==k);
+    tmp_gt=gt(cels_nums==k);
+    avg_acc=[avg_acc,sum((tmp_res>0.5)==tmp_gt)/numel(tmp_gt)];
+    
+end
+
+nanmean(avg_acc)

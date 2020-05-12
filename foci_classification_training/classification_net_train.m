@@ -86,7 +86,7 @@ checkpointPath='../../tmp2';
 %         for k=1:length(widnowa)
 %             test_counter=test_counter+1;
 %             
-%             window_k=cat(4,widnowa{k},widnowa{k});
+%             window_k=cat(4,widnowa{k},widnowb{k});
 %             
 %             save([data_tmp_dir '/test/' num2str(labels(k)) '/' num2str(test_counter,'%06.f') '.mat'],'window_k')
 %             
