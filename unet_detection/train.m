@@ -1,73 +1,113 @@
 clc;clear all;close all force;
+addpath('../utils')
 
-
-volLoc='D:\vicar\foci_3d_seg\trenovaci_data_preprocess/train/img';
-volds = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderDataC);
-
-lblLoc = 'D:\vicar\foci_3d_seg\trenovaci_data_preprocess/train/lbl';
-classNames = ["background","cell"];
-pixelLabelID = [0 1];
-pxds = pixelLabelDatastore(lblLoc,classNames,pixelLabelID, 'FileExtensions','.mat','ReadFcn',@matReaderMask);
+data_path='D:\vicar\foci_foci\example_folder';
 
 
 
-volLoc='D:\vicar\foci_3d_seg\trenovaci_data_preprocess/valid/img';
-volds_val = imageDatastore(volLoc,'FileExtensions','.mat','ReadFcn',@matReaderDataC);
+split_val=240;
 
-lblLoc = 'D:\vicar\foci_3d_seg\trenovaci_data_preprocess/valid/lbl';
-classNames = ["background","cell"];
-pixelLabelID = [0 1];
-pxds_val = pixelLabelDatastore(lblLoc,classNames,pixelLabelID, 'FileExtensions','.mat','ReadFcn',@matReaderMask);
+volds = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',@matReaderData);
+Files=volds.Files;
+Files_new={};
+for k=1:length(Files)
+    file=Files{k};
+    if contains(file,'unet_foci_detection_data')&&(str2num(file(end-37:end-34))<split_val)
+       for k=1:4
+           tmp=[file num2str(k)];
+           Files_new=[Files_new,tmp];
+           a=1;
+           save(tmp,'a')
+       end
+    end
+end
+volds.Files=Files_new;
+
+
+volds_gt = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',@matReaderMask);
+Files=volds_gt.Files;
+Files_new={};
+for k=1:length(Files)
+    file=Files{k};
+    if contains(file,'unet_foci_detection_mask')&&(str2num(file(end-37:end-34))<split_val)
+       for k=1:4
+           tmp=[file num2str(k)];
+           Files_new=[Files_new,tmp];
+           a=1;
+           save(tmp,'a')
+       end
+    end
+end
+volds_gt.Files=Files_new;
+
+
+volds_val = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',@matReaderData);
+Files=volds_val.Files;
+Files_new={};
+for k=1:length(Files)
+    file=Files{k};
+    if contains(file,'unet_foci_detection_data')&&(str2num(file(end-37:end-34))>=split_val)
+       for k=1:4
+           tmp=[file num2str(k)];
+           Files_new=[Files_new,tmp];
+           a=1;
+           save(tmp,'a')
+       end
+    end
+end
+volds_val.Files=Files_new;
+
+
+volds_gt_val = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',@matReaderMask);
+Files=volds_gt_val.Files;
+Files_new={};
+for k=1:length(Files)
+    file=Files{k};
+    if contains(file,'unet_foci_detection_mask')&&(str2num(file(end-37:end-34))>=split_val)
+       for k=1:4
+           tmp=[file num2str(k)];
+           Files_new=[Files_new,tmp];
+           a=1;
+           save(tmp,'a')
+       end
+    end
+end
+volds_gt_val.Files=Files_new;
 
 
 
-% tbl = countEachLabel(pxds);
-
-% volume = preview(volds);
-% label = preview(pxds);
-
-% totalNumberOfPixels = sum(tbl.PixelCount);
-% frequency = tbl.PixelCount / totalNumberOfPixels;
-% classWeights = 1./frequency;
-
-% img=pxds.readimage(2);
-% im=zeros(size(img));
-% im(img=="cell")=1;
-% imshow4(im);
+% img=volds_gt.readimage(2);
+% imshow5(img);
 
 
 patchSize = [128 128 48];
-patchPerImage = 1;
+patchPerImage = 2;%%%%%%%%
 miniBatchSize = 8;
-patchds = randomPatchExtractionDatastore(volds,pxds,patchSize,'PatchesPerImage',patchPerImage);
-patchds.MiniBatchSize = miniBatchSize;
-
-patchds_val = randomPatchExtractionDatastore(volds_val,pxds_val,patchSize,'PatchesPerImage',patchPerImage);
+patchds = randomPatchExtractionDatastore(volds,volds_gt,patchSize,'PatchesPerImage',patchPerImage);
 patchds.MiniBatchSize = miniBatchSize;
 
 
-
-% asdd=patchds.read()
-
-% patchds =pixelLabelImageDatastore(volds,pxds);
+patchds_val = randomPatchExtractionDatastore(volds_val,volds_gt_val,patchSize,'PatchesPerImage',patchPerImage);
+patchds.MiniBatchSize = miniBatchSize;
 
 
 
-% 
-% for k=1:53:10000
+
+
+ 
+% for k=1:5:30
 % 
 %     
 %     minibatch = patchds.readByIndex(k);
 %     inputs = minibatch.InputImage;
-%     responses = minibatch.ResponsePixelLabelImage;
+%     responses = minibatch.ResponseImage;
 % 
 %     i=inputs{1};
 %     r=responses{1};
-%     rr=zeros(size(i),'like',i);
-%     rr(r=="cell")=1;
+%     
+% %     rr=repmat(r,[1,1,1,3]);
 % 
-% %     imshow4(cat(2,i,rr))
-%     imshow5(i)
+%     imshow5(cat(2,i+0.5,r*30))
 %     drawnow;
 % end
 
@@ -76,17 +116,10 @@ dsTrain = transform(patchds,@augment3dPatch);
 
 lgraph = createUnet3d([patchSize 3]);
 
-% lgraph = replaceLayer(lgraph,'output',weightedClassification3DLayer(classWeights,'output'));
 
 
-
-
-checkpointPath='../cpt';
+checkpointPath='../../cpt';
 mkdir(checkpointPath)
-
-% load('cpt/net_checkpoint__21008__2019_06_22__09_52_06.mat')
-% lgraph=layerGraph(net);
-
 
 
 
@@ -108,7 +141,7 @@ options = trainingOptions('adam', ...
     'GradientThresholdMethod','l2norm',...
     'MiniBatchSize',miniBatchSize);
 
-
+disp('train_start')
 [net,info] = trainNetwork(dsTrain ,lgraph,options);
 
 
@@ -129,25 +162,6 @@ save('dice_rot_new.mat','net')
 
 
 
-
-
-
-
-function dataa=matReaderDataC(filename)
-    load(filename);
-    dataa=reshape(dataa,[128,128,48,3]);
-
-end
-
-
-function lbll=matReaderMask(filename)
-    load(filename);
-    lbll(lbll==2)=0;
-end
-
-% function c=augment3dPatch(data)
-%     data=data;
-% end
 
 
 

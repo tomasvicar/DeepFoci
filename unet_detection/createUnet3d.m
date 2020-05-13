@@ -109,11 +109,11 @@ for id=1:length(NumFilters)
     layers = [layers; sublayers];
 end
 
-numLabels = 2;
+numLabels = 3;
 convLast = convolution3dLayer(1,numLabels,'Name','convLast');
-softmaxL = softmaxLayer('Name','softmax');
-pixelCL = dicePixelClassification3dLayer('output');
-layers = [layers; convLast; softmaxL; pixelCL];
+% softmaxL = softmaxLayer('Name','softmax');
+pixelCL = pixelRegressionLayer('output');
+layers = [layers; convLast; pixelCL];
 end
 
 function myName = iGetName(moduleType,layerType,varargin)
