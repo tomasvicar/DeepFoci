@@ -8,13 +8,7 @@ function [window_k] = matReaderData(filename)
     r=randi(3)-2;
     window_k=window_k(3+p:end-3+p,3+q:end-3+q,2+r:end-2+r,:);
     
-    if strcmp(filename,'C:\Users\Tom\Desktop\tmp\foci\tmp\train\0\000002.mat')
-    filename
-    p
-    q
-    r
-    end
-    
+
     if rand()>0.5
         window_k=fliplr(window_k);
     end
