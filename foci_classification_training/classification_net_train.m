@@ -215,8 +215,6 @@ layers = connectLayers(layers,'pool3','add4/in2');
 
 
 
-
-
 mkdir(checkpointPath);
 miniBatchSize=64;
 
