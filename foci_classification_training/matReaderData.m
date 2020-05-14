@@ -6,8 +6,8 @@ function [window_k] = matReaderData(filename)
     p=randi(5)-3;
     q=randi(5)-3;
     r=randi(3)-2;
-    window_k=window_k(3+p:end-3+p,3+q:end-3+q,2+r:end-2+r,:);
-    
+%     window_k=window_k(3+p:end-3+p,3+q:end-3+q,2+r:end-2+r,:);
+    window_k=window_k(4+p:end-4+p,4+q:end-4+q,2+r:end-2+r,:);
 
     if rand()>0.5
         window_k=fliplr(window_k);
