@@ -22,6 +22,16 @@ for id=1:size(patchIn,1)
         out =  tmpImg;
         respOut = tmpResp;
     end
+    min_v=rand()*0.6-0.3;
+    max_v=1+rand()*0.6-0.3;
+    out(:,:,:,1)=single(mat2gray(out(:,:,:,1)+0.5,[min_v max_v]))-0.5;
+    min_v=rand()*0.6-0.3;
+    max_v=1+rand()*0.6-0.3;
+    out(:,:,:,2)=single(mat2gray(out(:,:,:,2)+0.5,[min_v max_v]))-0.5;
+    min_v=rand()*0.6-0.3;
+    max_v=1+rand()*0.6-0.3;
+    out(:,:,:,3)=single(mat2gray(out(:,:,:,3)+0.5,[min_v max_v]))-0.5;
+    
     inpVol{id}=out;
     inpResponse{id}=respOut;
 end
