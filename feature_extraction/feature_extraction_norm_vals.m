@@ -13,7 +13,7 @@ names={names(:).name};
 gpu=1;
 
 
-for img_num=1:300
+for img_num=12:200
     
     img_num
     
@@ -85,6 +85,8 @@ for img_num=1:300
     norm_vals.Properties.VariableNames={'cellNum'};
     cell_nums=[norm_vals{:,:}];
     
+    cell_nums(cell_nums==0)=1;
+    
     global_a=repmat({global_a},[length(cell_nums),1]);
     global_b=repmat({global_b},[length(cell_nums),1]);
     global_c=repmat({global_c},[length(cell_nums),1]);
@@ -94,10 +96,13 @@ for img_num=1:300
     norm_vals = addvars(norm_vals,global_c,'NewVariableNames','globalC');
     
     tmp=[tmp_cell_a(cell_nums)]';
+    tmp=reshape(tmp,length(tmp),1);
     norm_vals = addvars(norm_vals,tmp,'NewVariableNames','cellA');
     tmp=[tmp_cell_b(cell_nums)]';
+    tmp=reshape(tmp,length(tmp),1);
     norm_vals = addvars(norm_vals,tmp,'NewVariableNames','cellB');
     tmp=[tmp_cell_c(cell_nums)]';
+    tmp=reshape(tmp,length(tmp),1);
     norm_vals = addvars(norm_vals,tmp,'NewVariableNames','cellC');
     
     

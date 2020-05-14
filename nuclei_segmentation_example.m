@@ -15,7 +15,7 @@ gpu=1;
 
 load('dice_rot_new.mat')
 
-for img_num=1:300
+for img_num=88:200
     
     img_num
     
