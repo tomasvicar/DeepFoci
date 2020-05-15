@@ -83,7 +83,7 @@ for img_num=1:300
     mask_points_foci(positions_linear)=true;
     
     
-    mask_points_foci2=imgaussfilt3(single(mask_points_foci),[2,2,1]);
+    mask_points_foci2=imgaussfilt3(single(mask_points_foci),[2,2,1])*59.5238*10;
     
     vys=predict_by_parts_detection(a,b,c,net);
     
