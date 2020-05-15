@@ -24,7 +24,7 @@ function data = matReaderMask(filename)
     matObject = matfile(filename);
     data=matObject.mask_points_foci(postion_vec1,postion_vec2,:);
 
-    data=imgaussfilt3(single(data),[2,2,1]);
+    data=imgaussfilt3(single(data),[2,2,1])*59.5238*10;
     
      data=repmat(data,[1,1,1,3]);
     

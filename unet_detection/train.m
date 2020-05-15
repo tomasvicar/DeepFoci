@@ -80,7 +80,8 @@ volds_gt_val.Files=Files_new;
 % imshow5(img);
 
 
-patchSize = [128 128 48];
+% patchSize = [128 128 48];
+patchSize = [96 96 48];
 patchPerImage = 2;%%%%%%%%
 miniBatchSize = 8;
 patchds = randomPatchExtractionDatastore(volds,volds_gt,patchSize,'PatchesPerImage',patchPerImage);
@@ -137,15 +138,13 @@ options = trainingOptions('adam', ...
     'CheckpointPath',checkpointPath,...
     'ValidationData',patchds_val, ...
     'ValidationFrequency',300, ...
-    'GradientThreshold',3,...
-    'GradientThresholdMethod','l2norm',...
     'MiniBatchSize',miniBatchSize);
 
 disp('train_start')
 [net,info] = trainNetwork(dsTrain ,lgraph,options);
 
 
-save('test2_value_aug.mat','net','info')
+save('test3_value_aug_mult.mat','net','info')
 
 
 

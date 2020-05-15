@@ -28,9 +28,9 @@ classdef pixelRegressionLayer < nnet.layer.RegressionLayer
 
             % Layer forward loss function goes here.
             
-            s=1:length(size(T));
-            s=s([2 1 3:end]);
-            T=permute(T,s);
+%             s=1:length(size(T));
+%             s=s([2 1 3:end]);
+%             T=permute(T,s);
             
             q=0.5*(Y-T).^2;
 %             q=abs(Y-T);
@@ -52,9 +52,9 @@ classdef pixelRegressionLayer < nnet.layer.RegressionLayer
 
             % Layer backward loss function goes here.
             
-            s=1:length(size(T));
-            s=s([2 1 3:end]);
-            T=permute(T,s);
+%             s=1:length(size(T));
+%             s=s([2 1 3:end]);
+%             T=permute(T,s);
             
             q=Y-T;
 %             q=sign(Y-T);
