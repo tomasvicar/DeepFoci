@@ -7,8 +7,9 @@ names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
 % names=subdir('F:\example_folder\*3D_*.tif');
+names=subdir('F:\example_folder\*3D_*.tif');
 names={names(:).name};
 
 
@@ -210,8 +211,6 @@ layers=layerGraph(layers);
 layers = connectLayers(layers,'pool1','add2/in2');
 layers = connectLayers(layers,'pool2','add3/in2');
 layers = connectLayers(layers,'pool3','add4/in2');
-
-
 
 
 
