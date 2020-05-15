@@ -90,6 +90,4 @@ for img_num=1:300
     drawnow;
     
     
-    
-    
 end
