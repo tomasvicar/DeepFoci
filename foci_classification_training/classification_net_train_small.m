@@ -7,9 +7,9 @@ names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
 % names=subdir('F:\example_folder\*3D_*.tif');
-names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\example_folder_used\*3D_*.tif');
+% names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\example_folder_used\*3D_*.tif');
 names={names(:).name};
 
 
@@ -123,7 +123,7 @@ checkpointPath='../../tmp2';
 %     
 %     
 % end
-
+% 
 
 
 
@@ -154,6 +154,7 @@ layers = [
     convolution3dLayer(3,filters1,'Padding','same','Name','c13')
     reluLayer('Name','relu13')
     batchNormalizationLayer('Name','bn13')
+    additionLayer(2,'Name','add1')
     
     maxPooling3dLayer(2,'Stride',2,'Name','pool1')
     
@@ -184,7 +185,7 @@ layers = [
     
 %     maxPooling3dLayer(2,'Stride',2,'Name','pool3')
     
-
+    convolution3dLayer(3,filters3,'Padding','same','Name','cxx')
     
     fullyConnectedLayer(100,'Name','fc1')
     reluLayer('Name','relufc1')
@@ -196,8 +197,9 @@ layers = [
     classificationLayer('Name','class')];
 
 layers=layerGraph(layers);
-layers = connectLayers(layers,'pool1','add2/in2');
-layers = connectLayers(layers,'pool2','add3/in2');
+layers = connectLayers(layers,'bn11','add1/in2');
+layers = connectLayers(layers,'bn21','add2/in2');
+layers = connectLayers(layers,'bn31','add3/in2');
 % layers = connectLayers(layers,'pool3','add4/in2');
 
 
@@ -209,10 +211,10 @@ miniBatchSize=64;
 
 
 options = trainingOptions('adam', ...
-    'MaxEpochs',50, ...
+    'MaxEpochs',28, ...
     'InitialLearnRate',1e-3, ...
     'LearnRateSchedule','piecewise', ...
-    'LearnRateDropPeriod',10, ...
+    'LearnRateDropPeriod',12, ...
     'LearnRateDropFactor',0.1, ...
     'SquaredGradientDecayFactor',0.99, ...
     'L2Regularization', 1e-8, ...
@@ -220,6 +222,8 @@ options = trainingOptions('adam', ...
     'CheckpointPath',checkpointPath,...
     'ValidationData',volds_val, ...
     'Plots','training-progress', ...
+    'GradientThreshold',3,...
+    'GradientThresholdMethod','l2norm',...
     'GradientDecayFactor',0.9, ...
     'ValidationFrequency',200, ...
     'MiniBatchSize',miniBatchSize);
@@ -231,4 +235,4 @@ options = trainingOptions('adam', ...
 % print('nonorm', '-depsc' ) 
 % print('nonorm', '-dpng' ) 
 % savefig('nonorm.fig' )
-save('global_norm_net_small.mat','net','info')
+save('global_norm_net_small_grow_add.mat','net','info')
