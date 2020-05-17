@@ -204,7 +204,8 @@ layers = connectLayers(layers,'bn31','add3/in2');
 
 
 
-
+load('../../tmp2/net_checkpoint__4180__2020_05_15__02_22_03.mat')
+layers=layerGraph(net);
 
 mkdir(checkpointPath);
 miniBatchSize=64;
@@ -228,7 +229,8 @@ options = trainingOptions('adam', ...
     'ValidationFrequency',200, ...
     'MiniBatchSize',miniBatchSize);
 
-
+% 'GradientThreshold',3,...
+%     'GradientThresholdMethod','l2norm',..
 
 [net,info] = trainNetwork(volds_train,layers,options);
 
