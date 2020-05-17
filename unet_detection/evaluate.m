@@ -19,7 +19,9 @@ gpu=1;
 
 load('test3_value_aug_mult.mat')
 
-
+tp=0;
+fp=0;
+fn=0;
 for img_num=1:300
     
     img_num
@@ -62,44 +64,74 @@ for img_num=1:300
     save_unet_foci_detection_res=strrep(name,'3D_','unet_foci_detection_res');
     save_unet_foci_detection_res=strrep(save_unet_foci_detection_res,'.tif','.mat');
     
+    
+    
 
     if img_num<240
         
     else
     
-        [a,b,c]=read_3d_rgb_tif(name);
+       h=0.5;
+       d=15;
+       t=1.4;
 
-
-        [a,b,c]=preprocess_filters(a,b,c,gpu);
-
-        shape_old=size(a);
-        [a,b,c]=preprocess_norm_resize_foci(a,b,c);
-        shape_new=size(a);
-
-        factor=shape_new./shape_old;
-
-        load(save_manual_label);
-
-
-        positions_resize=round(positions.*repmat(factor,[size(positions,1),1]));
-
-        mask_points_foci=false(shape_new);
-
-
-
-        use=labels>0;
-        positions_linear=sub2ind(shape_new,positions_resize(use,2),positions_resize(use,1),positions_resize(use,3));
-        mask_points_foci(positions_linear)=true;
-
-
-        mask_points_foci2=imgaussfilt3(single(mask_points_foci),[2,2,1])*59.5238*10;
-
-        vys=predict_by_parts_detection(a,b,c,net);
-
-        save(save_unet_foci_detection_res,'vys','mask_points_foci')
+       load(save_unet_foci_detection_res)
+       
+       [X,Y,Z] = meshgrid(linspace(-1,1,d),linspace(-1,1,d),linspace(-1,1,int16(d/3)));
+       sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
+       
+       tmp=imdilate(vys,sphere);
+       tmp = imhmax(tmp,h);
+       tmp = imregionalmax(tmp).*(vys>t);
+       
+       detection_results=false(size(tmp));
+       s = regionprops(tmp>0,'centroid');
+       centroids = round(cat(1, s.Centroid));
+       for kp=1:size(centroids,1)
+            detection_results(centroids(kp,2),centroids(kp,1),centroids(kp,3))=1;
+       end
+       
+      
+       s = regionprops(mask_points_foci>0,'centroid');
+       centroids_gt = round(cat(1, s.Centroid));
+       
+       d_t=10;
+       
+       if isempty(centroids)
+           centroids=zeros(0,3);
+       end
+       if isempty(centroids_gt)
+           centroids_gt=zeros(0,3);
+       end
+       
+       D = pdist2(centroids,centroids_gt);
+       
+       
+       D(D>d_t)=Inf;
+       
+       [assignment,cost]=munkres(D);
+       
+       fp=fp+sum(assignment==0);
+       
+       assignment(assignment==0)=[];
+       
+       tp=tp+length(assignment);
+       
+       ass_2 = 1:length(centroids_gt);
+       
+       ass_2(assignment)=[];
         
+       
+       fn=fn+length(ass_2);
         
-
+       acc=tp/(tp+fp+fn)
+       
+       tp
+       
+       fp
+       
+       fn
+       
     end
     
 end
