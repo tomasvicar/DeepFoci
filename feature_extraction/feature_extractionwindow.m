@@ -1,11 +1,11 @@
 clc;clear all;close all;
-addpath('utils')
-addpath('3DNucleiSegmentation_training')
+addpath('../utils')
+addpath('../3DNucleiSegmentation_training')
 
 gpu=1;
 
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-
+path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
 
 
 folders=dir(path);
@@ -18,7 +18,7 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=1:25
+for folder_num=1:length(folders)
     
     folder=folders{folder_num};
     
@@ -52,8 +52,8 @@ for folder_num=1:25
         save_manual_label=strrep(save_manual_label,'.tif','.mat');
 
 
-%         save_features=strrep(name,'3D_','features_window_');
-        save_features=strrep(name,'3D_','features_window2_');
+        save_features=strrep(name,'3D_','features_window_');
+%         save_features=strrep(name,'3D_','features_window2_');
         save_features=strrep(save_features,'.tif','.mat');
 
 
@@ -71,8 +71,8 @@ for folder_num=1:25
               clear mask_foci
      
      
-%     sizes=[71 71 19];
-    sizes=[101 101 19];
+    sizes=[71 71 19];
+%     sizes=[101 101 19];
      
     widnowa=get_window(a,lbl_foci,sizes);
     widnowb=get_window(b,lbl_foci,sizes);

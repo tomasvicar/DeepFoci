@@ -4,8 +4,8 @@ addpath('3DNucleiSegmentation_training')
 
 gpu=1;
 
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
+path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
 
 
 folders=dir(path);
@@ -18,9 +18,11 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=1:25
+for folder_num=1:length(folders)
+    
     
     folder=folders{folder_num};
+
     
     disp([num2str(folder_num) '/' num2str(length(folders))])
 
