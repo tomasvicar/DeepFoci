@@ -15,7 +15,9 @@ gpu=1;
 
 
 % load('foci_classification_training/fix_velke_aug_norm_net_checkpoint__8360__2020_01_14__17_52_49.mat');
-load('foci_classification_training/fix_velke_aug_nonorm_net_checkpoint__19000__2020_01_15__13_39_47.mat');
+% load('foci_classification_training/fix_velke_aug_nonorm_net_checkpoint__19000__2020_01_15__13_39_47.mat');
+
+load('foci_classification_training/global_norm_net_small_grow_add.mat')
 
 res=[];
 gt=[];
@@ -44,14 +46,17 @@ for img_num=1:300
     save_manual_label=strrep(save_manual_label,'.tif','.mat');
     
     
-%     save_features=strrep(name,'3D_','features_window_');
-    save_features=strrep(name,'3D_','features_window2_');
+    save_features=strrep(name,'3D_','features_window_');
+%     save_features=strrep(name,'3D_','features_window2_');
     save_features=strrep(save_features,'.tif','.mat');
 
 
     save_features_for_celnum=strrep(name,'3D_','features_cellnum_');
     save_features_for_celnum=strrep(save_features_for_celnum,'.tif','.mat');
     
+    
+    features_norm_vals=strrep(name,'3D_','features_norm_vals_');
+    features_norm_vals=strrep(features_norm_vals,'.tif','.mat');
 
     if img_num<240
         
@@ -60,6 +65,8 @@ for img_num=1:300
         load(save_manual_label)
     
         load(save_features)
+        
+        load(features_norm_vals)
         
         load(save_features_for_celnum)
         nums=table2array(cell_num)+cumul;
@@ -71,13 +78,25 @@ for img_num=1:300
         end
         for k=1:length(widnowa)
             
-            window_k=cat(4,widnowa{k},widnowb{k});
+            normA=norm_vals.globalA(k);
+            normB=norm_vals.globalB(k);
+            normA=normA{1};
+            normB=normB{1};
             
-            window_k=window_k(3:end-3,3:end-3,2:end-2,:);
+            wa=(widnowa{k}-normA(1))/(normA(2)-normA(1));
             
-%             window_k=single(mat2gray(window_k,[90,600])-0.5);
-            window_k=single((window_k-mean(window_k(:)))/std(window_k(:)));
+            wb=(widnowb{k}-normB(1))/(normB(2)-normB(1));
             
+            
+            window_k=cat(4,wa,wb);
+            
+
+            window_k=window_k(4:end-4,4:end-4,2:end-2,:);
+    
+    
+            window_k=single(mat2gray(window_k,[0,1]));
+
+
             YPred = predict(net,window_k);
             
             binaryResuslt=double(YPred(2));
