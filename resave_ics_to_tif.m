@@ -59,7 +59,7 @@ folders={};
 
 
 
-folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 317 (13-16,19-16)'];
+% folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 317 (13-16,19-16)'];
 % 
 % folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 337 (34-17, 35-17)'];
 
@@ -71,14 +71,17 @@ folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsic
 % folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\Pacient 314 (2-16,5-16,9-16)'];
 
 
-
+folders=[folders,'Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky'];
 
 
 color_order=[1 2 3];
 % color_order=[2 1 3];
 
+% color_order=[1 3 2];
 
 for folder_num=1:length(folders)
+    disp([num2str(folder_num) ' / ' num2str(length(folders))])
+    
     folder0=folders{folder_num};
     
     folder_save=[folder0 '_tif'];
@@ -90,6 +93,11 @@ for folder_num=1:length(folders)
     sub1={sub1([sub1(:).isdir]).name};
     
     for q=1:length(sub1)
+%         
+        if q~=6
+            continue
+        end
+        
         
         sub2=dir([folder0 filesep sub1{q}]);
         sub2=sub2(3:end);
@@ -127,10 +135,12 @@ for folder_num=1:length(folders)
                 [a,b,c]=read_ics_3_files(name);
                 
                 tmp=cat(4,a,b,c);
-                imwrite_single_4D(name_save,tmp(:,:,:,color_order))
+%                 imwrite_single_4D(name_save,tmp(:,:,:,color_order))
+                imwrite_uint16_4D(name_save,tmp(:,:,:,color_order))
                 tmp=cat(3,mean(a,3),mean(b,3),mean(c,3));
-                imwrite_single_3D(name_save_2d,tmp(:,:,color_order))
-                
+%                 imwrite_single_3D(name_save_2d,tmp(:,:,color_order))
+%                 imwrite_uint16_3D(name_save_2d,uint16(tmp(:,:,color_order)))
+                imwrite_single(single(tmp(:,:,color_order)),name_save_2d)
                 
                 name_fov_file=strrep(name,'01.ics','fov.txt');
                 
