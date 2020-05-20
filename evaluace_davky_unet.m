@@ -11,6 +11,9 @@ path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_
 load('unet_detection/test3_value_aug_mult')
 
 
+counts={};
+
+
 folders=dir(path);
 folders_new={};
 for k=3:length(folders)
@@ -35,7 +38,7 @@ for folder_num=1:length(folders)
     names=subdir([folder '/*3D*.tif']);
     names={names(:).name};
 
-
+    count=[];
 
     for img_num=1:length(names)
         img_num
@@ -61,73 +64,56 @@ for folder_num=1:length(folders)
         save_unet_foci_detection_res_points=strrep(save_unet_foci_detection_res_points,'.tif','.mat');
         
         
-        [a,b,c]=read_3d_rgb_tif(name);
-         
-        shape0=size(a);
 
-
-        [a,b,c]=preprocess_filters(a,b,c,gpu);
-        
-        close all;
-        
-        imshow(max(a,[],3),[])
-
-        [a,b,c]=preprocess_norm_resize_foci(a,b,c);
-
-        shape1=size(a);
-        
-        factor=shape0./shape1;
+        load(save_unet_foci_detection_res_points)
+%         'unet_foci_detection_res_points'
         
         
 
+        mask=imread(mask_name_split);
         
-        vys=predict_by_parts_detection(a,b,c,net);
-
-        save(save_unet_foci_detection_res,'vys')
+        mask_foci=imread(name_mask_foci)>0;
         
-        h=0.3;
-        d=12;
-        t=1;
+        lbl_mask=bwlabeln(mask);
+        
+        tmp=unet_foci_detection_res_points;
+        value=lbl_mask(sub2ind(size(lbl_mask),tmp(:,2),tmp(:,1),tmp(:,3)));
+        value_foci=mask_foci(sub2ind(size(mask_foci),tmp(:,2),tmp(:,1),tmp(:,3)));
+        
+        drawnow;
+        
 
-
-        [X,Y,Z] = meshgrid(linspace(-1,1,d),linspace(-1,1,d),linspace(-1,1,int16(d/3)));
-        sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
-
-        tmp=imdilate(vys,sphere);
-        tmp = imhmax(tmp,h);
-        tmp = imregionalmax(tmp).*(vys>t);
-
-        s = regionprops(tmp>0,'centroid');
-        centroids = round(cat(1, s.Centroid));
-
-        if isempty(centroids)
-           centroids=zeros(0,3);
+        for kk=1:max(value(:))
+            count=[count,sum(value==kk)];
         end
-        
-        centroids(:,1)=centroids(:,1)*factor(1);
-        centroids(:,2)=centroids(:,2)*factor(2);
-        centroids(:,3)=centroids(:,3)*factor(3);
-        
-        
-        hold on
-        
-        plot(centroids(:,1), centroids(:,2), 'ro','MarkerSize',3)
-        plot(centroids(:,1), centroids(:,2), 'g*','MarkerSize',3)
-        
-        
-        unet_foci_detection_res_points=centroids;
-       
-         
-        
-        
-        save(save_unet_foci_detection_res_points,'unet_foci_detection_res_points')
         
         
         
     end
+    
+    
+    counts=[counts,count];
 
 
 end
+
+
+
+
+
+x=[];
+y=[];
+
+for k=1:length(counts)
+    
+    tmp=counts{k};
+    x=[x,k*ones(1,length(tmp))];
+    y=[y,tmp];
+    
+    
+end
+
+boxplot(y,x)
 
 
 

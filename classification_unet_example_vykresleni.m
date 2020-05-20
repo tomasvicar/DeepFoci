@@ -7,9 +7,9 @@ names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
 % names=subdir('F:\example_folder\*3D_*.tif');
-% names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\example_folder_used\*3D_*.tif');
+names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\example_folder_used\*3D_*.tif');
 names={names(:).name};
 
 gpu=1;
@@ -19,6 +19,9 @@ gpu=1;
 % load('foci_classification_training/fix_velke_aug_nonorm_net_checkpoint__19000__2020_01_15__13_39_47.mat');
 
 load('unet_detection/test3_value_aug_mult.mat')
+
+
+
 
 res=[];
 gt=[];
@@ -62,9 +65,6 @@ for img_num=1:300
     
     
     
-    save_features_for_celnum=strrep(name,'3D_','features_cellnum_');
-    save_features_for_celnum=strrep(save_features_for_celnum,'.tif','.mat');
-    
     
     save_unet_foci_detection_mask=strrep(name,'3D_','unet_foci_detection_mask');
     save_unet_foci_detection_mask=strrep(save_unet_foci_detection_mask,'.tif','.mat');
@@ -77,6 +77,8 @@ for img_num=1:300
     save_unet_foci_detection_res=strrep(name,'3D_','unet_foci_detection_res');
     save_unet_foci_detection_res=strrep(save_unet_foci_detection_res,'.tif','.mat');
     
+    save_unet_foci_detection_res_example=strrep(name,'3D_','unet_foci_detection_res_example');
+    save_unet_foci_detection_res_example=strrep(save_unet_foci_detection_res_example,'.tif','');
     
     
 
@@ -131,7 +133,7 @@ for img_num=1:300
         plot(centroids(:,1), centroids(:,2), 'ro','MarkerSize',3)
         plot(centroids(:,1), centroids(:,2), 'g*','MarkerSize',3)
         
-        
+        print(save_unet_foci_detection_res_example,'-dpng')
         drawnow;
         
     end

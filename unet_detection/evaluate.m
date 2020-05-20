@@ -95,7 +95,7 @@ for img_num=1:300
        s = regionprops(mask_points_foci>0,'centroid');
        centroids_gt = round(cat(1, s.Centroid));
        
-       d_t=10;
+       d_t=25;
        
        if isempty(centroids)
            centroids=zeros(0,3);
