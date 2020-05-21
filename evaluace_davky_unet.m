@@ -8,7 +8,6 @@ gpu=1;
 % path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
 path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
 
-load('unet_detection/test3_value_aug_mult')
 
 
 counts={};
@@ -69,60 +68,51 @@ for folder_num=1:length(folders)
         save_unet_foci_detection_res_points=strrep(save_unet_foci_detection_res_points,'.tif','.mat');
         
         
-
-        load(save_unet_foci_detection_res_points)
-%         'unet_foci_detection_res_points'
+        save_unet_foci_segmentation_res=strrep(name,'3D_','unet_foci_segmentation_res');
         
         
-
-        mask=imread(mask_name_split);
-        
-        mask_foci=imread(name_mask_foci)>0;
-        
-        lbl_mask=bwlabeln(mask);
-        
-        tmp=unet_foci_detection_res_points;
-        value=lbl_mask(sub2ind(size(lbl_mask),tmp(:,2),tmp(:,1),tmp(:,3)));
-        value_foci=mask_foci(sub2ind(size(mask_foci),tmp(:,2),tmp(:,1),tmp(:,3)));
-        
-        drawnow;
+        save_results_table_unet=strrep(name,'3D_','results_table_unet');
+        save_results_table_unet=strrep(save_results_table_unet,'.tif','.csv');
         
 
-        for kk=1:max(value(:))
-            count=[count,sum(value==kk)];
-        end
+        L_res=bwlabeln(imread(save_unet_foci_segmentation_res));
+        L_nuc_mask=bwlabeln(imread(mask_name_split));
         
-        bad=bad+sum((value_foci==0)&(value>0))
-        all=all+length(value)
+        [a,b,c]=read_3d_rgb_tif(name);
+        
+        nuc_volumes=regionprops3(L_nuc_mask,'Volume');
+        nuc_volumes=nuc_volumes.Volume;
+        
+        r_table = regionprops3(L_res,a,'MaxIntensity','MeanIntensity');
+        r_table.Properties.VariableNames{'MaxIntensity'}='MaxIntensityR';
+        r_table.Properties.VariableNames{'MeanIntensity'}='MeanIntensityR';
+        
+        g_table = regionprops3(L_res,b,'MaxIntensity','MeanIntensity');
+        g_table.Properties.VariableNames{'MaxIntensity'}='MaxIntensityG';
+        g_table.Properties.VariableNames{'MeanIntensity'}='MeanIntensityG';
+        
+        
+        rg_table = regionprops3(L_res,a.*b,'MaxIntensity','MeanIntensity');
+        rg_table.Properties.VariableNames{'MaxIntensity'}='MaxIntensityRG';
+        rg_table.Properties.VariableNames{'MeanIntensity'}='MeanIntensityRG';
+        
+        other_table = regionprops3(L_res,L_nuc_mask,'MaxIntensity','Volume');
+        other_table.Properties.VariableNames{'MaxIntensity'}='CellNum';
+        tmp=nuc_volumes(other_table.CellNum);
+        other_table = addvars(other_table,tmp,'NewVariableNames','NucVolume');
+        tmp(:)=max(L_nuc_mask(:));
+        other_table = addvars(other_table,tmp,'NewVariableNames','MaxCellNum');
+        
+        res_table=[r_table,g_table,rg_table,other_table];
+        
+        writetable(res_table,save_results_table_unet)
+        
+        drawnow
+
+        
     end
-    
-    
-    counts=[counts,count];
-
 
 end
-
-
-
-
-
-x=[];
-y=[];
-
-for k=1:length(counts)
-    
-    tmp=counts{k};
-    x=[x,k*ones(1,length(tmp))];
-    y=[y,tmp];
-    
-    
-end
-
-boxplot(y,x)
-
-
-
-
 
 
 
