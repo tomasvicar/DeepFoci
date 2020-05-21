@@ -17,7 +17,6 @@ names={names(:).name};
 
 gpu=1;
 
-load('test3_value_aug_mult.mat')
 
 tp=0;
 fp=0;
@@ -67,8 +66,12 @@ for img_num=1:300
     save_unet_foci_detection_res_points=strrep(name,'3D_','unet_foci_detection_res_points');
     save_unet_foci_detection_res_points=strrep(save_unet_foci_detection_res_points,'.tif','.mat');
     
+    
+    save_unet_foci_segmentation_res=strrep(name,'3D_','unet_foci_segmentation_res');
 
-    if img_num<241
+    
+
+    if img_num<240
         
     else
     
@@ -209,8 +212,8 @@ for img_num=1:300
         plot(centroids(:,1), centroids(:,2), 'ro','MarkerSize',3)
         plot(centroids(:,1), centroids(:,2), 'g*','MarkerSize',3)
         
-        
-
+        imwrite_uint16_3D(save_unet_foci_segmentation_res,wab_krajeny)
+    
         drawnow;
        
     end
