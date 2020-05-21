@@ -26,6 +26,11 @@ folders=folders_new;
 folders=sort(folders);
 
 
+
+result_value=[];
+result_folder_names={};
+
+
 for folder_num=1:length(folders)
     
     
@@ -74,41 +79,24 @@ for folder_num=1:length(folders)
         save_results_table_unet=strrep(name,'3D_','results_table_unet');
         save_results_table_unet=strrep(save_results_table_unet,'.tif','.csv');
         
-
-        L_res=bwlabeln(imread(save_unet_foci_segmentation_res));
-        L_nuc_mask=bwlabeln(imread(mask_name_split));
         
-        [a,b,c]=read_3d_rgb_tif(name);
+        res_table=readtable(save_results_table_unet);
         
-        nuc_volumes=regionprops3(L_nuc_mask,'Volume');
-        nuc_volumes=nuc_volumes.Volume;
+        tmp=repmat({folder},[size(res_table,1),1]);
+        res_table= addvars(res_table,tmp,'NewVariableNames','Folder');
+        tmp=repmat({name},[size(res_table,1),1]);
+        res_table= addvars(res_table,tmp,'NewVariableNames','ImgName');
         
-        r_table = regionprops3(L_res,a,'MaxIntensity','MeanIntensity');
-        r_table.Properties.VariableNames{'MaxIntensity'}='MaxIntensityR';
-        r_table.Properties.VariableNames{'MeanIntensity'}='MeanIntensityR';
-        
-        g_table = regionprops3(L_res,b,'MaxIntensity','MeanIntensity');
-        g_table.Properties.VariableNames{'MaxIntensity'}='MaxIntensityG';
-        g_table.Properties.VariableNames{'MeanIntensity'}='MeanIntensityG';
-        
-        
-        rg_table = regionprops3(L_res,a.*b,'MaxIntensity','MeanIntensity');
-        rg_table.Properties.VariableNames{'MaxIntensity'}='MaxIntensityRG';
-        rg_table.Properties.VariableNames{'MeanIntensity'}='MeanIntensityRG';
-        
-        other_table = regionprops3(L_res,L_nuc_mask,'MaxIntensity','Volume');
-        other_table.Properties.VariableNames{'MaxIntensity'}='CellNum';
-        tmp=nuc_volumes(other_table.CellNum);
-        other_table = addvars(other_table,tmp,'NewVariableNames','NucVolume');
-        tmp(:)=max(L_nuc_mask(:));
-        other_table = addvars(other_table,tmp,'NewVariableNames','MaxCellNum');
-        
-        res_table=[r_table,g_table,rg_table,other_table];
-        
-        writetable(res_table,save_results_table_unet)
-        
-        drawnow
-
+        if ~isempty(res_table)
+            for k=1:res_table.MaxCellNum(1)
+                count=sum(res_table.CellNum==k);
+                result_value=[result_value,count];
+                
+                folder_name=split(folder,{'\','/'});
+                result_folder_names=[result_folder_names,folder_name{end}];
+                
+            end
+        end
         
     end
 
@@ -116,4 +104,6 @@ end
 
 
 
+
+boxplot(result_value,result_folder_names)
 
