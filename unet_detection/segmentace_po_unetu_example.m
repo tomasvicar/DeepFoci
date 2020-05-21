@@ -109,7 +109,7 @@ for img_num=1:300
 %         lbl_mask=imresize3(lbl_mask,size(a));
         
 
-        [a,b,c]=preprocess_filters_small(a,b,c,gpu);
+        [a,b,c]=preprocess_filters(a,b,c,gpu);
 
         rgb_2d=cat(3,norm_percentile(mean(a,3),0.001),norm_percentile(mean(b,3),0.001),norm_percentile(mean(c,3),0.001));
 
