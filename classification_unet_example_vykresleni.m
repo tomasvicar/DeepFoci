@@ -81,6 +81,14 @@ for img_num=1:300
     save_unet_foci_detection_res_example=strrep(save_unet_foci_detection_res_example,'.tif','');
     
     
+    
+    save_unet_foci_detection_res=strrep(name,'3D_','unet_foci_detection_res');
+    save_unet_foci_detection_res=strrep(save_unet_foci_detection_res,'.tif','.mat');
+
+
+    save_unet_foci_detection_res_points=strrep(name,'3D_','unet_foci_detection_res_points');
+    save_unet_foci_detection_res_points=strrep(save_unet_foci_detection_res_points,'.tif','.mat');
+    
 
     if img_num<240
         
@@ -136,18 +144,16 @@ for img_num=1:300
         print(save_unet_foci_detection_res_example,'-dpng')
         drawnow;
         
+        
+        unet_foci_detection_res_points=centroids;
+       
+         
+        
+        
+        save(save_unet_foci_detection_res_points,'unet_foci_detection_res_points')
+        
     end
     
     
 end
 
-avg_acc=[];
-for k = 1:max(cels_nums)
-    
-    tmp_res=res(cels_nums==k);
-    tmp_gt=gt(cels_nums==k);
-    avg_acc=[avg_acc,sum((tmp_res>0.5)==tmp_gt)/numel(tmp_gt)];
-    
-end
-
-nanmean(avg_acc)

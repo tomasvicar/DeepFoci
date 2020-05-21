@@ -13,6 +13,9 @@ load('unet_detection/test3_value_aug_mult')
 
 counts={};
 
+bad=0;
+all=0;
+
 
 folders=dir(path);
 folders_new={};
@@ -39,6 +42,8 @@ for folder_num=1:length(folders)
     names={names(:).name};
 
     count=[];
+    
+    
 
     for img_num=1:length(names)
         img_num
@@ -87,8 +92,8 @@ for folder_num=1:length(folders)
             count=[count,sum(value==kk)];
         end
         
-        
-        
+        bad=bad+sum((value_foci==0)&(value>0))
+        all=all+length(value)
     end
     
     
@@ -114,6 +119,8 @@ for k=1:length(counts)
 end
 
 boxplot(y,x)
+
+
 
 
 

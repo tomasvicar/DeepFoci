@@ -7,15 +7,17 @@ names_orig=names;
 
 % names=subdir('..\example_folder\*3D_*.tif');
 % names=subdir('Z:\CELL_MUNI\foky\new_foci_detection\example_folder\*3D_*.tif');
-names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
+% names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
 % names=subdir('F:\example_folder\*3D_*.tif');
+names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\example_folder_used\*3D_*.tif');
+
 names={names(:).name};
 
 gpu=1;
 
 load('dice_rot_new.mat')
 
-for img_num=88:200
+for img_num=200:300
     
     img_num
     
@@ -34,7 +36,8 @@ for img_num=88:200
 
    [a,b,c]=read_3d_rgb_tif(name);
 
-
+   shape0=size(a) ;
+   
    [a,b,c]=preprocess_filters(a,b,c,gpu);
 
    [a,b,c]=preprocess_norm_resize(a,b,c);
@@ -60,7 +63,7 @@ for img_num=88:200
    [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
    sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
    mask_conected=imerode(mask,sphere);
-   mask=imresize3(uint8(mask),size(a),'nearest')>0;
+   mask=imresize3(uint8(mask),shape0,'nearest')>0;
 
 
 
