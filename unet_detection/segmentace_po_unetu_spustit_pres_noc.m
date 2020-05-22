@@ -23,7 +23,7 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=1%:length(folders)
+for folder_num=length(folders)
     
     
     folder=folders{folder_num};
@@ -39,7 +39,7 @@ for folder_num=1%:length(folders)
     
     
     length(names)
-    for img_num=130:length(names)
+    for img_num=1:length(names)
         
         img_num
         
