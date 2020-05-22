@@ -226,9 +226,10 @@ for folder_num=1:length(folders)
         imshow(rgb_2d)
         hold on
         visboundaries(max(wab_krajeny,[],3))
-        plot(centroids(:,1), centroids(:,2), 'ro','MarkerSize',3)
-        plot(centroids(:,1), centroids(:,2), 'g*','MarkerSize',3)
-        
+        if ~isempty(centroids)
+            plot(centroids(:,1), centroids(:,2), 'ro','MarkerSize',3)
+            plot(centroids(:,1), centroids(:,2), 'g*','MarkerSize',3)
+        end
         print(save_final_results_unet_control,'-dpng')
         
         imwrite_uint16_3D(save_unet_foci_segmentation_res,wab_krajeny)
