@@ -46,10 +46,6 @@ for folder_num=1:length(folders)
 
     for img_num=1:length(names)
         img_num
-        
-        if folder_num==1 && img_num<45
-            continue
-        end
     
         name=names{img_num};
 
@@ -89,7 +85,7 @@ for folder_num=1:length(folders)
         z_resize_faktor=1.8182;
         
         shape=size(L_nuc_mask);
-        L_nuc_mask_resize=imresize3(L_nuc_mask,[shape(1)/z_resize_faktor,shape(2)/z_resize_faktor,round(shape(3))],'nearest');
+        L_nuc_mask_resize=imresize3(L_nuc_mask,[shape(1),shape(2),round(shape(3)*z_resize_faktor)]);
         nuc_volumes=regionprops3(L_nuc_mask_resize,'Volume');
         clear L_nuc_mask_resize
         nuc_volumes=nuc_volumes.Volume;
@@ -109,7 +105,7 @@ for folder_num=1:length(folders)
         
 
         shape=size(L_res);
-        L_res_resize=imresize3(L_res,[shape(1)/z_resize_faktor,shape(2)/z_resize_faktor,round(shape(3))],'nearest');
+        L_res_resize=imresize3(L_res,[shape(1),shape(2),round(shape(3)*z_resize_faktor)]);
         shape_table = regionprops3(L_res_resize,'Volume','Solidity','SurfaceArea','EigenValues');
         clear L_res_res
         
@@ -121,14 +117,7 @@ for folder_num=1:length(folders)
         tmp(:)=max(L_nuc_mask(:));
         other_table = addvars(other_table,tmp,'NewVariableNames','MaxCellNum');
         
-        for k = 1:(size(other_table,1)-size(shape_table,1))
-            disp('mising rowwwwwwwwwwwww!!!!!!!!!!!!!!!!!!!!!!!')
-            shape_table=[shape_table;shape_table(end,:)];
-        end
-        
         res_table=[r_table,g_table,rg_table,shape_table,other_table];
-        
-        
         
         writetable(res_table,save_results_table_unet)
         
