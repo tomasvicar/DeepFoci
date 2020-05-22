@@ -29,13 +29,13 @@ gt=[];
 cels_nums=[];
 cumul=0;
 
-for img_num=1:300
+for img_num=1:100
     
     img_num
     
     name=names{img_num};
     
-    name_orig=names_orig{img_num};
+%     name_orig=names_orig{img_num};
     
     name_mask=strrep(name,'data_','mask_');
     mask_name_split=strrep(name,'data_','mask_split');
@@ -123,8 +123,7 @@ for img_num=1:300
         end
 
 
-        s = regionprops(mask_points_foci>0,'centroid');
-        centroids_gt = round(cat(1, s.Centroid));
+
         if isempty(centroids)
            centroids=zeros(0,3);
         end
