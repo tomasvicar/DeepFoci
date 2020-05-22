@@ -23,7 +23,7 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=1:length(folders)
+for folder_num=1%:length(folders)
     
     
     folder=folders{folder_num};
@@ -39,7 +39,7 @@ for folder_num=1:length(folders)
     
     
     length(names)
-    for img_num=1:length(names)
+    for img_num=130:length(names)
         
         img_num
         
@@ -95,7 +95,7 @@ for folder_num=1:length(folders)
         load(save_unet_foci_detection_res_points)
         factor=[2,2,1];
         
-        centroids=unet_foci_detection_res_points;
+        centroids=round(unet_foci_detection_res_points);
 %         centroids(:,1)=centroids(:,1)*factor(1);
 %         centroids(:,2)=centroids(:,2)*factor(2);
 %         centroids(:,3)=centroids(:,3)*factor(3);
@@ -226,8 +226,10 @@ for folder_num=1:length(folders)
         imshow(rgb_2d)
         hold on
         visboundaries(max(wab_krajeny,[],3))
-        plot(centroids(:,1), centroids(:,2), 'ro','MarkerSize',3)
-        plot(centroids(:,1), centroids(:,2), 'g*','MarkerSize',3)
+        if ~isempty(centroids)
+            plot(centroids(:,1), centroids(:,2), 'ro','MarkerSize',3)
+            plot(centroids(:,1), centroids(:,2), 'g*','MarkerSize',3)
+        end
         
         print(save_final_results_unet_control,'-dpng')
         
