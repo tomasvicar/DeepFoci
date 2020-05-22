@@ -37,64 +37,61 @@ for img_num=1:300
     
     name_orig=names_orig{img_num};
     
-    name_mask=strrep(name,'3D_','mask_');
-    mask_name_split=strrep(name,'3D_','mask_split');
+    name_mask=strrep(name,'data_','mask_');
+    mask_name_split=strrep(name,'data_','mask_split');
     
     
-    name_mask_foci=strrep(name,'3D_','mask_foci_');
+    name_mask_foci=strrep(name,'data_','mask_foci_');
     
-    name_2D=strrep(name,'3D_','2D_');
+    name_2D=strrep(name,'data_','2D_');
     
-    save_control_seg=strrep(name,'3D_','control_seg_foci');
+    save_control_seg=strrep(name,'data_','control_seg_foci');
     save_control_seg=strrep(save_control_seg,'.tif','');
     
-    save_manual_label=strrep(name,'3D_','manual_label_');
+    save_manual_label=strrep(name,'data_','manual_label_');
     save_manual_label=strrep(save_manual_label,'.tif','.mat');
     
     
-    save_features=strrep(name,'3D_','features_window_');
-%     save_features=strrep(name,'3D_','features_window2_');
+    save_features=strrep(name,'data_','features_window_');
+%     save_features=strrep(name,'data_','features_window2_');
     save_features=strrep(save_features,'.tif','.mat');
 
 
-    save_features_for_celnum=strrep(name,'3D_','features_cellnum_');
+    save_features_for_celnum=strrep(name,'data_','features_cellnum_');
     save_features_for_celnum=strrep(save_features_for_celnum,'.tif','.mat');
     
     
-    features_norm_vals=strrep(name,'3D_','features_norm_vals_');
+    features_norm_vals=strrep(name,'data_','features_norm_vals_');
     features_norm_vals=strrep(features_norm_vals,'.tif','.mat');
     
     
     
     
-    save_unet_foci_detection_mask=strrep(name,'3D_','unet_foci_detection_mask');
+    save_unet_foci_detection_mask=strrep(name,'data_','unet_foci_detection_mask');
     save_unet_foci_detection_mask=strrep(save_unet_foci_detection_mask,'.tif','.mat');
     
     
-    save_unet_foci_detection_data=strrep(name,'3D_','unet_foci_detection_data');
+    save_unet_foci_detection_data=strrep(name,'data_','unet_foci_detection_data');
     save_unet_foci_detection_data=strrep(save_unet_foci_detection_data,'.tif','.mat');
     
     
-    save_unet_foci_detection_res=strrep(name,'3D_','unet_foci_detection_res');
+    save_unet_foci_detection_res=strrep(name,'data_','unet_foci_detection_res');
     save_unet_foci_detection_res=strrep(save_unet_foci_detection_res,'.tif','.mat');
     
-    save_unet_foci_detection_res_example=strrep(name,'3D_','unet_foci_detection_res_example');
+    save_unet_foci_detection_res_example=strrep(name,'data_','unet_foci_detection_res_example');
     save_unet_foci_detection_res_example=strrep(save_unet_foci_detection_res_example,'.tif','');
     
     
     
-    save_unet_foci_detection_res=strrep(name,'3D_','unet_foci_detection_res');
+    save_unet_foci_detection_res=strrep(name,'data_','unet_foci_detection_res');
     save_unet_foci_detection_res=strrep(save_unet_foci_detection_res,'.tif','.mat');
 
 
-    save_unet_foci_detection_res_points=strrep(name,'3D_','unet_foci_detection_res_points');
+    save_unet_foci_detection_res_points=strrep(name,'data_','unet_foci_detection_res_points');
     save_unet_foci_detection_res_points=strrep(save_unet_foci_detection_res_points,'.tif','.mat');
     
 
-    if img_num<240
-        
 
-    else
         
         load(save_unet_foci_detection_res)
         
@@ -153,7 +150,7 @@ for img_num=1:300
         
         save(save_unet_foci_detection_res_points,'unet_foci_detection_res_points')
         
-    end
+
     
     
 end

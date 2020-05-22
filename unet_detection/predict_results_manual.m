@@ -26,7 +26,7 @@ for img_num=1:100
     
     name=names{img_num};
     
-    name_orig=names_orig{img_num};
+%     name_orig=names_orig{img_num};
     
     name_mask=strrep(name,'data_','mask_');
     mask_name_split=strrep(name,'data_','mask_split');
@@ -63,46 +63,42 @@ for img_num=1:100
     save_unet_foci_detection_res=strrep(save_unet_foci_detection_res,'.tif','.mat');
     
 
-    if img_num<240
-        
-    else
-    
-        [a,b,c]=read_3d_rgb_tif(name);
-         
-        a=a(:,:,[2,4:end]);
-        b=b(:,:,[2,4:end]);
-        c=c(:,:,[2,4:end]);
 
-        [a,b,c]=preprocess_filters(a,b,c,gpu);
+    [a,b,c]=read_3d_rgb_tif(name);
 
-        shape_old=size(a);
-        [a,b,c]=preprocess_norm_resize_foci(a,b,c);
-        shape_new=size(a);
+    a=a(:,:,[2,4:end]);
+    b=b(:,:,[2,4:end]);
+    c=c(:,:,[2,4:end]);
 
-        factor=shape_new./shape_old;
+    [a,b,c]=preprocess_filters(a,b,c,gpu);
 
-        load(save_manual_label);
+    shape_old=size(a);
+    [a,b,c]=preprocess_norm_resize_foci(a,b,c);
+    shape_new=size(a);
+
+%     factor=shape_new./shape_old;
+
+%     load(save_manual_label);
 
 
-        positions_resize=round(positions.*repmat(factor,[size(positions,1),1]));
+%     positions_resize=round(positions.*repmat(factor,[size(positions,1),1]));
 
-        mask_points_foci=false(shape_new);
+%     mask_points_foci=false(shape_new);
 
 
 
-        use=labels>0;
-        positions_linear=sub2ind(shape_new,positions_resize(use,2),positions_resize(use,1),positions_resize(use,3));
-        mask_points_foci(positions_linear)=true;
+%     use=labels>0;
+%     positions_linear=sub2ind(shape_new,positions_resize(use,2),positions_resize(use,1),positions_resize(use,3));
+%     mask_points_foci(positions_linear)=true;
 
 
-        mask_points_foci2=imgaussfilt3(single(mask_points_foci),[2,2,1])*59.5238*10;
+%     mask_points_foci2=imgaussfilt3(single(mask_points_foci),[2,2,1])*59.5238*10;
 
-        vys=predict_by_parts_detection(a,b,c,net);
+    vys=predict_by_parts_detection(a,b,c,net);
 
-        save(save_unet_foci_detection_res,'vys','mask_points_foci')
+    save(save_unet_foci_detection_res,'vys')
         
         
 
-    end
     
 end
