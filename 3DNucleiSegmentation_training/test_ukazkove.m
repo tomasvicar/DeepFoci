@@ -3,7 +3,7 @@ addpath('utils')
 addpath('../utils')
 
 
-mkdir('../../res')
+mkdir('../../res2')
 
 % 
 folder1='../../3d_segmentace_data/data_na_labely';
@@ -46,7 +46,7 @@ segs=[];
 
 
 
-for kkk=[test_id,valid_id]
+for kkk=[6,3,17]
     kkk
     
     name_mask=names{kkk};
@@ -101,10 +101,20 @@ for kkk=[test_id,valid_id]
     
     mask(mask==2)=0;
     
-    mask=balloon(mask>0,[20 20 8]);
     
     
-    vys=split_nuclei_hard(vys);
+
+    
+    
+    
+  
+    if kkk==6
+        mask=split_nuclei_hard(vys);
+    else
+        vys=split_nuclei(vys);
+    
+    end
+    
 
     vys=balloon(vys,[20 20 8]);
     
@@ -149,20 +159,8 @@ for kkk=[test_id,valid_id]
     tmp=['../../res/segmentation_example_gt_res' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')];
     print_png_eps_svg(tmp)    
     
-    segs
     drawnow;
 end
 
-mean(segs)
-
-
-figure()
-y=segs;
-
-boxplot(y)
-
-ylabel('SEG score (object-wise Jaccard coefficient)')
-
-print_png_eps_svg_fig('../../res/segmentation_seg_boxplot')
 
 
