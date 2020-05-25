@@ -9,6 +9,8 @@ mkdir('../../res')
 folder1='../../3d_segmentace_data/data_na_labely';
 folder2='../../3d_segmentace_data/data_na_labely2';
 
+
+
 names1=subdir([folder1 '/mask_norm_*']);
 names1={names1.name};
 
@@ -71,6 +73,7 @@ for kkk=[test_id,valid_id]
         rgb=imread(name_mask,k);
         mask(:,:,k)=rgb;
     end
+    mask_full_size=mask;
     
     mask=imresize3(mask,[337  454   48],'nearest');
     
@@ -102,25 +105,33 @@ for kkk=[test_id,valid_id]
     
     
     vys=split_nuclei(vys);
-    
-    vys=split_nuclei(vys);
+
     vys=balloon(vys,[20 20 8]);
     
     seg=seg_3d(vys,mask>0);
     segs=[segs seg];
     
     
-   slice=mat2gray(cf(:,:,25));
+    slice=mean(cf(:,:,22:28),3);
+    
+    slice=mat2gray(slice,[prctile(slice(:),1),prctile(slice(:),99)]);
+    shape=size(slice);
     rgb_slice=cat(3,zeros(size(slice)),zeros(size(slice)),slice);
     res_slice=vys(:,:,25);
-    gt_slice=vys(:,:,25);
+    gt_slice=mask(:,:,25);
     
+    res_slice=imresize(res_slice,shape,'nearest');
+    gt_slice=imresize(gt_slice,shape,'nearest');
+    res_slice=bwareaopen(res_slice,100);
+    
+    figure(1);
     hold off
     imshow(rgb_slice)
     hold on
     visboundaries(res_slice,'Color','r','LineWidth',1.5,'EnhanceVisibility',0);
     print_png_eps_svg(['../../res/segmentation_example_res_' num2str(kkk) '_seg_' num2str(seg)])
     
+    figure(2);
     hold off
     imshow(rgb_slice)
     hold on
@@ -128,6 +139,7 @@ for kkk=[test_id,valid_id]
     print_png_eps_svg(['../../res/segmentation_example_gt_' num2str(kkk)  '_seg_' num2str(seg)])
     
     
+    figure(3);
     hold off
     imshow(rgb_slice)
     hold on
@@ -135,7 +147,7 @@ for kkk=[test_id,valid_id]
     visboundaries(gt_slice,'Color','g','LineWidth',1.5,'EnhanceVisibility',0);
     print_png_eps_svg(['../../res/segmentation_example_gt_res' num2str(kkk) '_seg_' num2str(seg)])
     
-
+    drawnow;
 end
 
 segs=mean(segs)

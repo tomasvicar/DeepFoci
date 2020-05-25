@@ -6,8 +6,8 @@ addpath('unet_detection')
 gpu=1;
 
 % path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\dva_pacienti_tif';
+path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\dva_pacienti_tif';
 
 
 load('unet_detection/test3_value_aug_mult')
@@ -23,7 +23,7 @@ folders=folders_new;
 folders=sort(folders);
 
 
-for folder_num=1%length(folders)
+for folder_num=1:length(folders)
     
     
     folder=folders{folder_num};
@@ -43,9 +43,9 @@ for folder_num=1%length(folders)
         
         img_num
         
-        if img_num<130
-           continue 
-        end
+%         if img_num<130
+%            continue 
+%         end
         
         name=names{img_num};
         
