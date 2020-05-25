@@ -28,6 +28,7 @@ folders=sort(folders);
 
 
 counts=[];
+nuc_volume=[];
 volume_fractions=[];
 volume_w_counts=[];
 mean_foci_volumes=[];
@@ -137,7 +138,7 @@ print_png_eps_svg_fig('../res/foci_vol_vol_box_davky')
 
 figure;
 boxplot(volume_w_counts,result_folder_names)
-ylabel('Foci count / nm^3')
+ylabel('Volume ')
 print_png_eps_svg_fig('../res/foci_count_vol_box_davky')
 
 
