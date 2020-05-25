@@ -203,18 +203,6 @@ end
 
 med_dice
 
-figure(t_num)
-y=[dice_res_ja',dice_res_jarda',dice_ja_jarda'];
-boxplot(y,'Labels',{'Automatic vs Expert 1','Automatic vs Expert 2','Expert 1 vs Expert 2'})
-
-
-
-ylabel('Dice coefficient')
-
-mkdir('../../res')
-
-print_png_eps_svg_fig('../../res/detection_dice_boxplot')
-
 
 end
 
