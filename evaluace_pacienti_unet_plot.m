@@ -115,8 +115,7 @@ for folder_num=1:length(folders)
                 
                 volume_w_count=count/mean(nuc_volume);
                 volume_w_counts=[volume_w_counts,volume_w_count];
-                
-                
+
                 
                 mean_foci_volume=mean(foci_volume)*(0.1650^3);
                 if ~isnan(mean_foci_volume)

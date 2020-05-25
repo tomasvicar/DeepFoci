@@ -3,6 +3,8 @@ addpath('utils')
 addpath('../utils')
 
 
+mkdir('../../res')
+
 % 
 folder1='../../3d_segmentace_data/data_na_labely';
 folder2='../../3d_segmentace_data/data_na_labely2';
@@ -104,7 +106,50 @@ for kkk=[test_id,valid_id]
     vys=split_nuclei(vys);
     vys=balloon(vys,[20 20 8]);
     
-    segs=[segs seg_3d(vys,mask>0)]
+    seg=seg_3d(vys,mask>0);
+    segs=[segs seg];
+    
+    
+   slice=mat2gray(cf(:,:,25));
+    rgb_slice=cat(3,zeros(size(slice)),zeros(size(slice)),slice);
+    res_slice=vys(:,:,25);
+    gt_slice=vys(:,:,25);
+    
+    hold off
+    imshow(rgb_slice)
+    hold on
+    visboundaries(res_slice,'Color','r','LineWidth',1.5,'EnhanceVisibility',0);
+    print_png_eps_svg(['../../res/segmentation_example_res_' num2str(kkk) '_seg_' num2str(seg)])
+    
+    hold off
+    imshow(rgb_slice)
+    hold on
+    visboundaries(gt_slice,'Color','g','LineWidth',1.5,'EnhanceVisibility',0);
+    print_png_eps_svg(['../../res/segmentation_example_gt_' num2str(kkk)  '_seg_' num2str(seg)])
+    
+    
+    hold off
+    imshow(rgb_slice)
+    hold on
+    visboundaries(res_slice,'Color','r','LineWidth',1.5,'EnhanceVisibility',0);
+    visboundaries(gt_slice,'Color','g','LineWidth',1.5,'EnhanceVisibility',0);
+    print_png_eps_svg(['../../res/segmentation_example_gt_res' num2str(kkk) '_seg_' num2str(seg)])
+    
+
 end
 
 segs=mean(segs)
+
+
+figure()
+y=segs;
+
+boxplot(y)
+
+
+
+ylabel('SEG score (object-wise Jaccard coefficient)')
+
+print_png_eps_svg('../../res/detection_dice_boxplot')
+
+

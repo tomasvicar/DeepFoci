@@ -36,7 +36,22 @@ folders=sort(folders);
 
 
 
-result_value=[];
+
+
+n_foci=[];
+sum_vol_foci=[];
+avg_vol_foci=[];
+std_vol_foci=[];
+avg_3d_roudness=[];
+avg_3d_vol_solidity=[];
+avg_red=[];
+std_red=[];
+avg_green=[];
+std_green=[];
+avg_coloc=[];
+std_coloc=[];
+vol_nuc=[];
+
 result_folder_names={};
 
 
@@ -98,8 +113,66 @@ for folder_num=1:length(folders)
         
         if ~isempty(res_table)
             for k=1:res_table.MaxCellNum(1)
-                count=sum(res_table.CellNum==k);
-                result_value=[result_value,count];
+                use_row=res_table.CellNum==k;
+                count=sum(use_row);
+                
+                
+                foci_volume=res_table.Volume;
+                nuc_volume=res_table.NucVolume;
+                nuc_area=res_table.SurfaceArea;
+                foci_volume=foci_volume(use_row);
+                nuc_volume=nuc_volume(use_row);
+                nuc_area=nuc_area(use_row);
+                
+                solidity=res_table.NucVolume;
+                solidity=mean(solidity(use_row));
+                
+                
+                sum_foci_volume=sum(foci_volume)*(0.1650^3);
+                
+                mean_foci_volume=mean(foci_volume)*(0.1650^3);
+                if ~isnan(mean_foci_volume)
+                    mean_foci_volume=0;
+                end
+                
+                std_foci_volume=mean(foci_volume)*(0.1650^3);
+                
+                
+%                 rV=((3*nuc_volume)/(4*pi)).^(1/3);
+%                 rA=((nuc_area)/(4*pi)).^(1/2);
+%                 roudness=(rV*12.57)./(rA);
+                
+                                
+                MeanIntensityR=res_table.MeanIntensityR;
+                MeanIntensityR=MeanIntensityR(use_row);
+                mr=mean(MeanIntensityR);
+                sr=std(MeanIntensityR);
+
+                MeanIntensityG=res_table.MeanIntensityG;
+                MeanIntensityG=MeanIntensityG(use_row);
+                mg=mean(MeanIntensityG);
+                sg=std(MeanIntensityG);
+                
+                MeanIntensityRG=res_table.MeanIntensityRG;
+                MeanIntensityRG=MeanIntensityRG(use_row);
+                mrg=mean(MeanIntensityRG);
+                srg=std(MeanIntensityRG);
+                
+                n_foci=[n_foci,count];
+                sum_vol_foci=[sum_vol_foci,sum_foci_volume];
+                avg_vol_foci=[avg_vol_foci,mean_foci_volume];
+                std_vol_foci=[std_vol_foci,std_foci_volume];
+                avg_3d_roudness=[];
+                avg_3d_vol_solidity=[avg_3d_vol_solidity,solidity];
+                avg_red=[avg_red,mr];
+                std_red=[std_red,sr];
+                avg_green=[avg_green,mg];
+                std_green=[std_green,sg];
+                avg_coloc=[avg_coloc,mrg];
+                std_coloc=[std_coloc,srg];
+                vol_nuc=[vol_nuc,nuc_volume];
+
+
                 
                 folder_name=split(folder,{'\','/'});
                 result_folder_names=[result_folder_names,folder_name{end}];
@@ -111,8 +184,13 @@ for folder_num=1:length(folders)
 
 end
 
+X=table(n_foci,sum_vol_foci,avg_vol_foci,std_vol_foci,avg_3d_vol_solidity,avg_red,std_red,avg_green,...
+    std_green,avg_coloc,std_coloc,vol_nuc);
 
 
 
-boxplot(result_value,result_folder_names)
+
+
+
+
 
