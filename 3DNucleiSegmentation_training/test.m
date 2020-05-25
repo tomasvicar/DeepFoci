@@ -162,6 +162,6 @@ boxplot(y)
 
 ylabel('SEG score (object-wise Jaccard coefficient)')
 
-print_png_eps_svg('../../res/detection_dice_boxplot')
+print_png_eps_svg_fig('../../res/detection_dice_boxplot')
 
 
