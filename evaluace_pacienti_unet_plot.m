@@ -40,6 +40,8 @@ counts=[];
 volume_fractions=[];
 volume_w_counts=[];
 mean_foci_volumes=[];
+mean_foci_r=[];
+mean_foci_g=[];
 result_folder_names={};
 
 
@@ -117,6 +119,27 @@ for folder_num=1:length(folders)
                 volume_w_counts=[volume_w_counts,volume_w_count];
 
                 
+                 MeanIntensityR=res_table.MeanIntensityR;
+                MeanIntensityR=MeanIntensityR(use_row);
+                mr=mean(MeanIntensityR);
+                sr=std(MeanIntensityR);
+
+                MeanIntensityG=res_table.MeanIntensityG;
+                MeanIntensityG=MeanIntensityG(use_row);
+                mg=mean(MeanIntensityG);
+                sg=std(MeanIntensityG);
+                
+                MeanIntensityRG=res_table.MeanIntensityRG;
+                MeanIntensityRG=MeanIntensityRG(use_row);
+                mrg=mean(MeanIntensityRG);
+                srg=std(MeanIntensityRG);
+                
+                
+                
+                mean_foci_r=[mean_foci_r,mean(MeanIntensityR)];
+                mean_foci_g=[mean_foci_g,mean(MeanIntensityG)];
+                
+                
                 mean_foci_volume=mean(foci_volume)*(0.1650^3);
 
                 mean_foci_volumes=[mean_foci_volumes,mean_foci_volume];
@@ -141,7 +164,6 @@ figure;
 boxplot(volume_fractions,result_folder_names)
 
 
-
 figure;
 boxplot(volume_w_counts,result_folder_names)
 
@@ -149,3 +171,14 @@ boxplot(volume_w_counts,result_folder_names)
 
 figure;
 boxplot(mean_foci_volumes,result_folder_names)
+
+
+
+figure;
+boxplot(mean_foci_r,result_folder_names)
+
+
+
+figure;
+boxplot(mean_foci_g,result_folder_names)
+
