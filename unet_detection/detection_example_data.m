@@ -35,7 +35,7 @@ dice_res_jarda=[];
 dice_ja_jarda=[];
 
 
-for img_num=1:25
+for img_num=1:20
     
     img_num;
     
@@ -166,7 +166,7 @@ for img_num=1:25
         plot(res(:,1), res(:,2), 'kv','MarkerSize',ms,'LineWidth',lwp)
         plot(res(:,1), res(:,2), 'rv','MarkerSize',ms,'LineWidth',lw)
     end
-    tmp=['../../res/detection_example_res' num2str(img_num) '_dice_' replace(num2str(dice_res_ja),'.','_')];
+    tmp=['../../res/detection_example_res' num2str(img_num) '_dice_' replace(num2str(dice_res_ja(end)),'.','_')];
     print_png_eps_svg(tmp)   
     
     
@@ -178,7 +178,7 @@ for img_num=1:25
         plot(gt_ja(:,1), gt_ja(:,2), 'k^','MarkerSize',ms,'LineWidth',lwp)
         plot(gt_ja(:,1), gt_ja(:,2), 'g^','MarkerSize',ms,'LineWidth',lw)
     end
-    tmp=['../../res/detection_example_gt' num2str(img_num) '_dice_' replace(num2str(dice_res_ja),'.','_')];
+    tmp=['../../res/detection_example_gt' num2str(img_num) '_dice_' replace(num2str(dice_res_ja(end)),'.','_')];
     print_png_eps_svg(tmp) 
     
      figure(3)
@@ -193,7 +193,7 @@ for img_num=1:25
         plot(gt_ja(:,1), gt_ja(:,2), 'k^','MarkerSize',ms,'LineWidth',lwp)
         plot(gt_ja(:,1), gt_ja(:,2), 'g^','MarkerSize',ms,'LineWidth',lw)
     end
-    tmp=['../../res/detection_example_res_gt' num2str(img_num) '_dice_' replace(num2str(dice_res_ja),'.','_')];
+    tmp=['../../res/detection_example_res_gt' num2str(img_num) '_dice_' replace(num2str(dice_res_ja(end)),'.','_')];
     print_png_eps_svg(tmp) 
     
 
