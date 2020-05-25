@@ -6,8 +6,8 @@ addpath('unet_detection')
 gpu=1;
 
 % path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\tif_4times';
-path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
-
+% path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
+path='../data_ruzne_davky_tif';
 
 
 counts={};
@@ -27,7 +27,10 @@ folders=sort(folders);
 
 
 
-result_value=[];
+counts=[];
+volume_fractions=[];
+volume_w_counts=[];
+mean_foci_volumes=[];
 result_folder_names={};
 
 
@@ -89,8 +92,24 @@ for folder_num=1:length(folders)
         
         if ~isempty(res_table)
             for k=1:res_table.MaxCellNum(1)
-                count=sum(res_table.CellNum==k);
-                result_value=[result_value,count];
+                use_row=res_table.CellNum==k;
+                
+                count=sum(use_row);
+                counts=[counts,count];
+                
+                foci_volume=res_table.Volume;
+                nuc_volume=res_table.NucVolume;
+                foci_volume=foci_volume(use_row);
+                nuc_volume=nuc_volume(use_row);
+                volume_fration=sum(foci_volume)/mean(nuc_volume);
+                volume_fractions=[volume_fractions,volume_fration];
+                
+                volume_w_count=count/mean(nuc_volume);
+                volume_w_counts=[volume_w_counts,volume_w_count];
+
+                
+                mean_foci_volume=mean(foci_volume)*(0.1650^3);
+                mean_foci_volumes=[mean_foci_volumes,mean_foci_volume];
                 
                 folder_name=split(folder,{'\','/'});
                 result_folder_names=[result_folder_names,folder_name{end}];
@@ -103,7 +122,26 @@ for folder_num=1:length(folders)
 end
 
 
+mkdir('../res')
+
+figure;
+boxplot(counts,result_folder_names)
+ylabel('Foci count')
+print_png_eps_svg_fig('../res/foci_count_box_davky')
+
+figure;
+boxplot(volume_fractions,result_folder_names)
+ylabel('Foci count')
+print_png_eps_svg_fig('../res/foci_count_box_davky')
 
 
-boxplot(result_value,result_folder_names)
+figure;
+boxplot(volume_w_counts,result_folder_names)
+ylabel('Foci count')
+print_png_eps_svg_fig('../res/foci_count_box_davky')
 
+
+figure;
+boxplot(mean_foci_volumes,result_folder_names)
+ylabel('Foci count')
+print_png_eps_svg_fig('../res/foci_count_box_davky')

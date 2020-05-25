@@ -118,9 +118,8 @@ for folder_num=1:length(folders)
 
                 
                 mean_foci_volume=mean(foci_volume)*(0.1650^3);
-                if ~isnan(mean_foci_volume)
-                    mean_foci_volumes=[mean_foci_volumes,mean_foci_volume];
-                end
+
+                mean_foci_volumes=[mean_foci_volumes,mean_foci_volume];
                 
                 folder_name=split(folder,{'\','/'});
                 result_folder_names=[result_folder_names,folder_name{end}];
