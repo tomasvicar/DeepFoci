@@ -36,7 +36,10 @@ folders=sort(folders);
 
 
 
-result_value=[];
+counts=[];
+volume_fractions=[];
+volume_w_counts=[];
+mean_foci_volumes=[];
 result_folder_names={};
 
 
@@ -98,8 +101,27 @@ for folder_num=1:length(folders)
         
         if ~isempty(res_table)
             for k=1:res_table.MaxCellNum(1)
-                count=sum(res_table.CellNum==k);
-                result_value=[result_value,count];
+                use_row=res_table.CellNum==k;
+                
+                count=sum(use_row);
+                counts=[counts,count];
+                
+                foci_volume=res_table.Volume;
+                nuc_volume=res_table.NucVolume;
+                foci_volume=foci_volume(use_row);
+                nuc_volume=nuc_volume(use_row);
+                volume_fration=sum(foci_volume)/mean(nuc_volume);
+                volume_fractions=[volume_fractions,volume_fration];
+                
+                volume_w_count=count/mean(nuc_volume);
+                volume_w_counts=[volume_w_counts,volume_w_count];
+                
+                
+                
+                mean_foci_volume=mean(foci_volume)*(0.1650^3);
+                if ~isnan(mean_foci_volume)
+                    mean_foci_volumes=[mean_foci_volumes,mean_foci_volume];
+                end
                 
                 folder_name=split(folder,{'\','/'});
                 result_folder_names=[result_folder_names,folder_name{end}];
@@ -113,6 +135,19 @@ end
 
 
 
+figure;
+boxplot(counts,result_folder_names)
 
-boxplot(result_value,result_folder_names)
 
+figure;
+boxplot(volume_fractions,result_folder_names)
+
+
+
+figure;
+boxplot(volume_w_counts,result_folder_names)
+
+
+
+figure;
+boxplot(mean_foci_volumes,result_folder_names)
