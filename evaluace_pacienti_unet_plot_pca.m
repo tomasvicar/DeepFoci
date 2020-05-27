@@ -9,6 +9,7 @@ gpu=1;
 % path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\data_ruzne_davky_tif';
 path='Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_for_segmenttion_paper\dva_pacienti_tif';
 
+mkdir('../res_pca')
 
 counts={};
 
@@ -124,18 +125,15 @@ for folder_num=1:length(folders)
                 nuc_volume=nuc_volume(use_row);
                 nuc_area=nuc_area(use_row);
                 
-                solidity=res_table.NucVolume;
+                solidity=res_table.Solidity;
                 solidity=mean(solidity(use_row));
                 
                 
                 sum_foci_volume=sum(foci_volume)*(0.1650^3);
                 
                 mean_foci_volume=mean(foci_volume)*(0.1650^3);
-                if ~isnan(mean_foci_volume)
-                    mean_foci_volume=0;
-                end
                 
-                std_foci_volume=mean(foci_volume)*(0.1650^3);
+                std_foci_volume=std(foci_volume)*(0.1650^3);
                 
                 
 %                 rV=((3*nuc_volume)/(4*pi)).^(1/3);
@@ -170,8 +168,11 @@ for folder_num=1:length(folders)
                 std_green=[std_green,sg];
                 avg_coloc=[avg_coloc,mrg];
                 std_coloc=[std_coloc,srg];
-                vol_nuc=[vol_nuc,nuc_volume];
-
+                if ~isempty(nuc_volume)
+                    vol_nuc=[vol_nuc,nuc_volume(1)];
+                else
+                    vol_nuc=[vol_nuc,nan];
+                end
 
                 
                 folder_name=split(folder,{'\','/'});
@@ -183,14 +184,110 @@ for folder_num=1:length(folders)
     end
 
 end
+n_foci=n_foci';
+sum_vol_foci=sum_vol_foci';
+avg_vol_foci=avg_vol_foci';
+std_vol_foci=std_vol_foci';
+avg_3d_vol_solidity=avg_3d_vol_solidity';
+avg_red=avg_red';
+std_red=std_red';
+avg_green=avg_green';
+std_green=std_green';
+avg_coloc=avg_coloc';
+std_coloc=std_coloc';
+vol_nuc=vol_nuc';
 
-X=table(n_foci,sum_vol_foci,avg_vol_foci,std_vol_foci,avg_3d_vol_solidity,avg_red,std_red,avg_green,...
-    std_green,avg_coloc,std_coloc,vol_nuc);
+% X=table(n_foci,sum_vol_foci,avg_vol_foci,std_vol_foci,...
+%    avg_3d_vol_solidity,avg_red,avg_green,std_green,avg_coloc,std_coloc,vol_nuc );
+
+X=table(n_foci,sum_vol_foci,avg_vol_foci,avg_3d_vol_solidity,avg_red,avg_green,avg_coloc,vol_nuc );
 
 
 
+nonan=~isnan(sum(X{:,:},2))&(X{:,1}>1);
+X_nonan=X(nonan,:);
+
+result_folder_names_nonan=result_folder_names(nonan);
 
 
 
+%   Columns 1 through 5
+% 
+%     {'75-18 24h PI'}    {'75-18 30min PI'}    {'75-18 8h PI'}    {'75-18 non IR'}    {'76-18 24h PI'}
+% 
+%   Columns 6 through 11
+% 
+%     {'76-18 30min PI'}    {'76-18 8h PI'}    {'76-18 nonIR'}    {'77-18 24h PI'}    {'77-18 30min PI'}    {'77-18 8h PI'}
+% 
+%   Columns 12 through 16
+% 
+%     {'77-18 nonIR'}    {'79-18 24h PI'}    {'79-18 30min PI'}    {'79-18 8h PI'}    {'79-18 nonIR'}
 
+% gs={'77-18 30min PI','77-18 8h PI'};
+
+
+for qq=1:2
+
+if qq==1
+gs={'77-18 30min PI','75-18 30min PI'};
+elseif qq==2
+gs={'77-18 30min PI','77-18 8h PI','77-18 24h PI'};
+end
+    
+    
+g=[];
+XX={};
+for g_num = 1:length(gs)
+    tmp=strcmp(result_folder_names_nonan,gs{g_num});
+    XX=[XX,{X_nonan(tmp,:)}];
+    g=[g;g_num*ones(sum(tmp),1)];
+end
+
+
+   
+
+XXX=cat(1,XX{:});
+XXX_arr=XXX{:,:};
+
+mu=mean(XXX_arr,1);
+sig=std(XXX_arr,1);
+
+XXX_arr_norm=(XXX_arr-mu)./sig;
+[coefs,score,latent,tsquared,explained,mu] = pca(XXX_arr_norm);
+
+s=score(:,1:2);
+d=sqrt(s(:,1).^2+s(:,2).^2);
+[ss,ii]=sort(d);
+s=s(ii(1:end-15),:);
+g=g(ii(1:end-15));
+
+var_names=XXX.Properties.VariableNames;
+var_names=cellfun(@(x) replace(x,'_',' '),var_names,'UniformOutput',0);
+
+
+format = { {'Marker', 'v','MarkerSize', 4,'MarkerEdgeColor',[0,0.4470,0.7410],'MarkerFaceColor',[0,0.4470,0.7410]};...
+    {'Marker', '^','MarkerSize', 4,'MarkerEdgeColor',[0.850,0.3250,0.0980],'MarkerFaceColor',[0.850,0.3250,0.0980]};...
+    {'Marker', 'o','MarkerSize', 4,'MarkerEdgeColor',[0.9290,0.6940,0.1250],'MarkerFaceColor',[0.9290,0.6940,0.1250]}};
+
+if qq==1
+    format =format(1:2);
+end
+
+
+figure()
+subset=biplotG(coefs(:,1:2),s,'VarLabels',var_names,'Groups',g,'Format',format);
+
+xlabel(['Component 1  (' num2str(explained(1),'%4.2f') '%)'])
+ylabel(['Component 2  (' num2str(explained(2),'%4.2f') '%)'])
+
+if qq==1
+    legend(subset,{'Adjacent tissue','Mix'})
+elseif qq==2
+    legend(subset,{'0.5 h','8 h','24 h'})
+end
+
+
+print_png_eps_svg_fig(['../res_pca/pca_biplot_' num2str(qq)])
+
+end
 
