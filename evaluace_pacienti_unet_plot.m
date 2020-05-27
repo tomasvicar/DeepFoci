@@ -90,7 +90,10 @@ for folder_num=1:length(folders)
         save_unet_foci_segmentation_res=strrep(name,'3D_','unet_foci_segmentation_res');
         
         
-        save_results_table_unet=strrep(name,'3D_','results_table_unet');
+%         save_results_table_unet=strrep(name,'3D_','results_table_unet');
+%         save_results_table_unet=strrep(save_results_table_unet,'.tif','.csv');
+
+        save_results_table_unet=strrep(name,'3D_','results_table_unet_t29');
         save_results_table_unet=strrep(save_results_table_unet,'.tif','.csv');
         
         

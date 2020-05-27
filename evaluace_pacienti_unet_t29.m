@@ -111,7 +111,7 @@ for folder_num=1:length(folders)
         
 
         shape=size(L_res);
-        L_res_resize=imresize3(L_res,[shape(1),shape(2),round(shape(3)*z_resize_faktor)]);
+        L_res_resize=imresize3(L_res,[shape(1),shape(2),round(shape(3)*z_resize_faktor)],'nearest');
         shape_table = regionprops3(L_res_resize,'Volume','Solidity','SurfaceArea','EigenValues');
         clear L_res_res
         
