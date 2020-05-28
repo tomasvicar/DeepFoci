@@ -157,31 +157,27 @@ for folder_num=1:length(folders)
 
 end
 
-
+f='../res_pacosi';
+mkdir(f)
 
 figure;
 boxplot(counts,result_folder_names)
-
+ylabel('Foci count')
+print_png_eps_svg_fig([f '/foci_count_box_davky'])
 
 figure;
 boxplot(volume_fractions,result_folder_names)
+ylabel('Foci volume / Nuclei Volume')
+print_png_eps_svg_fig([f '/foci_vol_vol_box_davky'])
 
 
 figure;
-boxplot(volume_w_counts,result_folder_names)
-
+boxplot(volume_w_counts*nanmean(nuc_volumes),result_folder_names)
+ylabel('Nuclei volume weigthed foci count')
+print_png_eps_svg_fig([f '/foci_count_vol_box_davky'])
 
 
 figure;
 boxplot(mean_foci_volumes,result_folder_names)
-
-
-
-figure;
-boxplot(mean_foci_r,result_folder_names)
-
-
-
-figure;
-boxplot(mean_foci_g,result_folder_names)
-
+ylabel('Average foci volume (um)')
+print_png_eps_svg_fig([f '/avg_foci_volume_box_davky'])

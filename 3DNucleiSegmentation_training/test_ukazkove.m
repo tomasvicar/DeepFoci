@@ -118,6 +118,7 @@ for kkk=[6,3,17]
 
     vys=balloon(vys,[20 20 8]);
     
+
     seg=seg_3d(vys,mask>0);
     segs=[segs seg];
     

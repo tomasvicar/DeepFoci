@@ -109,13 +109,13 @@ for folder_num=1:length(folders)
                 volume_fration=sum(foci_volume)/mean(nuc_volume);
                 volume_fractions=[volume_fractions,volume_fration];
                 
-                volume_w_count=count/(mean(nuc_volume)*(0.1650^3));
+                volume_w_count=count/(mean(nuc_volume)*(0.065*0.065*0.1650));
                 volume_w_counts=[volume_w_counts,volume_w_count];
 
                 
-                nuc_volumes=[nuc_volumes,mean(nuc_volume)*(0.1650^3)];
+                nuc_volumes=[nuc_volumes,mean(nuc_volume)*(0.065*0.065*0.1650)];
                 
-                mean_foci_volume=mean(foci_volume)*(0.1650^3);
+                mean_foci_volume=mean(foci_volume)*(0.065*0.065*0.1650);
                 mean_foci_volumes=[mean_foci_volumes,mean_foci_volume];
                 
                 folder_name=split(folder,{'\','/'});
@@ -128,27 +128,27 @@ for folder_num=1:length(folders)
 
 end
 
-
-mkdir('../res')
+f='../res_davky';
+mkdir(f)
 
 figure;
 boxplot(counts,result_folder_names)
 ylabel('Foci count')
-print_png_eps_svg_fig('../res/foci_count_box_davky')
+print_png_eps_svg_fig([f '/foci_count_box_davky'])
 
 figure;
 boxplot(volume_fractions,result_folder_names)
 ylabel('Foci volume / Nuclei Volume')
-print_png_eps_svg_fig('../res/foci_vol_vol_box_davky')
+print_png_eps_svg_fig([f '/foci_vol_vol_box_davky'])
 
 
 figure;
 boxplot(volume_w_counts*nanmean(nuc_volumes),result_folder_names)
 ylabel('Nuclei volume weigthed foci count')
-print_png_eps_svg_fig('../res/foci_count_vol_box_davky')
+print_png_eps_svg_fig([f '/foci_count_vol_box_davky'])
 
 
 figure;
 boxplot(mean_foci_volumes,result_folder_names)
 ylabel('Average foci volume (um)')
-print_png_eps_svg_fig('../res/avg_foci_volume_box_davky')
+print_png_eps_svg_fig([f '/avg_foci_volume_box_davky'])

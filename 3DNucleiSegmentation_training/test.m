@@ -108,8 +108,21 @@ for kkk=[test_id,valid_id]
 
     vys=balloon(vys,[20 20 8]);
     
+    
+    
+    
+    data_to_save=uint16(cat(4,af,bf,cf));
+    vys_to_save=imresize3(uint16(vys*255),size(af),'nearest');
+    mask_to_save=imresize3(uint16(mask*255),size(af),'nearest');
+    
     seg=seg_3d(vys,mask>0);
     segs=[segs seg];
+    
+    imwrite_uint16_4D(['../../res/segmentation_example_3ddata_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],data_to_save)
+    imwrite_uint16_3D(['../../res/segmentation_example_3dres_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],vys_to_save)
+    imwrite_uint16_3D(['../../res/segmentation_example_3dgt_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],mask_to_save)
+    
+
     
     
     slice=mean(cf(:,:,22:28),3);

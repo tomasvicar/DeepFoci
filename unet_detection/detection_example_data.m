@@ -96,7 +96,22 @@ for img_num=1:20
     name_gt_jarda=strrep(name_gt_jarda,'.tif','_tecky.mat');
     
     
+    [a,b,c]=read_3d_rgb_tif(name);
 
+
+    [af,bf,cf]=preprocess_filters(a,b,c,1);
+    
+
+    
+    seg=seg_3d(vys,mask>0);
+    segs=[segs seg];
+    
+    imwrite_uint16_4D(['../../res/segmentation_example_3ddata_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],data_to_save)
+    imwrite_uint16_3D(['../../res/segmentation_example_3dres_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],vys_to_save)
+    imwrite_uint16_3D(['../../res/segmentation_example_3dgt_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],mask_to_save)
+    
+    
+    
     
     load(save_unet_foci_detection_res)
     
@@ -110,11 +125,27 @@ for img_num=1:20
     res=res.Centroid;
     res=res(:,[1,2]);
     
-    tmp=regionprops3(res_im>0,tmp,'MaxIntensity');
+    res_im_L=bwlabeln(res_im>0);
+    
+    tmp=regionprops3(res_im_L,tmp,'MaxIntensity');
     tmp=tmp.MaxIntensity;
     tmp=tmp>t;
 
     res=res(tmp,:);
+    
+    
+    for kkk=1:length(tmp)
+        if tmp(kkk)==0
+            res_im_L(res_im_L==kkk)=0;
+        end
+    end
+    
+    
+        
+    data_to_save=uint16(cat(4,af,bf,cf));
+    vys_to_save=imresize3(uint16(vys*255),size(af),'nearest');
+
+    
     
     load(name_gt_ja)
     gt_ja=tecky;
