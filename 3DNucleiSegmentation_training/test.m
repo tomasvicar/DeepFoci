@@ -169,6 +169,11 @@ end
 mean(segs)
 
 
+
+save('tmp.mat','segs')
+
+load('tmp.mat')
+
 figure()
 y=segs;
 
@@ -177,5 +182,21 @@ boxplot(y)
 ylabel('SEG score (object-wise Jaccard coefficient)')
 
 print_png_eps_svg_fig('../../res/segmentation_seg_boxplot')
+
+
+bins=5;
+
+figure()
+y=segs;
+histogram(segs,bins)
+xlim([0,1])
+
+xlabel('SEG score (object-wise Jaccard coefficient)')
+
+print_png_eps_svg_fig(['../../res/segmentation_seg_histogram_bins' num2str(bins)])
+
+
+
+
 
 
