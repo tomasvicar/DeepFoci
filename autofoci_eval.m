@@ -97,27 +97,76 @@ for img_num=1:length(names)
 
     mask=imread(mask_name_split);
     
-    
-    s = regionprops(mask>0,'BoundingBox');
+    mask_L=bwlabeln(mask);
+    s = regionprops(mask_L,'BoundingBox');
     bbs = cat(1,s.BoundingBox);
 
     
-    d=10;
+    d=5;
     th=5;
     proj='max';
+%     proj='mean';
+    max_in ='r';
+%     max_in ='g';
     
+    LoG = [...
+        -2,-4,-4,-4,-2
+        -4,0,10,0,-4
+        -4,10,32,10,-4
+        -4,0,10,0,-4
+        -2,-4,-4,-4,-2
+        ];
     
+    output=zeros(size(a,1),size(a,2));
     for cell_num =1:size(bbs,1)
 
         bb=round(bbs(cell_num,:));
         a_crop = a(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
         b_crop = b(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
-        mask_crop = b(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
+        mask_crop = mask_L(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)==cell_num;
+        
+        mask_proj=max(mask_crop,[],3);
+        if strcmp(proj,'max')
+            aa=max(a_crop,[],3);
+            bb=max(b_crop,[],3);
+        elseif strcmp(proj,'mean')
+            aa=mean(a_crop,3);
+            bb=mean(b_crop,3);
+        else
+            errror('wrong proj selection')
+        end
         
         
-
+        if strcmp(max_in,'r')
+            img_to_maxdet=aa;
+        elseif strcmp(max_in,'g')
+            img_to_maxdet=bb;
+        else
+            errror('wrong max_in selection')
+        end
+        
+        img_to_maxdet=mask_proj.*img_to_maxdet;
+        img_to_maxdet = imdilate(img_to_maxdet,strel('disk',d));
+        
+        bw=imregionalmax(img_to_maxdet);
+        points=zeros(size(bw));
+        s = regionprops(bw>0,'centroid');
+        centroids = round(cat(1, s.Centroid));
+        for kp=1:size(centroids,1)
+            points(centroids(kp,2),centroids(kp,1))=1;
+        end
+        
+        r_th = imtophat(aa,strel('disk',th));
+        g_th = imtophat(bb,strel('disk',th));
+        
+        r_th = conv2(aa,LoG,'same');
+        g_th = conv2(bb,LoG,'same');
+        
         drawnow;
+        
     end
+    
+    
     
 
 

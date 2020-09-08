@@ -95,22 +95,14 @@ for img_num=1:20
     name_gt_jarda=strrep(name,'man_nahodny_vzorek_tif','man_nahodny_vzorek_tif_jarda');
     name_gt_jarda=strrep(name_gt_jarda,'.tif','_tecky.mat');
     
-    
+    clear af bf cf
     [a,b,c]=read_3d_rgb_tif(name);
 
 
     [af,bf,cf]=preprocess_filters(a,b,c,1);
-    
+    clear a b c
 
-    
-    seg=seg_3d(vys,mask>0);
-    segs=[segs seg];
-    
-    imwrite_uint16_4D(['../../res/segmentation_example_3ddata_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],data_to_save)
-    imwrite_uint16_3D(['../../res/segmentation_example_3dres_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],vys_to_save)
-    imwrite_uint16_3D(['../../res/segmentation_example_3dgt_' num2str(kkk) '_seg_' replace(num2str(seg),'.','_')],mask_to_save)
-    
-    
+  
     
     
     load(save_unet_foci_detection_res)
@@ -140,10 +132,6 @@ for img_num=1:20
         end
     end
     
-    
-        
-    data_to_save=uint16(cat(4,af,bf,cf));
-    vys_to_save=imresize3(uint16(vys*255),size(af),'nearest');
 
     
     
@@ -177,12 +165,22 @@ for img_num=1:20
     
     drawnow;
     
-    
+        
+    vys_to_save=uint16((res_im_L>0)*255); 
+    clear res_im res_im_L
+    data_to_save=uint16(cat(4,af,bf,cf));
+
+    mkdir('../../res/')
+    imwrite_uint16_4D(['../../res/detection_example_3ddata' num2str(img_num) '_dice_' replace(num2str(dice_res_ja(end)),'.','_') '.tif'],data_to_save)
+    imwrite_uint16_3D(['../../res/detection_example_3dres' num2str(img_num) '_dice_' replace(num2str(dice_res_ja(end)),'.','_') '.tif'],vys_to_save)
+
+    clear data_to_save vys_to_save
+     
     
         
-    [a,b,c]=read_3d_rgb_tif(name);
-    [a,b,c]=preprocess_filters(a,b,c,gpu);
-    rgb_2d=cat(3,norm_percentile(max(a,[],3),0.001),norm_percentile(max(b,[],3),0.001),norm_percentile(max(c,[],3),0.001));
+%     [a,b,c]=read_3d_rgb_tif(name);
+%     [a,b,c]=preprocess_filters(a,b,c,gpu);
+    rgb_2d=cat(3,norm_percentile(max(af,[],3),0.001),norm_percentile(max(bf,[],3),0.001),norm_percentile(max(cf,[],3),0.001));
 
     
     ms=10;
