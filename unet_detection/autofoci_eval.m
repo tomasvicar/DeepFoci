@@ -12,8 +12,9 @@ addpath('3DNucleiSegmentation_training')
 % names=subdir('E:\foky_tmp\example_folder\*3D_*.tif');
 % names=subdir('F:\example_folder\*3D_*.tif');
 % names=subdir('Z:\999992-nanobiomed\Konfokal\18-11-19 - gH2AX jadra\data_vsichni_pacienti\example_folder_used\*3D_*.tif');
-names=subdir('E:\foky_tmp\man_nahodny_vzorek_tif\*data_*.tif');
+% names=subdir('E:\foky_tmp\man_nahodny_vzorek_tif\*data_*.tif');
 % names=subdir('E:\foky_tmp\man_nahodny_vzorek_tif2\*data_*.tif');
+names=subdir('../man_nahodny_vzorek_tif/*data_*.tif');
 
 names={names(:).name};
 
