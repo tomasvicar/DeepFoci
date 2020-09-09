@@ -28,6 +28,8 @@ fn=[];
 dice_res_jarda=[];
 dice_ja_jarda=[];
 
+mkdir('../tmp_autofoci')
+index_tmp=0;
 
 for img_num=1:length(names)
     
@@ -119,22 +121,32 @@ for img_num=1:length(names)
     
     output=zeros(size(a,1),size(a,2));
     for cell_num =1:size(bbs,1)
+        index_tmp=index_tmp+1;
 
         bb=round(bbs(cell_num,:));
+        
         a_crop = a(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
         b_crop = b(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
         mask_crop = mask_L(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)==cell_num;
-        
+        aa_max=max(a_crop,[],3);
+        bb_max=max(b_crop,[],3);
+        aa_mean=mean(a_crop,3);
+        bb_mean=mean(b_crop,3);
         mask_proj=max(mask_crop,[],3);
+        
+        save(['../tmp_autofoci/' num2str(index_tmp) '.mat'],'aa_max','bb_max','aa_mean','bb_mean','mask_proj')
+        
         if strcmp(proj,'max')
-            aa=max(a_crop,[],3);
-            bb=max(b_crop,[],3);
+            aa=aa_max;
+            bb=bb_max;
         elseif strcmp(proj,'mean')
-            aa=mean(a_crop,3);
-            bb=mean(b_crop,3);
+            aa=aa_mean;
+            bb=bb_mean;
         else
             errror('wrong proj selection')
         end
+        
+
         
         
         if strcmp(max_in,'r')
@@ -159,8 +171,23 @@ for img_num=1:length(names)
         r_th = imtophat(aa,strel('disk',th));
         g_th = imtophat(bb,strel('disk',th));
         
-        r_th = conv2(aa,LoG,'same');
-        g_th = conv2(bb,LoG,'same');
+        r_lc = conv2(aa,LoG,'same');
+        g_lc = conv2(bb,LoG,'same');
+        
+        r_nucl= mean(mean(aa(mask_proj)));
+        g_nucl= mean(mean(bb(mask_proj)));
+        
+        
+        s = regionprops(bw>0,'centroid');
+        centroids = round(cat(1, s.Centroid));
+        locmax_num = size(centroids,1);
+        
+        areas=zeros(size(aa));
+        
+        for k = 1:locmax_num
+            bw=
+        
+        end
         
         drawnow;
         
