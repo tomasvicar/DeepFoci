@@ -95,7 +95,7 @@ for img_num=1:length(names)
     
     
 
-    [a,b,c]=read_3d_rgb_tif(name);
+%     [a,b,c]=read_3d_rgb_tif(name);
 
 
     mask=imread(mask_name_split);
@@ -104,7 +104,7 @@ for img_num=1:length(names)
     s = regionprops(mask_L,'BoundingBox');
     bbs = cat(1,s.BoundingBox);
 
-    
+    T=0.5;
     d=5;
     th=5;
     proj='max';
@@ -120,22 +120,25 @@ for img_num=1:length(names)
         -2,-4,-4,-4,-2
         ];
     
-    output=zeros(size(a,1),size(a,2));
+    output=zeros(size(mask,1),size(mask,2));
     for cell_num =1:size(bbs,1)
         index_tmp=index_tmp+1;
 
         bb=round(bbs(cell_num,:));
         
-        a_crop = a(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
-        b_crop = b(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
-        mask_crop = mask_L(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)==cell_num;
-        aa_max=max(a_crop,[],3);
-        bb_max=max(b_crop,[],3);
-        aa_mean=mean(a_crop,3);
-        bb_mean=mean(b_crop,3);
-        mask_proj=max(mask_crop,[],3);
+%         a_crop = a(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
+%         b_crop = b(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
+%         mask_crop = mask_L(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)==cell_num;
+%         aa_max=max(a_crop,[],3);
+%         bb_max=max(b_crop,[],3);
+%         aa_mean=mean(a_crop,3);
+%         bb_mean=mean(b_crop,3);
+%         mask_proj=max(mask_crop,[],3);
+%         
+%         save(['../tmp_autofoci/' num2str(index_tmp) '.mat'],'aa_max','bb_max','aa_mean','bb_mean','mask_proj')
         
-        save(['../tmp_autofoci/' num2str(index_tmp) '.mat'],'aa_max','bb_max','aa_mean','bb_mean','mask_proj')
+        load(['../tmp_autofoci/' num2str(index_tmp) '.mat'])
+
         
         if strcmp(proj,'max')
             aa=aa_max;
@@ -159,9 +162,8 @@ for img_num=1:length(names)
         end
         
         img_to_maxdet=mask_proj.*img_to_maxdet;
-        img_to_maxdet = imdilate(img_to_maxdet,strel('disk',d));
-        
-        bw=imregionalmax(img_to_maxdet);
+        img_to_maxdet_dil = imdilate(img_to_maxdet,strel('disk',d));
+        bw=imregionalmax(img_to_maxdet_dil);
         points=zeros(size(bw));
         s = regionprops(bw>0,'centroid');
         centroids = round(cat(1, s.Centroid));
@@ -169,14 +171,13 @@ for img_num=1:length(names)
             points(centroids(kp,2),centroids(kp,1))=1;
         end
         
-        r_th = imtophat(aa,strel('disk',th));
-        g_th = imtophat(bb,strel('disk',th));
         
-        r_lc = conv2(aa,LoG,'same');
-        g_lc = conv2(bb,LoG,'same');
+        r_th_im = imtophat(aa,strel('disk',th));
+        g_th_im = imtophat(bb,strel('disk',th));
         
-        r_nucl= mean(mean(aa(mask_proj)));
-        g_nucl= mean(mean(bb(mask_proj)));
+        r_lc_im = conv2(aa,LoG,'same');
+        g_lc_im = conv2(bb,LoG,'same');
+        
         
         
         s = regionprops(bw>0,'centroid');
@@ -184,9 +185,37 @@ for img_num=1:length(names)
         locmax_num = size(centroids,1);
         
         areas=zeros(size(aa));
+        C_r=zeros(1,locmax_num);
+        C_g=zeros(1,locmax_num);
+        r_th=zeros(1,locmax_num);
+        g_th=zeros(1,locmax_num);
+        r_lc=zeros(1,locmax_num);
+        g_lc=zeros(1,locmax_num);
+        r_nucl = ones(1,locmax_num)*mean(mean(aa(mask_proj)));
+        g_nucl = ones(1,locmax_num)*mean(mean(bb(mask_proj)));
         
+        img_to_maxdet_mean=mean(mean(aa(mask_proj)));
+        
+        [Y,X]=meshgrid(1:size(aa,2),1:size(aa,1));
+               
         for k = 1:locmax_num
-            bw=
+            
+            bw=img_to_maxdet>((1-T)*img_to_maxdet(centroids(k,2),centroids(k,1)) + (T)*img_to_maxdet_mean );
+            L=bwlabel(bw);
+            
+            bw=L==L(centroids(k,2),centroids(k,1));
+
+            centx = mean(X(bw));
+            centy = mean(Y(bw));
+            r2=(X(bw)-centx).^2 + (Y(bw)-centy).^2;
+            
+            Ir=aa(bw);
+            C_r(k)= 1/sum(r2.*Ir);
+            r_th(k)=
+            
+            
+            imshow(bw,[])
+            drawnow;
         
         end
         
