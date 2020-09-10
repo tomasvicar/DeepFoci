@@ -4,6 +4,12 @@ clc;clear all;close all force;
 addpath('utils')
 addpath('3DNucleiSegmentation_training')
 
+
+
+
+
+
+
 % load('../names_foci_sample.mat')
 % names_orig=names;
 
@@ -104,8 +110,10 @@ for img_num=1:length(names)
     s = regionprops(mask_L,'BoundingBox');
     bbs = cat(1,s.BoundingBox);
 
+    % 0 - 0.001
+    T_oep = 4.0980e-06;
     T=0.5;
-    d=5;
+    d=10;
     th=5;
     proj='max';
 %     proj='mean';
@@ -124,11 +132,11 @@ for img_num=1:length(names)
     for cell_num =1:size(bbs,1)
         index_tmp=index_tmp+1;
 
-        bb=round(bbs(cell_num,:));
+        bbb=round(bbs(cell_num,:));
         
-%         a_crop = a(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
-%         b_crop = b(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
-%         mask_crop = mask_L(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)==cell_num;
+%         a_crop = a(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1);
+%         b_crop = b(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1);
+%         mask_crop = mask_L(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1)==cell_num;
 %         aa_max=max(a_crop,[],3);
 %         bb_max=max(b_crop,[],3);
 %         aa_mean=mean(a_crop,3);
@@ -211,21 +219,41 @@ for img_num=1:length(names)
             
             Ir=aa(bw);
             C_r(k)= 1/sum(r2.*Ir);
-            r_th(k)=
+            Ig=bb(bw);
+            C_g(k)= 1/sum(r2.*Ig);
             
+            r_th(k)=max(r_th_im(bw));
+            g_th(k)=max(g_th_im(bw));
             
-            imshow(bw,[])
-            drawnow;
+            r_lc(k)=max(r_lc_im(bw));
+            g_lc(k)=max(g_lc_im(bw));
+            
         
         end
         
-        drawnow;
+        OEP_r =  r_th./r_nucl.*r_lc.*C_r;
+        OEP_g =  g_th./g_nucl.*g_lc.*C_g;
         
+        w=std(aa(mask_proj))/std(bb(mask_proj));
+        
+        OEP = OEP_r.^w .* OEP_g.^(1/w);
+        
+        use = OEP>T_oep;
+        
+        use = find(use);
+        for u = use
+            output(bbb(2)+centroids(u,2),bbb(1)+centroids(u,1)) = 1;
+        end
     end
     
-    
-    
+%     figure()
+%     imshow(max(a,[],3),[]);
+%     figure()
+%     imshow(output,[]);
 
+    
+    [y,x]=find(output);
+    res=[x,y];
 
     load(name_gt_ja)
     gt_ja=tecky;
@@ -251,7 +279,7 @@ for img_num=1:length(names)
     dice_ja_jarda=[dice_ja_jarda,dice];
     
     
-    dice_res_jarda(end)
+%     dice_res_jarda(end)
     
     med_dice=median(dice_res_ja);
     med_fp=median(fp);
@@ -263,10 +291,13 @@ for img_num=1:length(names)
     
 end
 
-med_dice
 
-figure()
-y=[dice_res_ja',dice_res_jarda',dice_ja_jarda'];
-boxplot(y)
+dice_final = (dice_res_ja + dice_res_jarda)/2;
+
+% med_dice
+
+% figure()
+% y=[dice_res_ja',dice_res_jarda',dice_ja_jarda'];
+% boxplot(y)
 
 
