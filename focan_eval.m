@@ -6,8 +6,10 @@ addpath('3DNucleiSegmentation_training')
 addpath('unet_detection')
 
 
+% res_focan( 0.35777 ,25.572,18,10,0)
 
 
+% dfsdfsfd
 
 try 
 parpool(3);
@@ -15,12 +17,12 @@ end
 
 v1 = optimizableVariable('c',[-1,1]);
 v2 = optimizableVariable('median_size',[5,30]);
-v3 = optimizableVariable('d',[12,50],'Type','integer');
+v3 = optimizableVariable('d',[12,40],'Type','integer');
 vars = [v1,v2,v3];
 
 fun = @(x) -1*res_focan(x.c,x.median_size,x.d,10,0);
 
-results = bayesopt(fun,vars,'UseParallel',1,'MaxObjectiveEvaluations',500);
+results = bayesopt(fun,vars,'UseParallel',1,'MaxObjectiveEvaluations',50);
 
 
 save('opt_focan.mat','results');

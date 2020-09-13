@@ -1,6 +1,7 @@
 
 function dice = res_focan(c,median_size,d,how_many,all_res)
 
+%     try
 
 
     % load('../names_foci_sample.mat')
@@ -34,7 +35,7 @@ function dice = res_focan(c,median_size,d,how_many,all_res)
     for img_num=1:how_many
         
 
-    %     img_num
+%         img_num
 
         name=names{img_num};
 %         name
@@ -132,7 +133,7 @@ function dice = res_focan(c,median_size,d,how_many,all_res)
             sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
             
 
-            dilated=imdilate(ab_crop,sphere);
+            dilated=imdilate(uint8(255*ab_crop),sphere);
             
 
             ab_maxima=imregionalmax(dilated);  
@@ -197,16 +198,21 @@ function dice = res_focan(c,median_size,d,how_many,all_res)
 
     dice = (mean(dice_res_ja) + mean(dice_res_jarda))/2;
     
+    if isnan(dice)
+        dice=0;
+    end
+    
     if all_res
         dice = {dice_res_ja,dice_res_jarda,dice_ja_jarda};
     end
+    
+    
+    
 %     
 %     catch ME
 % 
 %         drawnow 
-%         disp('chybka')
-%         disp([T_oep,T,d,th,how_many])
-%         dice=0;
+% 
 % 
 %     end
 %     
