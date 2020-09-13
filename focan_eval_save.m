@@ -104,7 +104,14 @@ for img_num=1:length(names)
     s = regionprops(mask_L,'BoundingBox');
     bbs = cat(1,s.BoundingBox);
 
+    ab = a.*b;
     
+    a_max=max(a(:));
+    a_min=min(a(:));
+    b_max=max(b(:));
+    b_min=min(b(:));
+    ab_max=max(ab(:));
+    ab_min=min(ab(:));
    
     
     output=zeros(size(a,1),size(a,2));
@@ -116,13 +123,13 @@ for img_num=1:length(names)
         a_crop = a(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
         b_crop = b(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
         mask_crop = mask_L(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)==cell_num;
-        aa_max=max(a_crop,[],3);
-        bb_max=max(b_crop,[],3);
-        aa_mean=mean(a_crop,3);
-        bb_mean=mean(b_crop,3);
-        mask_proj=max(mask_crop,[],3);
+
         
-        save(['../tmp_autofoci/' num2str(index_tmp) '.mat'],'aa_max','bb_max','aa_mean','bb_mean','mask_proj')
+        ab_crop=a_crop.*b_crop;
+        
+        
+        
+        save(['../tmp_focan/' num2str(index_tmp) '.mat'],'a_crop','b_crop','mask_crop','ab_crop','a_max','a_min','b_max','b_min','ab_max','ab_min')
         
 %         if strcmp(proj,'max')
 %             aa=aa_max;
