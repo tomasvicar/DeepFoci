@@ -11,9 +11,9 @@ addpath('unet_detection')
 
 % dfsdfsfd
 
-try 
-parpool(3);
-end
+% try 
+% parpool(3);
+% end
 
 v1 = optimizableVariable('c',[-1,1]);
 v2 = optimizableVariable('median_size',[5,30]);
@@ -22,14 +22,18 @@ vars = [v1,v2,v3];
 
 fun = @(x) -1*res_focan(x.c,x.median_size,x.d,10,0);
 
-results = bayesopt(fun,vars,'UseParallel',1,'MaxObjectiveEvaluations',50);
+% results = bayesopt(fun,vars,'UseParallel',0,'MaxObjectiveEvaluations',150);
 
 
-save('opt_focan.mat','results');
+% save('opt_focan.mat','results');
+
+results.c=0.017596 ;
+results.median_size=6.6423;
+results.d=13;
 
 fun2 = @(x) res_focan(x.c,x.median_size,x.d,100,1);
 
-tmp = fun2(results.XAtMinObjective);
+tmp = fun2(results);
 
 dice_res_ja = tmp{1};
 dice_res_jarda = tmp{2};

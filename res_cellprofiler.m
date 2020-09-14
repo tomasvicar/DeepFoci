@@ -1,7 +1,7 @@
 
-function dice = res_focan(c,median_size,d,how_many,all_res)
+function dice = res_cellprofiler(d,th,how_many,all_res)
 
-%     try
+
 
 
     % load('../names_foci_sample.mat')
@@ -33,9 +33,10 @@ function dice = res_focan(c,median_size,d,how_many,all_res)
     index_tmp=0;
 
     for img_num=1:how_many
+        if all_res
+            img_num
         
-
-        img_num
+        end
 
         name=names{img_num};
 %         name
@@ -107,54 +108,111 @@ function dice = res_focan(c,median_size,d,how_many,all_res)
 
         
 
+        LoG = [...
+            -2,-4,-4,-4,-2
+            -4,0,10,0,-4
+            -4,10,32,10,-4
+            -4,0,10,0,-4
+            -2,-4,-4,-4,-2
+            ];
+
         output=zeros(size(mask,1),size(mask,2));
         for cell_num =1:size(bbs,1)
+            
+            if all_res
+                disp('load')
+            end
             
             index_tmp=index_tmp+1;
 
             bbb=round(bbs(cell_num,:));
 
-    
-            load(['../tmp_focan/' num2str(index_tmp) '.mat'],'mask_crop','ab_crop','ab_max','ab_min')
-            
-            
-            ab_crop = mat2gray(ab_crop,[ab_max,ab_min]);
-            
+    %         a_crop = a(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1);
+    %         b_crop = b(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1);
+    %         mask_crop = mask_L(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1)==cell_num;
+    %         aa_max=max(a_crop,[],3);
+    %         bb_max=max(b_crop,[],3);
+    %         aa_mean=mean(a_crop,3);
+    %         bb_mean=mean(b_crop,3);
+    %         mask_proj=max(mask_crop,[],3);
+    %         
+    %         save(['../tmp_autofoci/' num2str(index_tmp) '.mat'],'aa_max','bb_max','aa_mean','bb_mean','mask_proj')
 
-            tmp = imgaussfilt3(ab_crop,[median_size median_size median_size/3]);
-
-%            tmp = gather(imgaussfilt3(gpuArray(ab_crop),[median_size median_size median_size/3]));
-
-            
-            bw = ab_crop>(tmp+c);
-
-            shape=[d,d,round(d/3)];
-            [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
-            sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
-            
-
-            dilated=imdilate(uint8(255*ab_crop),sphere);
-            
-
-            ab_maxima=imregionalmax(dilated);  
-            ab_maxima=ab_maxima.*bw.*mask_crop;
+            load(['../tmp_autofoci/' num2str(index_tmp) '.mat'],'aa_max','bb_max','mask_proj')
 
 
-            s = regionprops(ab_maxima>0,'Centroid');
-            centroids = round(cat(1, s.Centroid));
-           
 
-            for u= 1:size(centroids,1)
-                output(bbb(2)+centroids(u,2),bbb(1)+centroids(u,1)) = 1;
+            ab=aa_max.*bb_max;
+
+
+            if all_res
+                disp('th')
             end
+            ab_th = imtophat(ab,strel('disk',th));
+            
+            
+            img_to_maxdet=mask_proj.*ab_th;
+            
+            if all_res
+                disp('dil')
+            end
+            img_to_maxdet_dil = imdilate(img_to_maxdet,strel('disk',d));
+            bw1=imregionalmax(img_to_maxdet_dil);
+            ab_th_norm=mat2gray(ab_th);
+            bw2=ab_th_norm>graythresh(ab_th_norm(mask_proj));
+            
+            bw=bw1.*bw2.*mask_proj;
+            
+            
+            if all_res
+                disp('cent')
+            end
+            points=zeros(size(bw));
+            s = regionprops(bw>0,'centroid');
+            centroids = round(cat(1, s.Centroid));
+            
+            
+            tmp2=centroids(:,2)+bbb(2);
+            tmp1=centroids(:,1)+bbb(1);
+            
+            tmp2(tmp2>size(output,1))=size(output,1);
+            tmp1(tmp1>size(output,2))=size(output,2);
+            tmp2(tmp2<1)=1;
+            tmp1(tmp1<1)=1;
+            centroids(:,2)=tmp2;
+            centroids(:,1)=tmp1;
+            
+            if img_num==33
+                drawnow;
+            end
+
+            ind = sub2ind(size(output),centroids(:,2),centroids(:,1));
+            
+            output(ind) = 1;
+            
+%             for u = 1:size(centroids,1)
+%                 output(bbb(2)+centroids(u,2),bbb(1)+centroids(u,1)) = 1;
+%             end
+            
+
 
         end
 
+        if img_num==33
+            dice_res_ja=[dice_res_ja,0];
+            dice_res_jarda=[dice_res_jarda,0];
+        else
+            
+  
     %     figure()
-%         imshow(max(a,[],3),[]);
+    %     imshow(max(a,[],3),[]);
     %     figure()
     %     imshow(output,[]);
-%         output = max(output,[],3);
+    
+        if all_res
+                disp('eval1')
+        end
+
 
         [y,x]=find(output);
         res=[x,y];
@@ -174,16 +232,23 @@ function dice = res_focan(c,median_size,d,how_many,all_res)
         fn=[fn,max(size(gt_ja,1)-d,0)];
 
 
+        if all_res
+                disp('eval2')
+        end
+        
         d=matches_distance(res,gt_jarda);
         dice=(2*d)/(size(res,1)+size(gt_jarda,1));
         dice_res_jarda=[dice_res_jarda,dice];
 
+        end
+        
         d=matches_distance(gt_ja,gt_jarda);
         dice=(2*d)/(size(gt_ja,1)+size(gt_jarda,1));
         dice_ja_jarda=[dice_ja_jarda,dice];
 
-
-    %     dice_res_jarda(end)
+        if all_res
+                disp(dice_res_jarda(end))
+        end
 
         med_dice=median(dice_res_ja);
         med_fp=median(fp);
@@ -191,28 +256,23 @@ function dice = res_focan(c,median_size,d,how_many,all_res)
 
         drawnow;
 
-
+       
 
     end
 
 
     dice = (mean(dice_res_ja) + mean(dice_res_jarda))/2;
     
-    if isnan(dice)
-        dice=0;
-    end
-    
     if all_res
         dice = {dice_res_ja,dice_res_jarda,dice_ja_jarda};
     end
-    
-    
-    
 %     
 %     catch ME
 % 
 %         drawnow 
-% 
+%         disp('chybka')
+%         disp([T_oep,T,d,th,how_many])
+%         dice=0;
 % 
 %     end
 %     
