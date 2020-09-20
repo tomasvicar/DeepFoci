@@ -34,6 +34,10 @@ dice_res_jarda=[];
 dice_ja_jarda=[];
 
 
+counts_res=[];
+counts_ja=[];
+counts_jarda=[];
+
 for img_num=1:100
     
     img_num
@@ -113,13 +117,82 @@ for img_num=1:100
 
     res=res(tmp,:);
     
+    
+    
+     mask=imread(mask_name_split);
+
+    mask_L=bwlabeln(mask);
+    
+    
+    
+    res_im_bw=zeros(size(mask,1),size(mask,2));
+    
+    ind = sub2ind(size(res_im_bw),round(res(:,2)),round(res(:,1)));
+    
+    res_im_bw(ind) = 1;
+    
+    
+    
     load(name_gt_ja)
-    gt_ja=tecky;
-    
+    tecky(tecky<1)=1;
+
+
+    gt_img_ja=zeros(size(mask,1),size(mask,2));
+
+    if ~isempty(tecky)
+        tmp=tecky(:,2);
+        tmp(tmp>size(mask,1))=size(mask,1);
+        tecky(:,2)=tmp;
+        tmp=tecky(:,1);
+        tmp(tmp>size(mask,2))=size(mask,2);
+        tecky(:,1)=tmp;
+
+        gt_ja=tecky;
+
+        ind = sub2ind(size(gt_img_ja),gt_ja(:,2),gt_ja(:,1));
+    else
+        ind=[];
+    end
+
+    gt_img_ja(ind) = 1;
+
+
+
     load(name_gt_jarda)
-    gt_jarda=tecky;
+    tecky(tecky<1)=1;
+
+
+    gt_img_jarda=zeros(size(mask,1),size(mask,2));
+
+    if ~isempty(tecky)
+        tmp=tecky(:,2);
+        tmp(tmp>size(mask,1))=size(mask,1);
+        tecky(:,2)=tmp;
+        tmp=tecky(:,1);
+        tmp(tmp>size(mask,2))=size(mask,2);
+        tecky(:,1)=tmp;
+
+        gt_jarda=tecky;
+
+
+        ind = sub2ind(size(gt_img_jarda),gt_jarda(:,2),gt_jarda(:,1));
+    else
+        ind=[];
+    end
+
+
+    gt_img_jarda(ind) = 1;
     
-   
+    mask_L=max(mask_L,[],3);
+    
+    for cell_num = 1:max(mask_L(:))
+        
+         counts_res=[counts_res,sum(res_im_bw(mask_L==cell_num))];
+        counts_ja=[counts_ja,sum(gt_img_ja(mask_L==cell_num))];
+        counts_jarda=[counts_jarda,sum(gt_img_jarda(mask_L==cell_num))];
+       
+        
+    end
     
     d=matches_distance(res,gt_ja);
     dice=(2*d)/(size(res,1)+size(gt_ja,1));
@@ -150,7 +223,7 @@ end
 med_dice
 
 
-save('res_deepfoci.mat','dice_res_ja','dice_res_jarda','dice_ja_jarda')
+save('res_deepfoci.mat','dice_res_ja','dice_res_jarda','dice_ja_jarda','counts_res','counts_ja','counts_jarda')
 
 figure(t_num)
 y=[dice_res_ja',dice_res_jarda',dice_ja_jarda'];

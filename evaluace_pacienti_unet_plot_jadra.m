@@ -296,7 +296,101 @@ for var_num=1:length(var_names)
 end
 
 
+
+
+
+u=unique(g);
+for k=1:length(u)
+    num=u(k);
+    use=g==num;
+    name=gs{k};
+    
+    
+    x=(XXX.vol_nuc).^(1/3);
+    y=XXX.avg_nuc_blue;
+    
+    x=x(use);
+    y=y(use);
+    
+    figure();
+    plot(x,y,'*')
+    xlim([4 16])
+    ylim([100 250])
+    title(name)
+    xlabel('objem na 1/3')
+    ylabel('prumer modre v jadre')
+    print_png_eps_svg_fig([f '/scatter3_' name])
+    
+   
 end
+
+
+
+x=(XXX.vol_nuc).^(1/3);
+y=XXX.avg_nuc_blue;
+
+name='mix';
+
+figure();
+plot(x,y,'r*')
+title(name)
+xlabel('objem na 1/3')
+ylabel('prumer modre v jadre')
+xlim([4 16])
+ylim([100 250])
+print_png_eps_svg_fig([f '/scatter3_' name])
+
+
+
+
+u=unique(g);
+for k=1:length(u)
+    num=u(k);
+    use=g==num;
+    name=gs{k};
+    
+    
+    x=(XXX.vol_nuc).^(1/3);
+    y=XXX.n_foci;
+    
+    x=x(use);
+    y=y(use);
+    
+    figure();
+    plot(x,y,'*')
+    xlim([4 16])
+    ylim([0 80])
+    title(name)
+    xlabel('objem na 1/3')
+    ylabel('pocet fokù')
+    print_png_eps_svg_fig([f '/scatter2_' name])
+    
+   
+end
+
+
+
+x=(XXX.vol_nuc).^(1/3);
+y=XXX.n_foci;
+
+name='mix';
+
+figure();
+plot(x,y,'r*')
+title(name)
+xlabel('objem na 1/3')
+ylabel('pocet fokù')
+xlim([4 16])
+ylim([0 80])
+print_png_eps_svg_fig([f '/scatter2_' name])
+
+
+
+
+
+
+
+
 
 
 u=unique(g);
@@ -315,11 +409,17 @@ for k=1:length(u)
     figure();
     plot(x,y,'*')
     title(name)
+    xlabel('prumer modre v jadre')
+    ylabel('pocet fokù')
+    xlim([100 250])
+    ylim([0 80])
+    print_png_eps_svg_fig([f '/scatter_' name])
     
     figure()
     histogram(x)
     title(name)
-    
+    xlabel('prumer modre v jadre')
+    print_png_eps_svg_fig([f '/histogram_' name])
 end
 
 
@@ -327,21 +427,43 @@ end
 x=XXX.avg_nuc_blue;
 y=XXX.n_foci;
 
+name='mix';
+
 figure();
 plot(x,y,'r*')
+title(name)
+xlabel('prumer modre v jadre')
+ylabel('pocet fokù')
+xlim([100 250])
+ylim([0 80])
+print_png_eps_svg_fig([f '/scatter_' name])
 
 figure()
 histogram(x)
+title(name)
+xlabel('prumer modre v jadre')
+print_png_eps_svg_fig([f '/histogram_' name])
 
 
 
 
 
-addpath('plotSpread')
-
-figure();
-plotSpread(avg_foci_blue_all./avg_nuc_blue_all,'distributionIdx',names_all)
 
 
-figure();
-plotSpread(avg_foci_blue_all,'distributionIdx',names_all)
+
+
+
+close all
+
+
+
+
+
+end
+
+
+
+
+
+
+

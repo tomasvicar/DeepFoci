@@ -41,10 +41,19 @@ function dice = res_autofoci(T_oep,T,d,th,how_many,all_res)
 
     mkdir('../tmp_autofoci')
     index_tmp=0;
+    
+    counts_res=[];
+    counts_ja=[];
+    counts_jarda=[];
+    
+   
+    
+    
+    
 
     for img_num=1:how_many
 
-    %     img_num
+        img_num
 
         name=names{img_num};
 %         name
@@ -115,7 +124,60 @@ function dice = res_autofoci(T_oep,T,d,th,how_many,all_res)
         bbs = cat(1,s.BoundingBox);
 
         
+        
+        load(name_gt_ja)
+        tecky(tecky<1)=1;
+        
 
+        gt_img_ja=zeros(size(mask,1),size(mask,2));
+        
+        if ~isempty(tecky)
+            tmp=tecky(:,2);
+            tmp(tmp>size(mask,1))=size(mask,1);
+            tecky(:,2)=tmp;
+            tmp=tecky(:,1);
+            tmp(tmp>size(mask,2))=size(mask,2);
+            tecky(:,1)=tmp;
+
+            gt_ja=tecky;
+            
+            ind = sub2ind(size(gt_img_ja),gt_ja(:,2),gt_ja(:,1));
+        else
+            ind=[];
+        end
+            
+        gt_img_ja(ind) = 1;
+
+        
+        
+        load(name_gt_jarda)
+        tecky(tecky<1)=1;
+       
+                
+        gt_img_jarda=zeros(size(mask,1),size(mask,2));
+        
+        if ~isempty(tecky)
+            tmp=tecky(:,2);
+            tmp(tmp>size(mask,1))=size(mask,1);
+            tecky(:,2)=tmp;
+            tmp=tecky(:,1);
+            tmp(tmp>size(mask,2))=size(mask,2);
+            tecky(:,1)=tmp;
+
+            gt_jarda=tecky;
+
+            
+            ind = sub2ind(size(gt_img_jarda),gt_jarda(:,2),gt_jarda(:,1));
+        else
+            ind=[];
+        end
+        
+            
+        gt_img_jarda(ind) = 1;
+        
+
+        
+        
         LoG = [...
             -2,-4,-4,-4,-2
             -4,0,10,0,-4
@@ -129,6 +191,9 @@ function dice = res_autofoci(T_oep,T,d,th,how_many,all_res)
             index_tmp=index_tmp+1;
 
             bbb=round(bbs(cell_num,:));
+            
+            gt_img_jarda_crop = gt_img_jarda(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1);
+            gt_img_ja_crop = gt_img_ja(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1);
 
     %         a_crop = a(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1);
     %         b_crop = b(bbb(2):bbb(2)+bbb(5)-1,bbb(1):bbb(1)+bbb(4)-1,bbb(3):bbb(3)+bbb(6)-1);
@@ -143,6 +208,8 @@ function dice = res_autofoci(T_oep,T,d,th,how_many,all_res)
 
             load(['../tmp_autofoci/' num2str(index_tmp) '.mat'])
 
+            gt_img_jarda_crop=gt_img_jarda_crop.*mask_proj;
+            gt_img_ja_crop=gt_img_ja_crop.*mask_proj;
 
             if strcmp(proj,'max')
                 aa=aa_max;
@@ -240,6 +307,12 @@ function dice = res_autofoci(T_oep,T,d,th,how_many,all_res)
             for u = use
                 output(bbb(2)+centroids(u,2),bbb(1)+centroids(u,1)) = 1;
             end
+            
+            
+            counts_res=[counts_res,length(use)];
+            counts_ja=[counts_ja,sum(gt_img_ja_crop(:))];
+            counts_jarda=[counts_jarda,sum(gt_img_jarda_crop(:))];
+            
         end
 
     %     figure()
@@ -251,11 +324,7 @@ function dice = res_autofoci(T_oep,T,d,th,how_many,all_res)
         [y,x]=find(output);
         res=[x,y];
 
-        load(name_gt_ja)
-        gt_ja=tecky;
-
-        load(name_gt_jarda)
-        gt_jarda=tecky;
+       
 
 
 
@@ -287,11 +356,11 @@ function dice = res_autofoci(T_oep,T,d,th,how_many,all_res)
 
     end
 
-
+            
     dice = (mean(dice_res_ja) + mean(dice_res_jarda))/2;
     
     if all_res
-        dice = {dice_res_ja,dice_res_jarda,dice_ja_jarda};
+        dice = {dice_res_ja,dice_res_jarda,dice_ja_jarda,counts_res,counts_ja,counts_jarda};
     end
 %     
 %     catch ME

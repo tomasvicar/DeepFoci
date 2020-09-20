@@ -32,6 +32,27 @@ dice_res_jarda = tmp{2};
 dice_ja_jarda = tmp{3};
 dice = (mean(dice_res_ja) + mean(dice_res_jarda))/2
 
+counts_res= tmp{4};
+counts_ja= tmp{5};
+counts_jarda= tmp{6};
+
+
+figure()
+y=[dice_res_ja',dice_res_jarda',dice_ja_jarda'];
+boxplot(y)
+
+
+figure()
+plot(counts_res,(counts_jarda+counts_ja)/2,'*')
+ylim([0,100])
+xlim([0,100])
+
+figure()
+plot(counts_jarda,counts_ja,'*')
+ylim([0,100])
+xlim([0,100])
+
+
 
 figure()
 y=[dice_res_ja',dice_res_jarda',dice_ja_jarda'];
