@@ -5,9 +5,12 @@ n = 1; % Polynomial Order
 alfa = 0.95; % Desired Significance
 xv = linspace(0, max(x))';
 
-polyfcn = @(b,x) b(1).*x;
+% polyfcn = @(b,x) b(1).*x;
+polyfcn = @(b,x) b(1).*x + b(2);
 
-[beta,R,J,CovB,MSE,ErrorModelInfo]=nlinfit(x,y,polyfcn,1);
+beta0=[1,0];
+% beta0=1;
+[beta,R,J,CovB,MSE,ErrorModelInfo]=nlinfit(x,y,polyfcn,beta0);
 
 
 [yhat,delta] = nlpredci(polyfcn,xv,beta,R,'Jacobian',J);
