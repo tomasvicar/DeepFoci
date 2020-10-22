@@ -131,11 +131,18 @@ for folder_num=1:length(folders)
             
             tic
             %    try
+            
+            min_area=50/ numel(ab_uint);
+            min_area(min_area>1)=1;
+            
+            max_area=2400/ numel(ab_uint);
+            max_area(max_area>1)=1;
+            
             r=vl_mser(ab_uint,'MinDiversity',0.1,...
                 'MaxVariation',0.8,...
                 'Delta',1,...
-                'MinArea', 50/ numel(ab_uint),...
-                'MaxArea',2400/ numel(ab_uint));
+                'MinArea', min_area,...
+                'MaxArea',max_area);
             %     catch
             %         r=[] ;
             %     end
