@@ -18,7 +18,11 @@ The proposed method was verified on two testing datasets: (1) patient-derived pr
 
 
 bioRxiv paper:
-[## DeepFoci: Deep Learning-Based Algorithm for Fast Automatic Analysis of DNA Double Strand Break Ionizing Radiation-Induced Foci](https://doi.org/10.1101/2020.10.07.321927)
+
+## DeepFoci: Deep Learning-Based Algorithm for Fast Automatic Analysis of DNA Double Strand Break Ionizing Radiation-Induced Foci
+
+[https://doi.org/10.1101/2020.10.07.321927](https://doi.org/10.1101/2020.10.07.321927)
+
 Tomas Vicar,  Jaromir Gumulec,  Radim Kolar, Olga Kopecna, Eva Pagáčová,  Martin Falk
 
 
