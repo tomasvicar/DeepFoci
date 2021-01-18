@@ -1,0 +1,28 @@
+clc;clear all;close all;
+addpath('utils')
+
+
+data_path = 'G:\Sdílené disky\martin_data\NHDF\NHDF_8h PI\IR 0,5Gy_8h PI';
+
+path_save = 'G:\Sdílené disky\martin_data\NHDF\NHDF_8h PI\IR 0,5Gy_8h PI_labeled';
+
+
+
+file_names = subdir([data_path '/*01.ics']);
+
+
+
+for file_num = 1
+    
+    file_name = file_names(file_num).name;
+    
+    
+
+    [r,g,b]=read_ics_3_files(file_name);
+    
+    
+    
+    imshow5(cat(r,g,b,4))
+    
+    
+end
