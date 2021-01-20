@@ -1,0 +1,13 @@
+function [img] = apply_bb(img,bb)
+
+bb = round(bb);
+
+    bbs(4:end) = bbs(4:end)-1;
+end
+
+
+img = img(...
+    bb(2):bb(2)+bb(5),...
+    bb(1):bb(1)+bb(4),...
+    bb(3):bb(3)+bb(6),:);
+end
