@@ -29,23 +29,26 @@ for file_num = 1:length(file_names)
 
     [af,bf,cf]=preprocess_filters(a,b,c,gpu);
 
-    [a,b,c]=preprocess_norm_resize(af,bf,cf);
-
-
-    mask=predict_by_parts(a,b,c,net);
-
-    mask=split_nuclei(mask);
-    mask=balloon(mask,[20 20 8]);
-
-    mask_conected=imerode(mask,sphere([5,5,2]));
-    mask=imresize3(uint8(mask),size(af),'nearest')>0;
-
+%     [a,b,c]=preprocess_norm_resize(af,bf,cf);
+% 
+% 
+%     mask=predict_by_parts(a,b,c,net);
+% 
+%     mask=split_nuclei(mask);
+%     mask=balloon(mask,[20 20 8]);
+% 
+%     mask_conected=imerode(mask,sphere([5,5,2]));
+%     mask=imresize3(uint8(mask),size(af),'nearest')>0;
+% 
+%     
+%     save_name = replace(replace(file_name,data_path,save_path),'01.ics','mask.tif');
+%     [save_path_tmp,~,~] = fileparts(save_name);
+%     mkdir(save_path_tmp)
+%     imwrite_uint16_3D(save_name,mask)
     
     save_name = replace(replace(file_name,data_path,save_path),'01.ics','mask.tif');
-    [save_path_tmp,~,~] = fileparts(save_name);
-    mkdir(save_path_tmp)
-    imwrite_uint16_3D(save_name,mask)
-    
+    mask=read_mask(name);
+
     
     bbs = regionprops3(mask,'BoundingBox');
     bbs = bbs.BoundingBox;
