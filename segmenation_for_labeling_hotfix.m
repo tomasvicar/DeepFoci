@@ -47,6 +47,7 @@ for file_num = 1:length(file_names)
 %     imwrite_uint16_3D(save_name,mask)
     
     save_name = replace(replace(file_name,data_path,save_path),'01.ics','mask.tif');
+    [save_path_tmp,~,~] = fileparts(save_name);
     mask=imread(save_name);
 
     
