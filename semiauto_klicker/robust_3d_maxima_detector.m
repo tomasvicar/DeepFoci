@@ -1,7 +1,9 @@
 function [c,v] = robust_3d_maxima_detector(img,mask,dil,h,t)
 
     img1 = imdilate(img,sphere(dil));
+
     img1 = imhmax(img1,h);
+
     M = imregionalmax(img1);
     
     M(mask==0)=0;
