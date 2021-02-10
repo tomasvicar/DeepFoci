@@ -78,24 +78,19 @@ for file_num = 1:length(file_names)
         gImg_right=gImg_right(:,end:-1:1);
         bImg_right=bImg_right(:,end:-1:1);
 
-        rImg_down=squeeze(max(img_crop(:,:,:,1),[],1))';
-        gImg_down=squeeze(max(img_crop(:,:,:,2),[],1))';
-        bImg_down=squeeze(max(img_crop(:,:,:,3),[],1))';
+        app.rImg_down=squeeze(max(img_crop(:,:,:,1),[],1))';
+        app.gImg_down=squeeze(max(img_crop(:,:,:,2),[],1))';
+        app.bImg_down=squeeze(max(img_crop(:,:,:,3),[],1))';
         
         
-        tmp = img_crop(:,:,:,1);
-        p95_R = prctile(tmp(app.data.mask_crop),95);
-        tmp = img_crop(:,:,:,2);
-        p95_G = prctile(tmp(app.data.mask_crop),95);
+        
         
         
         
         save([save_path_tmp '/cell' num2str(bb_num,'%03.f') '.mat'],'img_crop','mask_crop','bb',...
             'rImg_main','gImg_main','bImg_main',...
-            'rImg_left','gImg_left','bImg_left',...
-            'rImg_right','gImg_right','bImg_right',...
-            'rImg_down','gImg_down','bImg_down',...
-            'p95_R','p95_G','-v7.3')
+            'rImg_left','gImg_left','bImg_left'...
+            'rImg_right','gImg_right','bImg_right','-v7.3')
         
     end
     
