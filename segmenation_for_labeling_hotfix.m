@@ -3,10 +3,10 @@ addpath('utils')
 addpath('3DNucleiSegmentation_training')
 
 
-data_path = 'G:\Sdílené disky\martin_data\NHDF';
-save_path = 'G:\Sdílené disky\martin_data\NHDF_preprocess';
-% data_path = 'G:\Sdílené disky\martin_data\U87-MG';
-% save_path = 'G:\Sdílené disky\martin_data\U87-MG_preprocess';
+% data_path = 'G:\Sdílené disky\martin_data\NHDF';
+% save_path = 'G:\Sdílené disky\martin_data\NHDF_preprocess';
+data_path = 'G:\Sdílené disky\martin_data\U87-MG';
+save_path = 'G:\Sdílené disky\martin_data\U87-MG_preprocess';
 
 
 gpu = 1;
@@ -61,6 +61,9 @@ for file_num = 1:length(file_names)
         img_crop = apply_bb(cat(4,af,bf,cf),bb);
         mask_crop = apply_bb(cat(4,mask==bb_num),bb);
         img_crop = uint16(img_crop);
+
+        
+        
         rImg_main=max(img_crop(:,:,:,1),[],3);
         gImg_main=max(img_crop(:,:,:,2),[],3);
         bImg_main=max(img_crop(:,:,:,3),[],3);
@@ -88,6 +91,7 @@ for file_num = 1:length(file_names)
         p95_G = prctile(tmp(mask_crop),95);
         
         
+
         
         save([save_path_tmp '/cell' num2str(bb_num,'%03.f') '.mat'],'img_crop','mask_crop','bb',...
             'rImg_main','gImg_main','bImg_main',...
