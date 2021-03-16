@@ -3,10 +3,10 @@ addpath('utils')
 addpath('3DNucleiSegmentation_training')
 
 
-data_path = 'G:\Sdílené disky\martin_data\NHDF';
-save_path = 'G:\Sdílené disky\martin_data\NHDF_preprocess';
-% data_path = 'G:\Sdílené disky\martin_data\U87-MG';
-% save_path = 'G:\Sdílené disky\martin_data\U87-MG_preprocess';
+% data_path = 'G:\Sdílené disky\martin_data\NHDF';
+% save_path = 'G:\Sdílené disky\martin_data\NHDF_preprocess';
+data_path = 'G:\Sdílené disky\martin_data\U87-MG';
+save_path = 'G:\Sdílené disky\martin_data\U87-MG_preprocess';
 
 
 gpu = 1;
@@ -46,7 +46,9 @@ for file_num = 1:length(file_names)
     mkdir(save_path_tmp)
     imwrite_uint16_3D(save_name,mask)
     
-    
+
+
+    mask = bwlabeln(mask);
     bbs = regionprops3(mask,'BoundingBox');
     bbs = bbs.BoundingBox;
     
@@ -55,9 +57,47 @@ for file_num = 1:length(file_names)
         bb = bbs(bb_num,:);
         
         img_crop = apply_bb(cat(4,af,bf,cf),bb);
-        mask_crop = apply_bb(cat(4,mask),bb);
+        mask_crop = apply_bb(cat(4,mask==bb_num),bb);
+        img_crop = uint16(img_crop);
+
         
-        save([save_path_tmp '/cell' num2str(bb_num,'%03.f') '.mat'],'img_crop','mask_crop','bb','-v7.3')
+        
+        rImg_main=max(img_crop(:,:,:,1),[],3);
+        gImg_main=max(img_crop(:,:,:,2),[],3);
+        bImg_main=max(img_crop(:,:,:,3),[],3);
+
+        rImg_left=squeeze(max(img_crop(:,:,:,1),[],2));
+        gImg_left=squeeze(max(img_crop(:,:,:,2),[],2));
+        bImg_left=squeeze(max(img_crop(:,:,:,3),[],2));
+
+        rImg_right=squeeze(max(img_crop(:,:,:,1),[],2));
+        gImg_right=squeeze(max(img_crop(:,:,:,2),[],2));
+        bImg_right=squeeze(max(img_crop(:,:,:,3),[],2));
+
+        rImg_right=rImg_right(:,end:-1:1);
+        gImg_right=gImg_right(:,end:-1:1);
+        bImg_right=bImg_right(:,end:-1:1);
+
+        rImg_down=squeeze(max(img_crop(:,:,:,1),[],1))';
+        gImg_down=squeeze(max(img_crop(:,:,:,2),[],1))';
+        bImg_down=squeeze(max(img_crop(:,:,:,3),[],1))';
+        
+        
+        tmp = img_crop(:,:,:,1);
+        p95_R = prctile(tmp(mask_crop),95);
+        tmp = img_crop(:,:,:,2);
+        p95_G = prctile(tmp(mask_crop),95);
+        
+        
+
+        
+        save([save_path_tmp '/cell' num2str(bb_num,'%03.f') '.mat'],'img_crop','mask_crop','bb',...
+            'rImg_main','gImg_main','bImg_main',...
+            'rImg_left','gImg_left','bImg_left',...
+            'rImg_right','gImg_right','bImg_right',...
+            'rImg_down','gImg_down','bImg_down',...
+            'p95_R','p95_G','-v7.3')
+
         
     end
     
