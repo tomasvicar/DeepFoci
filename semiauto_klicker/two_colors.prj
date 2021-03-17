@@ -1,6 +1,6 @@
 <deployment-project plugin="plugin.ezdeploy" plugin-version="1.0">
   <configuration file="D:\vicar\foci_new\DeepFoci\semiauto_klicker\two_colors.prj" location="D:\vicar\foci_new\DeepFoci\semiauto_klicker" name="two_colors" target="target.ezdeploy.standalone" target-name="Application Compiler">
-    <param.appname>two_colors_v3</param.appname>
+    <param.appname>two_colors_v4</param.appname>
     <param.icon />
     <param.icons />
     <param.version>1.0</param.version>
@@ -11,7 +11,7 @@
     <param.description />
     <param.screenshot />
     <param.guid />
-    <param.installpath.string>\two_colors_v3\</param.installpath.string>
+    <param.installpath.string>\two_colors_v4\</param.installpath.string>
     <param.installpath.combo>option.installpath.programfiles</param.installpath.combo>
     <param.logo />
     <param.install.notes />
@@ -90,9 +90,9 @@
       <file>${PROJECT_ROOT}\subdir.m</file>
     </fileset.depfun>
     <build-deliverables>
+      <file location="${PROJECT_ROOT}\two_colors\for_testing" name="two_colors_v4.exe" optional="false">D:\vicar\foci_new\DeepFoci\semiauto_klicker\two_colors\for_testing\two_colors_v4.exe</file>
       <file location="${PROJECT_ROOT}\two_colors\for_testing" name="splash.png" optional="false">D:\vicar\foci_new\DeepFoci\semiauto_klicker\two_colors\for_testing\splash.png</file>
       <file location="${PROJECT_ROOT}\two_colors\for_testing" name="readme.txt" optional="true">D:\vicar\foci_new\DeepFoci\semiauto_klicker\two_colors\for_testing\readme.txt</file>
-      <file location="${PROJECT_ROOT}\two_colors\for_testing" name="two_colors_v3.exe" optional="false">D:\vicar\foci_new\DeepFoci\semiauto_klicker\two_colors\for_testing\two_colors_v3.exe</file>
     </build-deliverables>
     <workflow />
     <matlab>
