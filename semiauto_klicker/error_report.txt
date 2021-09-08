@@ -1,0 +1,55 @@
+Ahoj Tome,
+
+tak zatím toto zjištění:
+
+NHDF, 30min, PI 0.5Gy, knihovna "merged" - Obr 5: nenačítá žádné tečky.
+Když tečky doplňuji pomocí "new point (b)" v zeleném kanále tak se tečky
+doplňují, ovšem neaktivní (=modré). Poté je nelze nijak zaktivovat na
+červené... Když jsem totéž udělal v červeném kanále, první tečka vložená
+tečka se dala jako aktivní, zbylé neaktivní, a opět je nelze aktivovat.
+V červeném i zeleném kanále s tečkami ale lze normálně posunovat pomocí
+"edit points" ..... Nyní už se "green" obrázek zablokoval zcela a nejde
+tečky ani vkládat ani přemísťovat. Když přejdu na další obrázek a pak se
+vrátím zpět, hodilo to divný zvuk, začalo se točit kolečko, a musel jsem
+to shodit... Když software znova spustím, načte obrázky 1 až 4 sice bez
+teček, ale nespadne. Přejdu-li pak na obr 5 (kam jsem na rozdíl od obr 1
+až 4 znovu doplnit ty tečky, co zmizely, i když neaktivní, viz výše),
+tak se zase roztočí kolečko a musím to shodit...
+
+Pokračuji v průzkumu...
+
+
+
+
+
+
+tak mé podezření se bohužel potvrdilo... Už jsem z toho byl tak zmatený,
+že jsem si raději vše fotil...
+
+1. Posílám NHDF, 30 min PI, 0.5Gy, Obr. 9 (viz Google disk - složka
+G:\Sdílené disky\martin_data\Error report:
+
+fotka s jedním prstem - jak se to načítalo
+
+fotka se dvěma prsty - jak jsem to upravil (po načtení dalších obrázků
+vpřed a vzad, ale před vypnutím software)
+
+fotka se třem prsty - co se objevilo po vypnutí a znovuzapnutí GUI
+
+Na fotce po znovuzapnutí je vidět přítomnost nových modrých teček na
+místech původně aktivních teček, přičemž ty původně aktivní tečky se
+záhadně posunuly (zvýrazněno na fotce "Errors highlighted").
+
+
+2. totéž, obr 7 - přesouval jsem jednu tečku, načež místo přesunutí
+zmizela...
+
+
+
+
+
+
+
+
+
+M
