@@ -1,9 +1,14 @@
 clc;clear all;close all;
 addpath('utils')
 
-orig_data_path = 'D:\foky_testovaci_data\orig';
-labeled_path = 'D:\foky_testovaci_data\znacena';
-save_folder = '../data_test';
+orig_data_path = 'Z:\000000-My Documents\data_u87_nhdf';
+labeled_path = 'Z:\000000-My Documents\data_u87_nhdf_anotated';
+save_folder = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
+
+
+% orig_data_path = 'D:\foky_testovaci_data\orig';
+% labeled_path = 'D:\foky_testovaci_data\znacena';
+% save_folder = '../data_test';
 
 gpu=0;
 
@@ -20,9 +25,12 @@ labled_filenames = labled_filenames(cellfun(@(x) ~isempty(x),pos));
 labled_filenames_pahts = cellfun(@(x) fileparts(x),labled_filenames,'UniformOutput',false);
 
 unique_folders = unique(labled_filenames_pahts);
-for unique_folder = unique_folders
+
+for unique_folder_num = 1:length(unique_folders)
     
-    unique_folder_labled = unique_folder{1};
+    disp([num2str(unique_folder_num) ' / ' num2str(length(unique_folders))])
+    
+    unique_folder_labled = unique_folders{unique_folder_num};
     unique_folder_orig = replace(unique_folder_labled,labeled_path,orig_data_path);
     
     
