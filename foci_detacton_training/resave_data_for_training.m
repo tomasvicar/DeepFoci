@@ -1,9 +1,13 @@
 clc;clear all;close all force;
 addpath('../utils')
 
-src_path = '..\..\data_test';
-dst_paht = '..\..\data_resave';
-gpu = 0;
+% src_path = '..\..\data_test';
+% dst_paht = '..\..\data_resave';
+% gpu = 0;
+
+src_path = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
+dst_paht = 'Z:\000000-My Documents\data_u87_nhdf_resaved_for_training';
+gpu = 1;
 
 
 src_path = replace(src_path,'\','/');
@@ -15,6 +19,10 @@ names_53BP1 = subdirx([src_path '/data_53BP1.tif']);
 
 
 for img_num = 1:length(names_53BP1)
+    
+%     if img_num < 48
+%         continue;
+%     end
 
     disp([num2str(img_num) ' / ' num2str(length(names_53BP1))])
     
@@ -47,12 +55,38 @@ for img_num = 1:length(names_53BP1)
     mask_points_53BP1 = false(shape_new);
     mask_points_gH2AX = false(shape_new);
     
+    shape_new_tmp = shape_new([2 1 3]);
     
-    positions_linear_53BP1 = sub2ind(shape_new,positions_53BP1_resize(:,2),positions_53BP1_resize(:,1),positions_53BP1_resize(:,3));
-    mask_points_53BP1(positions_linear_53BP1) = true;
+    tmp = positions_53BP1_resize;
+    if ~isempty(tmp)
+        
+        for k = 1:3
+            tmp_tmp = tmp(:,k);
+            tmp(tmp_tmp > shape_new_tmp(k),:) = [];
+            tmp_tmp = tmp(:,k);
+            tmp(tmp_tmp < 1 ,:) = [];
+        end
+        if ~isempty(tmp)
+            positions_linear_53BP1 = sub2ind(shape_new,tmp(:,2),tmp(:,1),tmp(:,3));
+            mask_points_53BP1(positions_linear_53BP1) = true;
+        end
+    end
     
-    positions_linear_gH2AX = sub2ind(shape_new,positions_gH2AX_resize(:,2),positions_gH2AX_resize(:,1),positions_gH2AX_resize(:,3));
-    mask_points_gH2AX(positions_linear_gH2AX) = true;
+    
+    tmp = positions_gH2AX_resize;
+    if ~isempty(tmp)
+        
+        for k = 1:3
+            tmp_tmp = tmp(:,k);
+            tmp(tmp_tmp > shape_new_tmp(k),:) = [];
+            tmp_tmp = tmp(:,k);
+            tmp(tmp_tmp < 1 ,:) = [];
+        end
+        if ~isempty(tmp)
+            positions_linear_gH2AX = sub2ind(shape_new,tmp(:,2),tmp(:,1),tmp(:,3));
+            mask_points_gH2AX(positions_linear_gH2AX) = true;
+        end
+    end
     
     name_53BP1 = replace(name_53BP1,'\','/');
     dst_folder = fileparts(replace(name_53BP1,src_path,dst_paht));
