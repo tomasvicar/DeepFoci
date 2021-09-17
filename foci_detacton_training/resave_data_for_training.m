@@ -1,13 +1,13 @@
 clc;clear all;close all force;
 addpath('../utils')
 
-% src_path = '..\..\data_test';
-% dst_paht = '..\..\data_resave';
-% gpu = 0;
-
-src_path = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
-dst_paht = 'Z:\000000-My Documents\data_u87_nhdf_resaved_for_training';
-gpu = 1;
+src_path = '..\..\data_test';
+dst_paht = '..\..\data_resave';
+gpu = 0;
+% 
+% src_path = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
+% dst_paht = 'Z:\000000-My Documents\data_u87_nhdf_resaved_for_training';
+% gpu = 1;
 
 
 src_path = replace(src_path,'\','/');
