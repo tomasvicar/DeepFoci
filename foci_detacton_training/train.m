@@ -8,8 +8,8 @@ data_path='C:\Users\vicar\Desktop\foky_new_tmp\data_resave';
 
 folds = 4;
 
-matReaderData = @(x) matReader(x,'data');
-matReaderMask = @(x) matReader(x,'mask');
+matReaderData = @(x) matReader(x,'data',{'a','b','c'});
+matReaderMask = @(x) matReader(x,'mask',{'a','b'});
 
 files = subdirx([data_path '/*data_53BP1.mat']);
 perm = randperm(length(files));
@@ -59,8 +59,11 @@ for cv_index = 1:folds
 
 
 
-
-
+    drawnow;
+    minibatch = patchds.readByIndex(1);
+    
+    
+    
 
     % for k=1:5:30
     % 
