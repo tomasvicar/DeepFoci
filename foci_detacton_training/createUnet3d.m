@@ -112,8 +112,11 @@ end
 numLabels = outputNumLayers;
 convLast = convolution3dLayer(1,numLabels,'Name','convLast');
 % softmaxL = softmaxLayer('Name','softmax');
-pixelCL = pixelRegressionLayer('output');
-layers = [layers; convLast; pixelCL];
+
+% pixelCL = pixelRegressionLayer('pixelRegressionLayer');
+% layers = [layers; convLast; pixelCL];
+
+layers = [layers; convLast];
 end
 
 function myName = iGetName(moduleType,layerType,varargin)
