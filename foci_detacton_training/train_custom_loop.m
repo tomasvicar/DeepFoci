@@ -3,7 +3,7 @@ addpath('../utils')
 
 % p = gcp('nocreate');
 % if isempty(p)
-%     parpool(10)
+%     parpool()
 % end
     
 rng(42)
@@ -11,10 +11,13 @@ rng(42)
 data_path='../../data_u87_nhdf_resaved_for_training';
 folds = 5;
 
-matReaderData = @(x) matReader(x,'data',{'a','b','c'},'norm_perc');
+matReaderData = @(x) matReader(x,'data',{'a','b','c'},'norm_no');
 in_layers = 3;
 matReaderMask = @(x) matReader(x,'mask',{'a','b'},'norm_no');
 out_layers = 2;
+
+paralel_load = 0;
+
 
 files = subdirx([data_path '/*data_53BP1.mat']);
 
@@ -89,16 +92,18 @@ for fold = 1:folds
     dsTrain = transform(patchds,@augment3dPatch);
     dsValid = transform(patchds,@augment3dPatch_valid); 
     
+    
+    disp('minibatchqueue train')
     mbq = minibatchqueue(dsTrain,...
     'MiniBatchSize',miniBatchSize,...
-    'DispatchInBackground',0,...
+    'DispatchInBackground',paralel_load,...
     'MiniBatchFcn',@preprocessMiniBatch,...
     'MiniBatchFormat',{'SSSCB','SSSCB'});
 
-
+    disp('minibatchqueue valid')
     mbq_val = minibatchqueue(dsValid,...
     'MiniBatchSize',miniBatchSize,...
-    'DispatchInBackground',0,...
+    'DispatchInBackground',paralel_load,...
     'MiniBatchFcn',@preprocessMiniBatch,...
     'MiniBatchFormat',{'SSSCB','SSSCB'});
 
@@ -136,6 +141,8 @@ for fold = 1:folds
 %     toc
     grad_fcn = @modelGradients;
 
+    disp('start training')
+    
     % Loop over epochs.
     for epoch = 1:numEpochs
         % Shuffle data.
@@ -149,23 +156,23 @@ for fold = 1:folds
             disp(iteration)
             
             % Read mini-batch of data.
-            
+            tic
             [dlX, dlY] = next(mbq);
-            
+            toc
             
             [gradients,state,loss] = dlfeval(grad_fcn,dlnet,dlX,dlY);
             dlnet.State = state;
 
-            
-            
             [dlnet,averageGrad,averageSqGrad] = adamupdate(dlnet,gradients,averageGrad,averageSqGrad,iteration,learnRate,gradDecay,sqGradDecay);
             
             loss = double(gather(extractdata(loss)));
             
             losses_train = [losses_train,loss];
             
+%             toc
             
-            if mod(iteration,plot_train_freq) == 0 || iteration==1
+            
+            if mod(iteration,plot_train_freq) == 0 || iteration==99999
                 
                 
                 D = duration(0,0,toc(start),'Format','hh:mm:ss');
@@ -177,7 +184,7 @@ for fold = 1:folds
             end
             
             
-            if mod(iteration,valid_freq) == 0 || iteration==999
+            if mod(iteration,valid_freq) == 0 || iteration==9999
                 
                 shuffle(mbq_val);
 
