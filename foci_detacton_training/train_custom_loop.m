@@ -8,10 +8,10 @@ addpath('../utils')
     
 rng(42)
 
-data_path='../../data_u87_nhdf_resaved_for_training';
+data_path='../../data_u87_nhdf_resaved_for_training_norm_nofilters';
 folds = 5;
 
-matReaderData = @(x) matReader(x,'data',{'a','b','c'},'norm_no');
+matReaderData = @(x) matReader(x,'data',{'a','b','c'},'norm_perc');
 in_layers = 3;
 matReaderMask = @(x) matReader(x,'mask',{'a','b'},'norm_no');
 out_layers = 2;
