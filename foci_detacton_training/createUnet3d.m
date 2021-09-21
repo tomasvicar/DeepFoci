@@ -1,4 +1,4 @@
-function lgraph = createUnet3d(inputSize)
+function lgraph = createUnet3d(inputSize,outputNumLayers)
 % Create a 3-D U-Net
 %
 % Copyright 2018 The MathWorks, Inc.
@@ -14,7 +14,7 @@ encoder_d3 = createUnet3dEncoderModule(3,[64 64 ]);
 decoder_l4 = createUnet3dDecoderModule(4,[64 64]);
 decoder_l3 = createUnet3dDecoderModule(3,[64 64]);
 decoder_l2 = createUnet3dDecoderModule(2,[32 32]);
-decoder_l1 = createUnet3dFinalDecoderModule(1,[16 16]);
+decoder_l1 = createUnet3dFinalDecoderModule(1,[16 16],outputNumLayers);
 
 % layers = [inputL;preluLayer; encoder_d1; encoder_d2; encoder_d3; decoder_l4];
 layers = [inputL; encoder_d1; encoder_d2; encoder_d3; decoder_l4];
@@ -98,7 +98,7 @@ transConv = transposedConv3dLayer(2,NumFilters(end),'stride',2, ...
 layers = [layers; transConv];
 end
 
-function layers = createUnet3dFinalDecoderModule(ModuleNum,NumFilters)
+function layers = createUnet3dFinalDecoderModule(ModuleNum,NumFilters,outputNumLayers)
 layers = [];
 for id=1:length(NumFilters)
     sublayers = [
@@ -109,7 +109,7 @@ for id=1:length(NumFilters)
     layers = [layers; sublayers];
 end
 
-numLabels = 3;
+numLabels = outputNumLayers;
 convLast = convolution3dLayer(1,numLabels,'Name','convLast');
 % softmaxL = softmaxLayer('Name','softmax');
 pixelCL = pixelRegressionLayer('output');

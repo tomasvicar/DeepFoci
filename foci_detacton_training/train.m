@@ -4,51 +4,63 @@ addpath('../utils')
     
 rng(42)
 
-data_path='C:\Users\vicar\Desktop\foky_new_tmp\data_resave';
+data_path='D:\vicar\foci_new\data_u87_nhdf_resaved_for_training';
 
-folds = 4;
+folds = 5;
 
 matReaderData = @(x) matReader(x,'data',{'a','b','c'},'norm_perc');
+in_layers = 3;
 matReaderMask = @(x) matReader(x,'mask',{'a','b'},'norm_no');
+out_layers = 2;
 
 files = subdirx([data_path '/*data_53BP1.mat']);
-perm = randperm(length(files));
 
 
-for cv_index = 1:folds
 
-    N = length(perm);
-    tmp = 1+round(N/folds*(cv_index-1)):round(N/folds*(cv_index));
-    train_valid_ind = perm(tmp);
-    test_ind = perm;
-    test_ind(tmp) = [];
-    tmp = 1:round(length(train_valid_ind)*0.9);
-    train_ind = train_valid_ind(tmp);
-    valid_ind = train_valid_ind;
-    valid_ind(tmp) = [];
+
+
+for fold = 1:folds
+
+    [files_test,files_train_valid] = subfolder_based_split(files,fold,folds);
+    
+    [files_valid,files_train] = subfolder_based_split(files_train_valid,1,6);
+   
+    
+    
+    
+    
+    
 
     volds = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',matReaderData);
-    volds = create_4_for_each(volds,files(train_ind),data_path);
+    volds = create_4_for_each(volds,files_train,data_path);
 
     volds_gt = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',matReaderMask);
-    volds_gt = create_4_for_each(volds_gt,files(train_ind),data_path);
+    volds_gt = create_4_for_each(volds_gt,files_train,data_path);
 
     volds_val = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',matReaderData);
-    volds_val = create_4_for_each(volds_val,files(valid_ind),data_path);
+    volds_val = create_4_for_each(volds_val,files_valid,data_path);
 
     volds_gt_val = imageDatastore(data_path,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',matReaderMask);
-    volds_gt_val = create_4_for_each(volds_gt_val,files(valid_ind),data_path);
+    volds_gt_val = create_4_for_each(volds_gt_val,files_valid,data_path);
 
 
     
     
-    % img=volds_gt.readimage(2);
-    % imshow5(img);
-
+%     img=volds_gt.readimage(22);
+% %     imshow5(img);
+%     figure()
+%     imshow(max(img(:,:,:,1),[],3))
+%     
+% 
+%     img=volds.readimage(22);
+% %     imshow5(img);
+%     figure();
+%     imshow(max(img(:,:,:,1),[],3))
+    
 
     % patchSize = [128 128 48];
     patchSize = [96 96 48];
-    patchPerImage = 2;%%%%%%%%
+    patchPerImage = 1;
     miniBatchSize = 8;
     patchds = randomPatchExtractionDatastore(volds,volds_gt,patchSize,'PatchesPerImage',patchPerImage);
     patchds.MiniBatchSize = miniBatchSize;
@@ -59,39 +71,43 @@ for cv_index = 1:folds
 
 
 
-    minibatch = patchds.readByIndex(1);
-    drawnow;
-    
-    
-    
-   
+%     minibatch = patchds.readByIndex(66);
+%     x = minibatch.InputImage;
+%     x = x{1};
+%     y = minibatch.ResponseImage;
+%     y = y{1};
+% 
+%     figure()
+%     imshow(max(x(:,:,:,1),[],3))
+%     figure()
+%     imshow(max(y(:,:,:,1),[],3))
 
 
     dsTrain = transform(patchds,@augment3dPatch);
 
-    lgraph = createUnet3d([patchSize 3]);
+    
+    lgraph = createUnet3d([patchSize in_layers],out_layers);
 
 
 
     checkpointPath='../../cpt';
     mkdir(checkpointPath)
 
-
-
+    
     options = trainingOptions('adam', ...
-        'MaxEpochs',7, ...
+        'MaxEpochs',10, ...
         'InitialLearnRate',1e-3, ...
         'LearnRateSchedule','piecewise', ...
-        'LearnRateDropPeriod',3, ...
+        'LearnRateDropPeriod',5, ...
         'LearnRateDropFactor',0.1, ...
         'Plots','training-progress', ...
         'GradientDecayFactor',0.9, ...
         'SquaredGradientDecayFactor',0.99, ...
-        'L2Regularization', 1e-8, ...
+        'L2Regularization', 1e-6, ...
         'Shuffle', 'every-epoch', ...
         'CheckpointPath',checkpointPath,...
         'ValidationData',patchds_val, ...
-        'ValidationFrequency',300, ...
+        'ValidationFrequency',round(patchds.NumObservations/miniBatchSize), ...
         'MiniBatchSize',miniBatchSize);
 
     disp('train_start')
@@ -102,6 +118,6 @@ for cv_index = 1:folds
 
 
 
-
+    break;
 
 end

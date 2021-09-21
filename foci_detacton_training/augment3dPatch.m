@@ -24,16 +24,35 @@ for id=1:size(patchIn,1)
     end
     min_v=rand()*0.6-0.3;
     max_v=1+rand()*0.6-0.3;
-    out(:,:,:,1)=single(mat2gray(out(:,:,:,1)+0.5,[min_v max_v]))-0.5;
+    out(:,:,:,1)=single(mat2gray_nocrop(out(:,:,:,1)+0.5,[min_v max_v]))-0.5;
     min_v=rand()*0.6-0.3;
     max_v=1+rand()*0.6-0.3;
-    out(:,:,:,2)=single(mat2gray(out(:,:,:,2)+0.5,[min_v max_v]))-0.5;
+    out(:,:,:,2)=single(mat2gray_nocrop(out(:,:,:,2)+0.5,[min_v max_v]))-0.5;
     min_v=rand()*0.6-0.3;
     max_v=1+rand()*0.6-0.3;
-    out(:,:,:,3)=single(mat2gray(out(:,:,:,3)+0.5,[min_v max_v]))-0.5;
+    out(:,:,:,3)=single(mat2gray_nocrop(out(:,:,:,3)+0.5,[min_v max_v]))-0.5;
     
     inpVol{id}=out;
     inpResponse{id}=respOut;
 end
 
 patchOut = table(inpVol,inpResponse);
+
+
+end
+
+
+
+function data = mat2gray_nocrop(data,range)
+
+    data = (data - range(1))/(range(2) - range(1));
+
+
+end
+
+
+
+
+
+
+
