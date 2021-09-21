@@ -1,13 +1,13 @@
 clc;clear all;close all force;
 addpath('../utils')
 
-src_path = '..\..\data_test';
-dst_paht = '..\..\data_resave';
-gpu = 0;
+% src_path = '..\..\data_test';
+% dst_paht = '..\..\data_resave';
+% gpu = 0;
 % 
-% src_path = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
-% dst_paht = 'Z:\000000-My Documents\data_u87_nhdf_resaved_for_training';
-% gpu = 1;
+src_path = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
+dst_paht = 'Z:\000000-My Documents\data_u87_nhdf_resaved_for_training_norm_nofilters';
+gpu = 1;
 
 
 src_path = replace(src_path,'\','/');
@@ -36,7 +36,7 @@ for img_num = 1:length(names_53BP1)
     lbls = jsondecode(fileread(replace(name_53BP1,'data_53BP1.tif','labels.json')));
     
     shape_old=size(a);
-    [a,b,c]=preprocess_filters(a,b,c,gpu);
+%     [a,b,c]=preprocess_filters(a,b,c,gpu);
     [a,b,c]=preprocess_resize_foci(a,b,c);
     shape_new=size(a);
     
@@ -88,6 +88,19 @@ for img_num = 1:length(names_53BP1)
         end
     end
     
+
+    perc = 0.0001;
+    
+    a_perc_0_0001 = [prctile(double(a(:)),perc*100) prctile(double(a(:)),100-perc*100)];
+    a_std_mean = [std(double(a(:))) mean(double(a(:)))];
+    
+    b_perc_0_0001 = [prctile(double(b(:)),perc*100) prctile(double(b(:)),100-perc*100)];
+    b_std_mean = [std(double(b(:))) mean(double(b(:)))];
+    
+    c_perc_0_0001 = [prctile(double(c(:)),perc*100) prctile(double(c(:)),100-perc*100)];
+    c_std_mean = [std(double(c(:))) mean(double(c(:)))];
+    
+    
     name_53BP1 = replace(name_53BP1,'\','/');
     dst_folder = fileparts(replace(name_53BP1,src_path,dst_paht));
     
@@ -100,9 +113,9 @@ for img_num = 1:length(names_53BP1)
     save_unet_foci_detection_data_gH2AX = [dst_folder '/data_gH2AX.mat'];
     save_unet_foci_detection_data_DAPI = [dst_folder '/data_DAPI.mat'];
 
-    save(save_unet_foci_detection_data_53BP1,'a','-v7.3')
-    save(save_unet_foci_detection_data_gH2AX,'b','-v7.3')
-    save(save_unet_foci_detection_data_DAPI,'c','-v7.3')
+    save(save_unet_foci_detection_data_53BP1,'a','a_perc_0_0001','a_std_mean','-v7.3')
+    save(save_unet_foci_detection_data_gH2AX,'b','b_perc_0_0001','b_std_mean','-v7.3')
+    save(save_unet_foci_detection_data_DAPI,'c','c_perc_0_0001','c_std_mean','-v7.3')
     
     
     save(save_unet_foci_detection_mask_53BP1,'mask_points_53BP1','-v7.3')
