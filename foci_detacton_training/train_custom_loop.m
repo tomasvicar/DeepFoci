@@ -1,6 +1,10 @@
 clc;clear all;close all force;
 addpath('../utils')
 
+% p = gcp('nocreate');
+% if isempty(p)
+%     parpool(10)
+% end
     
 rng(42)
 
@@ -83,19 +87,20 @@ for fold = 1:folds
 
 
     dsTrain = transform(patchds,@augment3dPatch);
-    
+    dsValid = transform(patchds,@augment3dPatch_valid); 
     
     mbq = minibatchqueue(dsTrain,...
     'MiniBatchSize',miniBatchSize,...
+    'DispatchInBackground',0,...
     'MiniBatchFcn',@preprocessMiniBatch,...
     'MiniBatchFormat',{'SSSCB','SSSCB'});
-    
 
-    mbq_val = minibatchqueue(patchds_val,...
+
+    mbq_val = minibatchqueue(dsValid,...
     'MiniBatchSize',miniBatchSize,...
+    'DispatchInBackground',0,...
     'MiniBatchFcn',@preprocessMiniBatch,...
     'MiniBatchFormat',{'SSSCB','SSSCB'});
-    
 
     
     lgraph = createUnet3d([patchSize in_layers],out_layers);
@@ -124,6 +129,12 @@ for fold = 1:folds
     averageGrad = [];
     averageSqGrad = [];
     losses_train = [];
+    
+%     tic
+% %     grad_fcn = dlaccelerate(@modelGradients);
+% %     clearCache(grad_fcn)
+%     toc
+    grad_fcn = @modelGradients;
 
     % Loop over epochs.
     for epoch = 1:numEpochs
@@ -138,8 +149,11 @@ for fold = 1:folds
             disp(iteration)
             
             % Read mini-batch of data.
+            
             [dlX, dlY] = next(mbq);
-            [gradients,state,loss] = dlfeval(@modelGradients,dlnet,dlX,dlY);
+            
+            
+            [gradients,state,loss] = dlfeval(grad_fcn,dlnet,dlX,dlY);
             dlnet.State = state;
 
             
@@ -163,7 +177,7 @@ for fold = 1:folds
             end
             
             
-            if mod(iteration,valid_freq) == 0 || iteration==1
+            if mod(iteration,valid_freq) == 0 || iteration==999
                 
                 shuffle(mbq_val);
 
@@ -196,7 +210,12 @@ for fold = 1:folds
 
 
     
+    for file_num = 1:length(files_test)
+        file  = files_test(file_num);
+        
+        
     
-    break;
+    end
+    
 
 end

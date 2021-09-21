@@ -19,7 +19,12 @@ function data = matReader(filename,type,imgs2read,norm)
     elseif num==4
         postion_vec1=floor(size_v(1)/2)-20:size_v(1);
         postion_vec2=floor(size_v(2)/2)-20:size_v(2);   
+    elseif num==0
+        postion_vec1 = 1:size_v(1);
+        postion_vec2 = 1:size_v(2);
     end
+    
+    
         
     
     name_53BP1 = filename;
