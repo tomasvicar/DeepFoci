@@ -8,8 +8,8 @@ data_path='C:\Users\vicar\Desktop\foky_new_tmp\data_resave';
 
 folds = 4;
 
-matReaderData = @(x) matReader(x,'data',{'a','b','c'});
-matReaderMask = @(x) matReader(x,'mask',{'a','b'});
+matReaderData = @(x) matReader(x,'data',{'a','b','c'},'norm_perc');
+matReaderMask = @(x) matReader(x,'mask',{'a','b'},'norm_no');
 
 files = subdirx([data_path '/*data_53BP1.mat']);
 perm = randperm(length(files));
@@ -59,27 +59,12 @@ for cv_index = 1:folds
 
 
 
-    drawnow;
     minibatch = patchds.readByIndex(1);
+    drawnow;
     
     
     
-
-    % for k=1:5:30
-    % 
-    %     
-    %     minibatch = patchds.readByIndex(k);
-    %     inputs = minibatch.InputImage;
-    %     responses = minibatch.ResponseImage;
-    % 
-    %     i=inputs{1};
-    %     r=responses{1};
-    %     
-    % %     rr=repmat(r,[1,1,1,3]);
-    % 
-    %     imshow5(cat(2,i+0.5,r*30))
-    %     drawnow;
-    % end
+   
 
 
     dsTrain = transform(patchds,@augment3dPatch);
@@ -113,7 +98,7 @@ for cv_index = 1:folds
     [net,info] = trainNetwork(dsTrain ,lgraph,options);
 
 
-    save('test3_value_aug_mult.mat','net','info')
+    save('net_test0.mat','net','info')
 
 
 
