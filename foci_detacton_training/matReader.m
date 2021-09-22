@@ -62,10 +62,15 @@ function data = matReader(filename,type,imgs2read,norm)
             if strcmp(norm,'norm_no')
                 
             elseif strcmp(norm,'norm_perc')
-                
-                
+                if strcmp(img,'a')
+                    normalizacia = single(matObject.a_perc_0_0001);
+                elseif strcmp(img,'b')
+                    normalizacia = single(matObject.b_perc_0_0001);
+                elseif strcmp(img,'c')
+                    normalizacia = single(matObject.c_perc_0_0001);
+                end
 %                 data=norm_percentile_nocrop(data,0.0001)-0.5;
-                
+                data = (data - normalizacia(1))/(normalizacia(2) - normalizacia(1));
             else
                 error('wrong norm')
             end
