@@ -152,8 +152,11 @@ function data = matReader(filename,type,imgs2read,norm)
                 end
                 
                 data = false(size(data));
-                positions_linear = sub2ind(size(data),new_points(:,1),new_points(:,2),new_points(:,3));
-                data(positions_linear) = true;
+                
+                if ~isempty(new_points)
+                    positions_linear = sub2ind(size(data),new_points(:,1),new_points(:,2),new_points(:,3));
+                    data(positions_linear) = true;
+                end
            
             else
                 error('wrong img')

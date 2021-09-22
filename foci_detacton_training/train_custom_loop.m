@@ -38,9 +38,18 @@ for fold = 1:folds
     
     [files_valid,files_train] = subfolder_based_split(files_train_valid,1,4);
    
+
+%     train_valid_ind = randperm(length(files_train_valid));
+%     tmp = 1:round(length(files_train_valid)*0.75);
+%     
+%     train_ind = train_valid_ind(tmp);
+%     valid_ind = train_valid_ind;
+%     valid_ind(tmp) = [];
+%     
+%     files_valid = files_train_valid(valid_ind);
+%     files_train = files_train_valid(train_ind);
     
-    
-    
+ 
     
     
 
@@ -131,7 +140,8 @@ for fold = 1:folds
     
     learnRate = 0.001;
     learnRateMult = 0.1;
-    stepEpoch = [25 35 40];
+%     stepEpoch = [25 35 40];
+    stepEpoch = [10 13 15];
     numEpochs = stepEpoch(end);
     
     gradDecay = 0.9;
@@ -157,7 +167,7 @@ for fold = 1:folds
     % Loop over epochs.
     for epoch = 1:numEpochs
         
-        if mod(epoch,stepEpoch) == 0
+        if any(epoch == stepEpoch)
             learnRate = learnRate*learnRateMult;
         end
         
@@ -234,7 +244,7 @@ for fold = 1:folds
     end
 
     save([tmp_folder '/final_net.mat'],'dlnet','files_test')
-    
+    print([tmp_folder '/train_curve'],'-dpng')
 
     
     tmp_folder_valid = [tmp_folder '_valid'];
@@ -246,7 +256,6 @@ for fold = 1:folds
         
         file  = files_valid{file_num};
         data = matReaderData([file num2str(0)]);
-%         mask = matReaderMask([file num2str(0)]);
 
         mask_predicted = predict_by_parts_foci_new(data,out_layers,dlnet,patchSize);
         
@@ -272,7 +281,6 @@ for fold = 1:folds
         
         file  = files_test{file_num};
         data = matReaderData([file num2str(0)]);
-%         mask = matReaderMask([file num2str(0)]);
 
         mask_predicted = predict_by_parts_foci_new(data,out_layers,dlnet,patchSize);
         
@@ -313,8 +321,9 @@ for fold = 1:folds
 
      
         save([tmp_folder '/resutls_' mask_chanels{evaluate_index} '.mat'],'opt_results','test_dice','results_points','gt_points')
-    
         
+        aa = 1;
+        save([tmp_folder '/test_dice_' mask_chanels{evaluate_index} '_' num2str(test_dice)  '.mat'],'aa')
     end
 
     break
