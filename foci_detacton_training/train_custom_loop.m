@@ -15,7 +15,7 @@ data_chanels = {'a','b'};
 matReaderData = @(x) matReader(x,'data',data_chanels,'norm_perc');
 mask_chanels = {'a','b','ab'};
 matReaderMask = @(x) matReader(x,'mask',mask_chanels,'norm_no');
-model_name = 'a_b_ab';
+model_name = 'a_b_ab_allfolds';
 
 
 
@@ -36,18 +36,18 @@ for fold = 1:folds
 
     [files_test,files_train_valid] = subfolder_based_split(files,fold,folds);
     
-    [files_valid,files_train] = subfolder_based_split(files_train_valid,1,4);
+%     [files_valid,files_train] = subfolder_based_split(files_train_valid,1,4);
    
 
-%     train_valid_ind = randperm(length(files_train_valid));
-%     tmp = 1:round(length(files_train_valid)*0.75);
-%     
-%     train_ind = train_valid_ind(tmp);
-%     valid_ind = train_valid_ind;
-%     valid_ind(tmp) = [];
-%     
-%     files_valid = files_train_valid(valid_ind);
-%     files_train = files_train_valid(train_ind);
+    train_valid_ind = randperm(length(files_train_valid));
+    tmp = 1:round(length(files_train_valid)*0.75);
+    
+    train_ind = train_valid_ind(tmp);
+    valid_ind = train_valid_ind;
+    valid_ind(tmp) = [];
+    
+    files_valid = files_train_valid(valid_ind);
+    files_train = files_train_valid(train_ind);
     
  
     
@@ -140,8 +140,8 @@ for fold = 1:folds
     
     learnRate = 0.001;
     learnRateMult = 0.1;
-%     stepEpoch = [25 35 40];
-    stepEpoch = [10 13 15];
+    stepEpoch = [25 35 40];
+%     stepEpoch = [10 13 15];
     numEpochs = stepEpoch(end);
     
     gradDecay = 0.9;
@@ -326,5 +326,4 @@ for fold = 1:folds
         save([tmp_folder '/test_dice_' mask_chanels{evaluate_index} '_' num2str(test_dice)  '.mat'],'aa')
     end
 
-    break
 end
