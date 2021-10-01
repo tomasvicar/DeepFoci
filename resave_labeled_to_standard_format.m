@@ -1,9 +1,15 @@
 clc;clear all;close all;
 addpath('utils')
 
-orig_data_path = 'Z:\000000-My Documents\data_u87_nhdf';
-labeled_path = 'Z:\000000-My Documents\data_u87_nhdf_anotated';
-save_folder = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
+
+orig_data_path = 'C:\Data\Vicar\foci_new\rad51_alldata\data_u87_nhdf_rad51';
+labeled_path = 'C:\Data\Vicar\foci_new\rad51_alldata\data_u87_nhdf_rad51_anotated';
+save_folder = 'C:\Data\Vicar\foci_new\rad51_alldata\data_u87_nhdf_rad51_resaved';
+
+
+% orig_data_path = 'Z:\000000-My Documents\data_u87_nhdf';
+% labeled_path = 'Z:\000000-My Documents\data_u87_nhdf_anotated';
+% save_folder = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
 
 
 % orig_data_path = 'D:\foky_testovaci_data\orig';
@@ -12,8 +18,8 @@ save_folder = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
 
 gpu=0;
 
-
-orig_filenames = subdirx([orig_data_path '/*01.ics']);
+orig_filenames = subdirx([orig_data_path '/*02.ics']);
+% orig_filenames = subdirx([orig_data_path '/*01.ics']);
 
 labled_filenames = subdirx([labeled_path '/*' 'result*.mat']);
 pos = regexp(labled_filenames,'result\d\d\d\.mat$');
@@ -27,6 +33,10 @@ labled_filenames_pahts = cellfun(@(x) fileparts(x),labled_filenames,'UniformOutp
 unique_folders = unique(labled_filenames_pahts);
 
 for unique_folder_num = 1:length(unique_folders)
+    
+    if unique_folder_num<305
+        continue
+    end
     
     disp([num2str(unique_folder_num) ' / ' num2str(length(unique_folders))])
     
@@ -47,7 +57,9 @@ for unique_folder_num = 1:length(unique_folders)
     
     
     
-    [a,b,c]=read_ics_3_files(char(orig_filename));
+%     [a,b,c]=read_ics_3_files(char(orig_filename));
+    [a,c]=read_ics_2_files(char(orig_filename));
+    b = a;
     
     if isempty(labeled_filenames_allcells)
         

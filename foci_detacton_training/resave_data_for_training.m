@@ -4,9 +4,14 @@ addpath('../utils')
 % src_path = '..\..\data_test';
 % dst_paht = '..\..\data_resave';
 % gpu = 0;
-% 
-src_path = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
-dst_paht = 'Z:\000000-My Documents\data_u87_nhdf_resaved_for_training_norm_nofilters';
+
+src_path = 'C:\Data\Vicar\foci_new\rad51_alldata\data_u87_nhdf_rad51_resaved';
+dst_paht = 'C:\Data\Vicar\foci_new\rad51_alldata\data_u87_nhdf_rad51_resaved_for_training_norm_nofilters';
+
+% src_path = 'Z:\000000-My Documents\data_u87_nhdf_resaved';
+% dst_paht = 'Z:\000000-My Documents\data_u87_nhdf_resaved_for_training_norm_nofilters';
+
+
 gpu = 1;
 
 
@@ -46,6 +51,13 @@ for img_num = 1:length(names_53BP1)
     
     positions_53BP1 = lbls.points_53BP1;
     positions_gH2AX = lbls.points_gH2AX;
+    
+    if isempty(positions_53BP1)
+        positions_53BP1 = zeros(0,3);
+    end
+    if isempty(positions_gH2AX)
+        positions_gH2AX = zeros(0,3);
+    end
     
     positions_53BP1_resize = round(positions_53BP1.*repmat(factor,[size(positions_53BP1,1),1]));
     positions_gH2AX_resize = round(positions_gH2AX.*repmat(factor,[size(positions_gH2AX,1),1]));
