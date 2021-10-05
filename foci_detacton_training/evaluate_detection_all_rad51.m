@@ -27,6 +27,15 @@ parfor file_num = 1:length(files)
 
     
     dice = dice_points(gt_points,res_points);
+    
+    if isempty(gt_points)
+        dice = 9999;
+    end
+    
+    if isnan(dice)
+       error('still nan')
+    end
+    
 
     dices(file_num) = dice;
     
@@ -37,7 +46,7 @@ parfor file_num = 1:length(files)
 end
 
 
-dice = mean(dices);
+dice = mean(dices(dices~=9999));
 
 end
 

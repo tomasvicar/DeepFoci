@@ -70,6 +70,7 @@ g = {};
 for file_num = 1:length(file_names)
     
     title_name = 'count res';
+%     y = [y,counts_manual_a(file_num),counts_manual_b(file_num),counts_manual_ab(file_num)];
 %     y = [y,counts_res_a(file_num),counts_res_b(file_num),counts_res_ab(file_num)];
     y = [y,dices_a(file_num),dices_b(file_num),dices_ab(file_num)];
     g = [g,[data_lbls{file_num} ' a'],[data_lbls{file_num} ' b'],[data_lbls{file_num} ' ab']];
@@ -108,14 +109,14 @@ h=boxplot(y,g,'positions', pozice,'colors','k','symbol','');
 %     set(h,'LineWidth',1)
 xtickangle(-30)
 
-plotSpread(y,'distributionIdx',g,'distributionColors','k');
-c = get(gca, 'Children');
-for i=1:length(c)
-    try
-        set(c(i), 'MarkerSize',8,'MarkerEdgeColor','k');
-    end
-end
-
+% plotSpread(y,'distributionIdx',g,'distributionColors','k');
+% c = get(gca, 'Children');
+% for i=1:length(c)
+%     try
+%         set(c(i), 'MarkerSize',8,'MarkerEdgeColor','k');
+%     end
+% end
+% 
 
 ylim([0,200])
 
