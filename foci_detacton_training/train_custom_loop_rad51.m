@@ -8,15 +8,15 @@ addpath('../utils')
     
 rng(42)
 
-data_path='../../data_u87_nhdf_resaved_for_training_norm_nofilters';
-folds = 5;
+data_path='../../rad51_alldata/data_u87_nhdf_rad51_resaved_for_training_norm_nofilters';
+folds = 4;
 
-data_chanels = {'a','b'};
+data_chanels = {'a','c'};
 matReaderData = @(x) matReader(x,'data',data_chanels,'norm_perc');
-mask_chanels = {'a','b','ab'};
+mask_chanels = {'a'};
 matReaderMask = @(x) matReader(x,'mask',mask_chanels,'norm_no');
-model_name = 'a_b_ab_allfolds_fix';
-folds = 2;
+model_name = 'rad51_train';
+
 
 
 paralel_load = 1;
@@ -33,9 +33,8 @@ for fold = 1:folds
     tmp_folder = ['../../resutls_' model_name '_' num2str(fold)];
     mkdir(tmp_folder)
     
-    [files_test,files_train_valid] = subfolder_based_split_xxx(files,fold,folds);
-%     [files_test,files_train_valid] = subfolder_based_split(files,fold,folds);
-    files_test = files_test';
+
+    [files_test,files_train_valid] = subfolder_based_split(files,fold,folds);
     
 %     [files_valid,files_train] = subfolder_based_split(files_train_valid,1,4);
    
@@ -141,7 +140,8 @@ for fold = 1:folds
     
     learnRate = 0.001;
     learnRateMult = 0.1;
-    stepEpoch = [25 35 40];
+    stepEpoch = [35 45 50];
+%     stepEpoch = [25 35 40];
 %     stepEpoch = [10 13 15];
     numEpochs = stepEpoch(end);
     
