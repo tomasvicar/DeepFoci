@@ -16,7 +16,7 @@ opt_params_names_b = {};
 opt_params_names_ab = {};
 gt_json_names = {};
 
-for fold = 1:5
+for fold = 1:7
     
     results_folder_actual = [resutls_folder '/' reutls_name '_' num2str(fold) '_test'];
     results_folder_actual2 = [resutls_folder '/' reutls_name '_' num2str(fold)];
@@ -396,7 +396,7 @@ end
 
 
 
-save('../../tmp_count.mat')
+save('../../tmp_count2.mat')
 
 
 
