@@ -1,7 +1,7 @@
 clc;clear all;close all;
 addpath('plotSpread')
 
-load('../../tmp_count2.mat')
+load('../../blue_and_count.mat')
 
 files_part1 = {};
 file_names = split(file_names,'C:');
@@ -45,112 +45,103 @@ for file_num = 1:length(file_names)
 end
 
 
+
+
+% order_by = {};
+% for cell_type = {'U87-MG','NHDF'}
+% 
+%     for time = {'30min','8h'}
+% 
+%         for gy = {'0,5Gy','1Gy','2Gy','4Gy','8Gy'}
+%             
+%             
+%             order_by = [order_by,[cell_type{1},' ',time{1},' ',gy{1}]];
+% 
+%         end
+%         
+%     end
+%     
+% end
+
+
+% 'NHDF'
 order_by = {};
-for cell_type = {'U87-MG','NHDF'}
+for cell_type = {'NHDF'}
 
-    for time = {'30min','8h'}
+    for time = {'30min'}
 
-        for gy = {'0,5Gy','1Gy','2Gy','4Gy','8Gy'}
+        for gy = {'1Gy','2Gy','4Gy'}
             
             
-            order_by = [order_by,[cell_type{1},' ',time{1},' ',gy{1} ' a']];
-            
-            order_by = [order_by,[cell_type{1},' ',time{1},' ',gy{1} ' b']];
-            
-            order_by = [order_by,[cell_type{1},' ',time{1},' ',gy{1} ' ab']];
-            
+            order_by = [order_by,[cell_type{1},' ',time{1},' ',gy{1}]];
+
         end
         
     end
     
 end
 
-y = [];
-g = {};
-for file_num = 1:length(file_names)
-    
-%     title_name = 'count manual';
-%     yli = [0,200];
-%     y = [y,counts_manual_a(file_num),counts_manual_b(file_num),counts_manual_ab(file_num)];
 
-    title_name = 'count res';
-    yli = [0,200];
-    y = [y,counts_res_a(file_num),counts_res_b(file_num),counts_res_ab(file_num)];
 
-%     title_name = 'dice';
-%     yli = [0,1];
-%     y = [y,dices_a(file_num),dices_b(file_num),dices_ab(file_num)];
-    g = [g,[data_lbls{file_num} ' a'],[data_lbls{file_num} ' b'],[data_lbls{file_num} ' ab']];
-end
+g = data_lbls;
 
-yy = [];
+
+blues_nuc_tmp = [];
+counts_res_ab_post_tmp = [];
 gg = {};
 for order_by_num = 1:length(order_by)
     tmp = strcmp(g,order_by{order_by_num});
-    yy = [yy,y(tmp)];
+    
+    tmp_count = counts_res_ab_post(tmp);
+    tmp_count = (tmp_count-mean(tmp_count))/std(tmp_count);
+    counts_res_ab_post_tmp = [counts_res_ab_post_tmp,tmp_count];
+    
+    tmp_blue = blues_nuc(tmp);
+    tmp_blue = (tmp_blue-mean(tmp_blue))/std(tmp_blue);
+    blues_nuc_tmp = [blues_nuc_tmp,tmp_blue];
+    
+%     figure('Position', [10 100 1800 1000]);
+%     plot(tmp_count,tmp_blue,'*')
+%     title(order_by{order_by_num})
+%     xlabel('number of foci')
+%     ylabel('avg blue')
+%     print(['C:\Data\Vicar\foci_new\blue_res\sep\blue_count' order_by{order_by_num}],'-dpng')
+%     
+%     figure('Position', [10 100 1800 1000]);
+%     hist(tmp_blue,30)
+%     title(order_by{order_by_num})
+%     print(['C:\Data\Vicar\foci_new\blue_res\sep\blue_hist' order_by{order_by_num}],'-dpng')
+% 
+%     figure('Position', [10 100 1800 1000]);
+%     hist(tmp_count,30)
+%     title(order_by{order_by_num})
+%     print(['C:\Data\Vicar\foci_new\blue_res\sep\count_hist' order_by{order_by_num}],'-dpng')
+
     gg = [gg,g(tmp)];
+    
+    
 end
-y = yy;
+counts_res_ab_post = counts_res_ab_post_tmp;
+blues_nuc = blues_nuc_tmp;
 g = gg;
 
-
-colors = repmat({[0, 0.4470, 0.7410],[0.8500, 0.3250, 0.0980],[0.9290, 0.6940, 0.1250]},[1,50]);
+% 
+figure('Position', [10 100 1800 1000]);
+plot(counts_res_ab_post,blues_nuc,'*')
+xlabel('number of foci')
+ylabel('avg blue')
+print(['C:\Data\Vicar\foci_new\blue_res\n-30min_1-4Gy\blue_count'],'-dpng')
 
 figure('Position', [10 100 1800 1000]);
-hold on
+hist(blues_nuc,30)
+ylabel('avg blue')
+print(['C:\Data\Vicar\foci_new\blue_res\n-30min_1-4Gy\blue_hist'],'-dpng')
 
 
-pozice = [];
-counter = 0;
-counter2 = 0;
-for k = 1:length(unique(g))
-    
-    if mod(counter,3) == 0 && counter~=0
-        counter2 = counter2+1;
-    end
-    
-    counter = counter+1;
-    counter2 = counter2+1;
-    
-    pozice = [pozice,counter2];
-    
-end
-    
-% pozice=1:length(unique(g));
+figure('Position', [10 100 1800 1000]);
+hist(counts_res_ab_post,30)
+ylabel('number of foci')
+print(['C:\Data\Vicar\foci_new\blue_res\n-30min_1-4Gy\count_hist'],'-dpng')
 
 
-
-
-colorss=colors(end:-1:1);
-h=boxplot(y,g,'positions', pozice,'colors','k','symbol',''); 
-h = findobj(gca,'Tag','Box');
-for j=1:length(h)
-   patch(get(h(j),'XData'),get(h(j),'YData'),colorss{j});
-end 
-c = get(gca, 'Children');
-for i=1:length(c)
-    try
-        set(c(i), 'FaceAlpha', 0.4);
-    end
-end
-h=boxplot(y,g,'positions', pozice,'colors','k','symbol',''); 
-%     set(h,'LineWidth',1)
-xtickangle(-45)
-
-% plotSpread(y,'distributionIdx',g,'distributionColors','k');
-% c = get(gca, 'Children');
-% for i=1:length(c)
-%     try
-%         set(c(i), 'MarkerSize',8,'MarkerEdgeColor','k');
-%     end
-% end
-% 
-
-ylim(yli)
-
-savefig(title_name)
-print(title_name,'-dpng')
-print(title_name,'-depsc')
-print(title_name,'-dsvg')
-
-
+% [R,P] = corrcoef(counts_res_ab_post,blues_nuc);

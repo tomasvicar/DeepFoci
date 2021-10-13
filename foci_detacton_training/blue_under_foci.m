@@ -1,13 +1,15 @@
 clc;clear all;close all;
-
+addpath('../utils')
 
 resutls_folder = 'C:\Data\Vicar\foci_new';
 nuc_masks_folder = 'C:\Data\Vicar\foci_new\data_u87_nhdf_resaved';
+foci_seg_folder = 'C:\Data\Vicar\foci_new\data_u87_nhdf_foci_seg_tmp'; 
+
 
 
 reutls_name = 'resutls_a_b_ab_allfolds';
 img_types = {'a','b','ab'};
-
+gpu = 1;
 
 result_names = {};
 mask_names = {};
@@ -69,6 +71,8 @@ counts_res_b = [];
 counts_res_ab = [];
 counts_res_ab_post = [];
 
+blues_under = [];
+blues_under_div_back = [];
 blues_nuc = [];
 
 
@@ -90,6 +94,7 @@ for file_num = 1:length(result_names)
     size_v = [505  681   48];
     
     mask = imread(mask_name);
+    mask0 = mask;
     mask = bwlabeln(mask);
     mask = imresize3(mask,size_v,'nearest');
     
@@ -179,16 +184,128 @@ for file_num = 1:length(result_names)
     
     
     
+    
+    
+    a = imread(replace(mask_name,'mask.tif','data_53BP1.tif'));
+    b = imread(replace(mask_name,'mask.tif','data_gH2AX.tif'));
     c = imread(replace(mask_name,'mask.tif','data_DAPI.tif'));
+    
+    
+    [a,b,~]=preprocess_filters(a,b,c,gpu);
+    
+    
+    resuls_ab_post_big = imresize3(resuls_ab_post,size(a),'nearest');
+    
+    a=norm_percentile(a,0.00001);
+    b=norm_percentile(b,0.00001);
+
+    ab=a.*b;
+    ab_uint_whole=uint8(mat2gray(ab)*255).*uint8(mask0);
+    
+    result=zeros(size(ab_uint_whole),'uint16');
+
+        
+    s = regionprops(mask0>0,'BoundingBox');
+    bbs = cat(1,s.BoundingBox);
+    
+    for cell_num =1:size(bbs,1)
+
+        bb=round(bbs(cell_num,:));
+        ab_uint = ab_uint_whole(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
+
+        tic
+        %    try
+        r=vl_mser(ab_uint,'MinDiversity',0.1,...
+            'MaxVariation',0.8,...
+            'Delta',1,...
+            'MinArea', 50/ numel(ab_uint),...
+            'MaxArea',2400/ numel(ab_uint));
+        %     catch
+        %         r=[] ;
+        %     end
+
+        M = zeros(size(ab_uint),'uint16') ;
+        for x=1:length(r)
+            s = vl_erfill(ab_uint,r(x)) ;
+            M(s) = M(s) + 1;
+        end
+
+        shape=[9,9,3];
+        [X,Y,Z] = meshgrid(linspace(-1,1,shape(1)),linspace(-1,1,shape(2)),linspace(-1,1,shape(3)));
+        sphere=sqrt(X.^2+Y.^2+Z.^2)<1;
+
+        
+        ab_maxima = resuls_ab_post_big(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1);
+        
+        
+        
+        pom=-double(ab_uint);
+        pom=imimposemin(pom,ab_maxima);
+        wab_krajeny=watershed(pom)>0;
+        wab_krajeny(M==0)=0;
+        wab_krajeny=imfill(wab_krajeny,'holes');
+
+        wab_krajeny_orez=wab_krajeny;
+        tmp=~wab_krajeny_orez;
+        %             shape0=size(tmp);
+        %             tmp=imresize3(uint8(tmp),[shape0(1)*3,shape0(2)*3,shape0(3)],'nearest')>0;
+        %             D = bwdist(tmp);
+        D=bwdistsc(tmp,[1,1,3]);
+        D=imhmax(D,1);
+        %             D=imresize3(D,shape0,'linear');
+        wab_krajeny_orez=(watershed(-D)>0) & wab_krajeny_orez;
+
+
+        L=bwlabeln(wab_krajeny_orez);
+        s=regionprops3(L,ab_maxima,'MaxIntensity');
+        s = s.MaxIntensity;
+        for k=1:length(s)
+            if s(k)==0
+                L(L==k)=0;
+            end
+        end
+        wab_krajeny=L>0;
+
+        
+
+        result(bb(2):bb(2)+bb(5)-1,bb(1):bb(1)+bb(4)-1,bb(3):bb(3)+bb(6)-1)=wab_krajeny;
+
+
+    end
+    
+       
+    
+    foci_seg_name = replace(mask_name,norm_path(nuc_masks_folder),norm_path(foci_seg_folder));
+    foci_seg_name = [fileparts(foci_seg_name) '/foci_seg.tif'];
+    mkdir(fileparts(foci_seg_name));
+    
+    imwrite_uint16_3D(foci_seg_name,result) 
+    
+    
+    
     c = imresize3(c,size_v);
+    
+    foci_seg_mask = imresize3(result,size_v,'nearest');
+    
     
     
     N = max(mask(:));
     for nuc_num = 1:N
-        
-        
+       
+
         tmp = c(mask==nuc_num);
         blue_nuc = mean(tmp(:));
+        
+        tmp = c((mask==nuc_num) & (foci_seg_mask>0));
+        blue_under = mean(tmp(:));
+        
+        
+        tmp = c((mask==nuc_num) & (foci_seg_mask==0));
+        blue_under_div_back = blue_under/mean(tmp(:));
+        
+        
+        blues_under = [blues_under,blue_under];
+        blues_under_div_back = [blues_under_div_back,blue_under_div_back];
         
         
         tmp = double(mask==nuc_num).*double(resuls_a);
@@ -225,6 +342,6 @@ end
 
 
 
-save('../../blue_and_count.mat')
+save('../../blue_under_foci.mat')
 
 
