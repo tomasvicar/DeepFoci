@@ -57,6 +57,12 @@ for img_num=1:length(names_53BP1)
     figure()
     imshow(mask(:,:,25),[])
     
+    [a,b,c]=preprocess_filtersxxx(af,bf,cf,1);
+    rgb_2d=cat(3,norm_percentile(max(a,[],3),0.001),norm_percentile(max(b,[],3),0.001),norm_percentile(max(c,[],3),0.001));
+    
+    
+    
+    imwrite(rgb_2d,['../../seg_examples/' num2str(img_num) 'rgb'  '.png' ])
     
     imwrite(tmp2,['../../seg_examples/' num2str(img_num) 'dapi'  '.png' ])
     
