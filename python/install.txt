@@ -1,3 +1,2 @@
-conda install spyder numpy matplotlib scikit-learn scikit-image pandas seaborn -y && conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch -y
+conda create --name foci -y && conda activate foci && conda install spyder numpy matplotlib scikit-learn scikit-image pandas seaborn -y && conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch -y && conda install h5py -y
 
-conda install h5py
