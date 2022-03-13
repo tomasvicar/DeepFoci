@@ -27,7 +27,7 @@ function data = matReader(tmp_filename,type,chanel_names,data_path,tmp_folder,im
     elseif num==4
         postion_vec1=floor(img_size(1)/2)-20:img_size(1);
         postion_vec2=floor(img_size(2)/2)-20:img_size(2);   
-    elseif num==0
+    elseif num==0 %%% 0 to read whole img
         postion_vec1 = 1:img_size(1);
         postion_vec2 = 1:img_size(2);
     end

@@ -9,15 +9,15 @@ paralel_load = 1;
 
 
 
-%absolute path to data is required (do not use relative path)
-%use data resaved with resave_data_for_training
-data_path = 'D:/foky_final_cleaning/DeepFoci/data_zenodo/part2_resaved';
+data_path = '../../data_zenodo/part2_resaved';
+data_path = dir(data_path).folder; % convert to absolute path - requered for loading
 
 model_name = 'detection_model';
 
-%absolute path to data is required (do not use relative path)
-% tmp folder is used for temporaly mat files
-tmp_folder = ['D:/foky_final_cleaning/DeepFoci/data_zenodo/tmp_' model_name];
+
+tmp_folder = ['../../data_zenodo/tmp_' model_name];
+mkdir(tmp_folder)
+tmp_folder = dir(tmp_folder).folder; % convert to absolute path - requered for loading
 
 
 data_chanels = {'imgs_53BP1','imgs_gH2AX'}; %define image channels to read
@@ -25,15 +25,17 @@ mask_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'}; %de
 
 img_size=[505  681   48]; % define image size
 
-% patchSize = [96 96 48];
-patchSize = [64 64 48];
+patchSize = [96 96 48];
+% patchSize = [64 64 48];
 patchPerImage = 1;
-miniBatchSize = 4;
+% miniBatchSize = 4;
 % miniBatchSize = 8;
+miniBatchSize = 12;
 
 learnRate = 0.001;
 learnRateMult = 0.1;
-stepEpoch = [5 8 10];
+% stepEpoch = [5 8 10];
+stepEpoch = [25 35 40];
 
 
 tmp_path_train = [tmp_folder '/train'];
@@ -79,7 +81,7 @@ volds = imageDatastore(tmp_path_train,'FileExtensions','.mat','IncludeSubfolders
 volds_gt = imageDatastore(tmp_path_train,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',matReaderMask);
 
 
-create_4_tmpfiles_for_each(file_folders_train,data_path,tmp_path_valid);
+create_4_tmpfiles_for_each(file_folders_valid,data_path,tmp_path_valid);
 volds_val = imageDatastore(tmp_path_valid,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',matReaderData);
 volds_gt_val = imageDatastore(tmp_path_valid,'FileExtensions','.mat','IncludeSubfolders',1,'ReadFcn',matReaderMask);
 
@@ -247,13 +249,18 @@ for epoch = 1:numEpochs
 
 end
 
+save('tmp')
+print([model_name '_train_curve'],'-dpng')
 
-
+load("tmp.mat")
 
 %% evaluate valid data
 
 tmp_folder_valid_results = [tmp_folder '_valid_results'];
 
+
+files_valid = file_folders_valid;
+files_valid = cellfun(@(x) [x '0'], files_valid,UniformOutput=false);
 
 files_valid_result = {};
 for file_num = 1:length(files_valid)
@@ -261,10 +268,10 @@ for file_num = 1:length(files_valid)
     disp(['evaluation valid  '  num2str(file_num)  '/' num2str(length(files_valid))])
     
     file  = files_valid{file_num};
-    data = matReaderData([file num2str(0)]);
+    data = matReaderData(file);
 
-    mask_predicted = predict_by_parts_foci_new(data,out_layers,dlnet,patchSize);
-    
+    predicted = predict_by_parts(data,out_layers,dlnet,patchSize);
+     
     results_name = replace( norm_path(file), norm_path(data_path), norm_path(tmp_folder_valid_results));
 
     results_path = fileparts(results_name);
@@ -273,7 +280,7 @@ for file_num = 1:length(files_valid)
     
     mkdir(results_path)
     
-    save(results_name,'mask_predicted')
+    save(results_name,'predicted')
     
     files_valid_result = [files_valid_result,results_name];
 end
@@ -289,14 +296,14 @@ d = optimizableVariable('d',[2,25]);
 
 vars = [T,h,d];
  
-for evaluate_index = 1:out_layers
+for evaluate_index = 2:out_layers
 
     fun = @(x) -evaluate_detection_all(files_valid,files_valid_result,evaluate_index,matReaderMask,x.T,x.h,x.d);
 
     opt_results = bayesopt(fun,vars,'NumSeedPoints',5,'MaxObjectiveEvaluations',25,'UseParallel',false);
 
 
-    optimal_params.(mask_chanel{evaluate_index}) = opt_results.XAtMinObjective;
+    optimal_params.(mask_chanels{evaluate_index}) = opt_results.XAtMinObjective;
 
 
 end
@@ -304,4 +311,4 @@ end
 
 
 save([model_name '.mat'],'dlnet','optimal_params')
-print([model_name '_train_curve'],'-dpng')
+
