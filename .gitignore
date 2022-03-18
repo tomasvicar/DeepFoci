@@ -3,3 +3,4 @@ data_zenodo/*
 *.asv
 *tmp.mat
 *.hdf5
+*.pyc
