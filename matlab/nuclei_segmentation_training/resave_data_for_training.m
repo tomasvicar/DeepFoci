@@ -3,7 +3,7 @@ addpath('../utils')
 
 
 %% setup
-src_path = '../../data_zenodo/part1_tmp/nucleus_segmentation';
+src_path = '../../data_zenodo/part1/nucleus_segmentation';
 dst_paht = '../../data_zenodo/part1_resaved/nucleus_segmentation';
 
 

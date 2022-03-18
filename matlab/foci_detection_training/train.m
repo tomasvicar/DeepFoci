@@ -29,8 +29,8 @@ patchSize = [96 96 48];
 % patchSize = [64 64 48];
 patchPerImage = 1;
 % miniBatchSize = 4;
-% miniBatchSize = 8;
-miniBatchSize = 12;
+miniBatchSize = 8;
+% miniBatchSize = 12;
 
 learnRate = 0.001;
 learnRateMult = 0.1;
