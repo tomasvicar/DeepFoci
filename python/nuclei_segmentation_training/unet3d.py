@@ -73,6 +73,8 @@ class Unet3d(nn.Module):
         
         self.filters = filters
         
+        self.log = None
+        
         
         self.conv1 = nn.Sequential(unetConv3(in_size, filters[0]),unetConv3(filters[0], filters[0]),unetConv3(filters[0], filters[0]))
 
@@ -165,3 +167,6 @@ class Unet3d(nn.Module):
         
 #        sig=self.sm(final)
         return x
+    
+
+    
