@@ -2,7 +2,7 @@ from scipy.ndimage import convolve
 import numpy as np
 import torch
 
-def predict_py_parts(model, data, crop_size):
+def predict_by_parts(model, data, crop_size):
     
     
     border=16

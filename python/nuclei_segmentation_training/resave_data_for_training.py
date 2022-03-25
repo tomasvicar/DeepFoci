@@ -21,7 +21,7 @@ from norm_percentile_nocrop import norm_percentile_nocrop
 
 
 
-src_path = '../../data_zenodo/part1_tmp/nucleus_segmentation'
+src_path = '../../data_zenodo/part1/nucleus_segmentation'
 dst_hdf5_file = '../../data_zenodo/part1_resaved/nucleus_segmentation.hdf5'
 
 
@@ -53,6 +53,9 @@ with h5py.File(dst_hdf5_file, "w") as f:
     for file_num,(img_filename,mask_filename,img_number) in enumerate(zip(img_filenames,masks_filenames,img_numbers)):
         
         print(str(file_num) + ' / ' + str(len(img_filenames)))
+        
+        if  file_num == 77:
+            continue
         
         
         img = imread(img_filename)  
