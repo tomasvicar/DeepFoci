@@ -2,7 +2,7 @@ import numpy as np
 
 class Config:
     
-    tmp_save_dir='../../data_zenodo/tmp_segmentation_model'
+    tmp_save_dir='../../data_zenodo/tmp_detection_model'
     
     train_num_workers=6
     test_num_workers=3
@@ -11,10 +11,10 @@ class Config:
     # test_num_workers=0
     
     
-    hdf5_filename = '../../data_zenodo/part1_resaved/nucleus_segmentation.hdf5'
+    hdf5_filename = '../../data_zenodo/part2_resaved/foci_detection.hdf5'
     
     
-    model_name='segmentation_model_1'
+    model_name='detection_model_1'
     
     
     train_batch_size = 8
@@ -37,7 +37,7 @@ class Config:
     filters = [16, 32, 64, 128]
     # filters = [4, 8, 16, 32]
     input_size = 3
-    output_size = 1
+    output_size = 3
     
     crop_size = [96,96]
     # crop_size = [64,64]

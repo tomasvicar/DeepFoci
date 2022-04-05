@@ -10,6 +10,7 @@ import torch.optim as optim
 import matplotlib.pyplot as plt
 from tifffile import TiffWriter
 from tifffile import imread, imsave
+import random
 
 
 from dataset import Dataset
@@ -18,12 +19,11 @@ from utils.utils import dice_loss
 from unet3d import Unet3d
 from utils.log import Log
 from utils.predict_by_parts import predict_by_parts
-
+import h5py
 
 
 if __name__ == '__main__':
 
-    
     device = torch.device("cuda:0")
     config = Config();
     
@@ -32,16 +32,44 @@ if __name__ == '__main__':
     except:
         pass
     
+    with h5py.File(config.hdf5_filename, 'r') as h5data:
+        filenames = list(h5data.keys())
+        
+    filenames = [x.replace('\\data','\\') for x in filenames if x.endswith('data')]
+    folder_names = np.unique(['\\'.join(x.split('\\')[:-2]) for x in filenames]).tolist()
     
-    loader = Dataset(hdf5_filename=config.hdf5_filename,split='train',crop_size=config.crop_size)
+    random.seed(42)
+    test_folders = random.sample(folder_names,3)
+    
+    test_filenames = []
+    tmp_filenames = []
+    for filename in filenames:
+        used = 0
+        for test_folder in test_folders:
+            if test_folder in filename:
+                test_filenames.append(filename)
+                used = 1
+        if used == 0:
+            tmp_filenames.append(filename)
+        
+    valid_ind = random.sample(range(len(tmp_filenames)), int(len(tmp_filenames)/10))
+    valid_bool = np.zeros(len(tmp_filenames),dtype=bool)
+    valid_bool[valid_ind] = True
+    valid_filenames = [filename for x,filename in zip(valid_bool,tmp_filenames) if x]
+    train_filenames = [filename for x,filename in zip(valid_bool,tmp_filenames) if not x]
+        
+    
+    loader = Dataset(hdf5_filename=config.hdf5_filename, filenames=train_filenames, split='train', crop_size=config.crop_size)
     trainloader= data.DataLoader(loader, batch_size=config.train_batch_size, num_workers=config.train_num_workers, shuffle=True,drop_last=True)
 
-    loader = Dataset(hdf5_filename=config.hdf5_filename,split='valid',crop_size=config.crop_size)
+    loader = Dataset(hdf5_filename=config.hdf5_filename, filenames=valid_filenames, split='valid', crop_size=config.crop_size)
     validLoader= data.DataLoader(loader, batch_size=config.test_batch_size, num_workers=config.test_num_workers, shuffle=False,drop_last=False)
     
 
     model = Unet3d(filters=config.filters, in_size=config.input_size, out_size=config.output_size)
-    
+    model.test_filenames = test_filenames
+    model.valid_filenames = valid_filenames
+    model.train_filenames = train_filenames
 
     model = model.to(device)
 
@@ -57,8 +85,8 @@ if __name__ == '__main__':
         N=len(trainloader)
         for it, (batch,lbls,_) in enumerate(trainloader):
             
-            if it%50==0:
-                print(str(it) + '/' + str(N))
+            if it%10==0:
+                print('train ' + str(it) + '/' + str(N))
             
            
             batch=batch.to(device)
@@ -66,9 +94,10 @@ if __name__ == '__main__':
             
             res=model(batch)
             
-            res = torch.sigmoid(res)
-            loss = dice_loss(res,lbls)
+            # res = torch.sigmoid(res)
+            # loss = dice_loss(res,lbls)
             
+            loss = torch.mean((res - lbls)**2)
             
             optimizer.zero_grad()
             loss.backward()
@@ -84,17 +113,21 @@ if __name__ == '__main__':
             
         with torch.no_grad(): 
             model.eval()
+            N=len(validLoader)
             for it, (batch,lbls,_) in enumerate(validLoader):
+                
+                if it%10==0:
+                    print('valid ' + str(it) + '/' + str(N))
                 
                 batch=batch.to(device)
                 lbls=lbls.to(device)
                 
                 res=model(batch)
                 
-                res = torch.sigmoid(res)
-                loss = dice_loss(res,lbls)
+                # res = torch.sigmoid(res)
+                # loss = dice_loss(res,lbls)
                 
-                
+                loss = torch.mean((res - lbls)**2)
                 
                 loss=loss.detach().cpu().numpy()
                 res=res.detach().cpu().numpy()
@@ -129,51 +162,51 @@ if __name__ == '__main__':
     
     # model = model.to(device)
         
-    loader = Dataset(hdf5_filename=config.hdf5_filename,split='test',crop_size=config.crop_size)
-    testLoader= data.DataLoader(loader, batch_size=1, num_workers=0, shuffle=False,drop_last=False)
-    with torch.no_grad(): 
-        model.eval()
-        for it, (batch,lbls,filenames) in enumerate(testLoader):
+    # loader = Dataset(hdf5_filename=config.hdf5_filename,split='test',crop_size=config.crop_size)
+    # testLoader= data.DataLoader(loader, batch_size=1, num_workers=0, shuffle=False,drop_last=False)
+    # with torch.no_grad(): 
+    #     model.eval()
+    #     for it, (batch,lbls,filenames) in enumerate(testLoader):
             
-            batch=batch.to(device)
-            lbls=lbls.to(device)
+    #         batch=batch.to(device)
+    #         lbls=lbls.to(device)
             
-            res = predict_by_parts(model,batch[0,:,:,:], crop_size=config.crop_size)
+    #         res = predict_by_parts(model,batch[0,:,:,:], crop_size=config.crop_size)
             
-            res = torch.sigmoid(res)
+    #         # res = torch.sigmoid(res)
             
-            batch = batch.detach().cpu().numpy()
-            res = res.detach().cpu().numpy()
-            lbls = lbls.detach().cpu().numpy()
+    #         batch = batch.detach().cpu().numpy()
+    #         res = res.detach().cpu().numpy()
+    #         lbls = lbls.detach().cpu().numpy()
             
             
-            plt.imshow(np.max(batch[0,0,:,:,:],axis=2))
-            plt.show()
-            plt.imshow(np.max(lbls[0,0,:,:,:],axis=2))
-            plt.show()
-            plt.imshow(np.max(res[0,:,:,:],axis=2))
-            plt.show()
-            print()
+    #         plt.imshow(np.max(batch[0,0,:,:,:],axis=2))
+    #         plt.show()
+    #         plt.imshow(np.max(lbls[0,0,:,:,:],axis=2))
+    #         plt.show()
+    #         plt.imshow(np.max(res[0,:,:,:],axis=2))
+    #         plt.show()
+    #         print()
             
-            filename_saveimg = config.tmp_save_dir + os.sep + 'result_' + filenames[0]  + '.tiff'
+    #         filename_saveimg = config.tmp_save_dir + os.sep + 'result_' + filenames[0]  + '.tiff'
             
-            res = (res > 0.5).astype(np.float32)
+    #         # res = (res > 0.5).astype(np.float32)
             
-            res = np.transpose(res,(3,0,1,2))
+    #         res = np.transpose(res,(3,0,1,2))
             
-            with TiffWriter(filename_saveimg,bigtiff=True) as tif:
+    #         with TiffWriter(filename_saveimg,bigtiff=True) as tif:
     
-                for k in range(res.shape[0]):
+    #             for k in range(res.shape[0]):
                 
-                    tif.write(res[k,0,:,:,] ,compress = 2)
+    #                 tif.write(res[k,:,:,:,] ,compress = 2)
 
 
 
 
-            # res_loaded = imread(filename_saveimg,key = range(48))
+    #         # res_loaded = imread(filename_saveimg,key = range(48))
 
 
-            # print(np.sum(np.abs(res[:,0,:,:,] - res_loaded )))
+    #         # print(np.sum(np.abs(res[:,0,:,:,] - res_loaded )))
         
 
             
