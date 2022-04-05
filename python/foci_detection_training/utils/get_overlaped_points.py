@@ -30,6 +30,7 @@ def get_overlaped_points(poits1, poits2):
     poits_out = (poits1[row_ind,:] + poits2[col_ind,:]) / 2
     
     
+    
     poits_out[:,2] = poits_out[:,2] / z_scale_factor
     
     return poits_out.tolist()
