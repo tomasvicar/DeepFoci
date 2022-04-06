@@ -95,10 +95,6 @@ with torch.no_grad():
         
 
 
-
-
-
-        
       
 pbounds = dict()
 pbounds['T'] = [0.6, 8.5]
@@ -119,35 +115,16 @@ for filename in valid_filenames:
     filenames_results.append(filename_saveimg)
     
     
-# final_params = []
-# for evaluate_index in range(3):   
-#     optimizer = BayesianOptimization(f=WrapperEvaluateDetections(filenames_masks, filenames_results, evaluate_index),pbounds=pbounds,random_state=42)  
-    
-#     optimizer.maximize(init_points=5,n_iter=25)
-    
-    
-#     final_params.append(optimizer.max['params'])
-    
 final_params = []
+for evaluate_index in range(3):   
+    optimizer = BayesianOptimization(f=WrapperEvaluateDetections(filenames_masks, filenames_results, evaluate_index),pbounds=pbounds,random_state=42)  
+    
+    optimizer.maximize(init_points=5,n_iter=25)
+    
+    
+    final_params.append(optimizer.max['params'])
+    
 
-tmp = dict()
-tmp['T'] = 2.321
-tmp['d'] = 2.096
-tmp['h'] = 1.404
-final_params.append(tmp)
-
-tmp = dict()
-tmp['T'] = 2.309
-tmp['d'] = 2.0
-tmp['h'] = 0.1
-final_params.append(tmp)
-
-
-tmp = dict()
-tmp['T'] = 3.179
-tmp['d'] = 2.0
-tmp['h'] = 2.164 
-final_params.append(tmp)
 
 model.postprocessing_params = final_params
 
