@@ -30,7 +30,6 @@ loader = Dataset(hdf5_filename=config.hdf5_filename, filenames=valid_filenames, 
 validLoader= data.DataLoader(loader, batch_size=1, num_workers=0, shuffle=False,drop_last=False)
 
 
-valid_filenames
 
 with torch.no_grad(): 
     model.eval()
@@ -116,6 +115,7 @@ for filename in valid_filenames:
     
     
 final_params = []
+best_values = []
 for evaluate_index in range(3):   
     optimizer = BayesianOptimization(f=WrapperEvaluateDetections(filenames_masks, filenames_results, evaluate_index),pbounds=pbounds,random_state=42)  
     
@@ -123,10 +123,14 @@ for evaluate_index in range(3):
     
     
     final_params.append(optimizer.max['params'])
+    best_values.append(optimizer.max['target'])
     
+    print(final_params)
+    print(best_values)
 
 
 model.postprocessing_params = final_params
+model.best_values = best_values
 
 
 torch.save(model,'detection_model.pt')
