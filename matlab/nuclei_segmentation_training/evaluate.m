@@ -9,8 +9,9 @@ normalization_percentile = 0.0001;
 
 
 %posproccessing prarams can be adjusted
-minimal_nuclei_size=6000;
-for h = 1:10
+minimal_nuclei_size = 10000;
+minimal_hole_size = 10000;
+for h = 2 %1:10
     mask_dilatation=[14 14 5];
     
     
@@ -28,8 +29,9 @@ for h = 1:10
     end
     
     
-    load('tmp4.mat','dlnet')
-    
+    load('segmentation_model.mat','dlnet')
+    dlnet = dlnet.dlnet;
+
     patchSize = dlnet.Layers(1).InputSize;
     out_layers = dlnet.Layers(48).NumOutputs;
     
@@ -63,7 +65,9 @@ for h = 1:10
     
         mask_predicted = predict_by_parts(data,out_layers,dlnet,patchSize);
         
-        mask_split = split_nuclei(mask_predicted>0.5,minimal_nuclei_size,h);
+
+
+        mask_split = split_nuclei(mask_predicted>0.5,minimal_nuclei_size,minimal_hole_size,h);
         
         mask_label_dilated = balloon(mask_split,mask_dilatation);
     
@@ -101,6 +105,8 @@ for h = 1:10
         seg = seg_3d(mask,mask_final);
     
         segs = [segs,seg];
+
+        median(segs)
     
     end
     h
@@ -111,73 +117,3 @@ end
 
 
 
-% 
-% 
-% h =
-% 
-%      1
-% 
-% 
-% ans =
-% 
-%     0.6402
-% 
-% 
-% h =
-% 
-%      2
-% 
-% 
-% ans =
-% 
-%     0.6714
-% 
-% 
-% h =
-% 
-%      3
-% 
-% 
-% ans =
-% 
-%     0.6631
-% 
-% 
-% h =
-% 
-%      4
-% 
-% 
-% ans =
-% 
-%     0.6631
-% 
-% 
-% h =
-% 
-%      5
-% 
-% 
-% ans =
-% 
-%     0.6631
-% 
-% 
-% h =
-% 
-%      6
-% 
-% 
-% ans =
-% 
-%     0.6631
-% 
-% 
-% h =
-% 
-%      7
-% 
-% 
-% ans =
-% 
-%     0.6631

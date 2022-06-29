@@ -62,8 +62,9 @@ segs = []
 
 for file_num,(img_filename,mask_filename) in enumerate(zip(img_filenames,masks_filenames)):
     
-    if file_num < 1 :
-        continue
+    print(file_num)
+    # if file_num < 1 :
+    #     continue
     
     img = imread(img_filename)  
     img = np.moveaxis(img,0,2)

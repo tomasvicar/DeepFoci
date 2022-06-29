@@ -296,7 +296,7 @@ d = optimizableVariable('d',[2,25]);
 
 vars = [T,h,d];
  
-for evaluate_index = 2:out_layers
+for evaluate_index = 1:out_layers
 
     fun = @(x) -evaluate_detection_all(files_valid,files_valid_result,evaluate_index,matReaderMask,x.T,x.h,x.d);
 

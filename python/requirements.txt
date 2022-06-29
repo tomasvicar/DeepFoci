@@ -1,0 +1,14 @@
+numpy
+matplotlib
+spyder
+scikit-image
+scikit-learn
+bayesian-optimization
+scipy==1.7.2
+scikit-fmm
+edt
+imagecodecs
+--extra-index-url https://download.pytorch.org/whl/cu113
+torch 
+torchvision 
+torchaudio 

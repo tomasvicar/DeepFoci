@@ -279,3 +279,4 @@ for file_num = 1:length(files_valid)
 end
 
 
+save('segmentation_model.mat','dlnet')
