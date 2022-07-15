@@ -40,7 +40,7 @@ for data_folder_num = 1:length(data_folders)
 %             data = read_ics_3_files(filename);
             data_2D = read_ics_3_files_2D(filename);
             
-            shape = size(data_2D);
+            shape = size(data_2D{1});
 
             shapes = [shapes;shape];
             shapes_filenames = [shapes_filenames;filename];
