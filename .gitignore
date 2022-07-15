@@ -5,3 +5,4 @@ data_zenodo/*
 *.hdf5
 *.pyc
 matlab/nova_data/**/*.mat
+matlab/nuclei_segmentation_training/tmp*.mat
