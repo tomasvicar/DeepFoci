@@ -59,7 +59,7 @@ for data_folder_num = 1:length(data_folders)
 
 end
 
-
+save('analyze_size_results.mat','shapes','shapes_filenames')
 
 
 % u = unique(for_uniques);
