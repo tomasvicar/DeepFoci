@@ -4,3 +4,4 @@ data_zenodo/*
 *tmp.mat
 *.hdf5
 *.pyc
+matlab/nova_data/**/*.mat
