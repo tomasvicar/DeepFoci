@@ -58,13 +58,41 @@ for file_num = 1:length(filenames)
     
         filename_save = [results_folder, replace(filename,data_folder,'')];
 
-        if exist([filename_save 'nuclei_semgentaton.tif'],'file')
-            continue;
-        end
+%         if exist([filename_save 'nuclei_semgentaton.tif'],'file')
+%             continue;
+%         end
 
         mkdir(filename_save)
-    
+
+
+        %%%% dodelani kanalu
+        name_fov_file = [filename 'fov.txt'];
+        chanel_names={};
+        fid = fopen(name_fov_file);
+        tline = 'dfdf';
+        while ischar(tline)
+            if contains(tline,'Name=')
+                chanel_names=[chanel_names tline(6:end)];
+            end
+            tline = fgetl(fid);
+        end
+        fclose(fid);
+
+        if contains(lower(chanel_names{1}),'gh2ax')
+            continue
+        elseif contains(lower(chanel_names{2}),'gh2ax')
+            
+        else
+            save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+            continue;
+        end
+        %%%% dodelani kanalu
+
         data = read_ics_3_files(filename);
+
+        %%%% dodelani kanalu
+        data = data([2,1,3]);
+        %%%% dodelani kanalu
     
         for k = 1:length(data)
     
@@ -79,9 +107,9 @@ for file_num = 1:length(filenames)
     
         data = cat(4,data{:});
     
-        mask_predicted = predict_by_parts(data,1,dlnet_segmentation,patchSize);
-        mask_split = split_nuclei(mask_predicted>0.5,minimal_nuclei_size,minimal_hole_size,h);
-        result_nuclei_segmentation = balloon(mask_split,mask_dilatation);
+%         mask_predicted = predict_by_parts(data,1,dlnet_segmentation,patchSize);
+%         mask_split = split_nuclei(mask_predicted>0.5,minimal_nuclei_size,minimal_hole_size,h);
+%         result_nuclei_segmentation = balloon(mask_split,mask_dilatation);
     
         
     
@@ -104,14 +132,14 @@ for file_num = 1:length(filenames)
         fprintf(fileID, json_data);
         fclose(fileID);
     
-    
-        imwrite_uint16_3D([filename_save 'nuclei_semgentaton_unprocessed.tif'],uint16(mask_predicted*65535))
-    
-        for outputs_detection_chanels_ind = 1:length(outputs_detection_chanels)
-            cn = outputs_detection_chanels{outputs_detection_chanels_ind};
-            imwrite_uint16_3D([filename_save 'detection_unprocessed_' cn '.tif'],uint16(predicted_detection(:,:,:,outputs_detection_chanels_ind)*65535))
-        end
-        imwrite_uint16_3D([filename_save 'nuclei_semgentaton.tif'],result_nuclei_segmentation)
+%     
+%         imwrite_uint16_3D([filename_save 'nuclei_semgentaton_unprocessed.tif'],uint16(mask_predicted*65535))
+%     
+%         for outputs_detection_chanels_ind = 1:length(outputs_detection_chanels)
+%             cn = outputs_detection_chanels{outputs_detection_chanels_ind};
+%             imwrite_uint16_3D([filename_save 'detection_unprocessed_' cn '.tif'],uint16(predicted_detection(:,:,:,outputs_detection_chanels_ind)*65535))
+%         end
+%         imwrite_uint16_3D([filename_save 'nuclei_semgentaton.tif'],result_nuclei_segmentation)
 
     catch exception
         save([error_folder '/' num2str(file_num) '.mat'])

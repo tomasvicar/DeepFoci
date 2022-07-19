@@ -74,11 +74,39 @@ for data_folder_num = 1:length(data_folders)
             filename_save_oldseg = [results_folder_oldseg, replace(filename,data_folder,'')];
             filename_save_res1= [results_folder_res1, replace(filename,data_folder,'')];
             
+            %%%% dodelani kanalu
+            name_fov_file = [filename 'fov.txt'];
+            chanel_names={};
+            fid = fopen(name_fov_file);
+            tline = 'dfdf';
+            while ischar(tline)
+                if contains(tline,'Name=')
+                    chanel_names=[chanel_names tline(6:end)];
+                end
+                tline = fgetl(fid);
+            end
+            fclose(fid);
+    
+            if contains(lower(chanel_names{1}),'gh2ax')
+                continue
+            elseif contains(lower(chanel_names{2}),'gh2ax')
+                
+            else
+                save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+                continue;
+            end
+            %%%% dodelani kanalu
+
+
         
             data = read_ics_2_files(filename);
             for channel_num = 1:2
                 data{channel_num} = imresize3(single(data{channel_num}),resized_img_size);
             end
+
+            %%%% dodelani kanalu
+            data = data([2,1]);
+            %%%% dodelani kanalu
 
             detections = jsondecode(fileread([filename_save_res1 'detections.json']));
             detected_points = detections.(outputs_detection_chanels{3});
