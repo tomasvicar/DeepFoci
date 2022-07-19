@@ -37,7 +37,7 @@ MinArea = 8;
 MaxArea = 1000;
 
 
-
+% errory navíc
 
 for_uniques = {};
 wholes = {};
@@ -61,12 +61,19 @@ for data_folder_num = 1:length(data_folders)
     for file_num = 1:length(filenames)
         try
 %         while 1
-            disp(file_num)
+            disp(data_folder)
+            disp([num2str(file_num) '/' num2str(length(filenames))])
+
+            
  
         
             filename = filenames{file_num};
         
             filename_save_fociseg = [results_folder_fociseg, replace(filename,data_folder,'')];
+            if exist([filename_save_fociseg 'foci_semgentaton.tif'],'file')
+                continue;
+                disp('continue')
+            end
             mkdir(filename_save_fociseg)
 %             filename_save_examle_fociseg= [results_folder_examle_fociseg, replace(filename,data_folder,'')];
 %             mkdir(filename_save_examle_fociseg)
@@ -82,6 +89,12 @@ for data_folder_num = 1:length(data_folders)
 
             detections = jsondecode(fileread([filename_save_res1 'detections.json']));
             detected_points = detections.(outputs_detection_chanels{3});
+            if isempty(detected_points)
+                detected_points = zeros(0,3);
+            end
+            if numel(detected_points)==3
+                detected_points = detected_points';
+            end
             binary_detection = false(size(data{1},[1,2,3]));
             binary_detection(sub2ind(size(data{1},[1,2,3]),...
                 detected_points(:,2),...

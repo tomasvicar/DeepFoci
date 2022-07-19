@@ -35,7 +35,8 @@ for data_folder_num = 1:length(data_folders)
 
     
     for file_num = 1:length(filenames)
-        try
+%         try
+        if 1
             disp(file_num)
  
         
@@ -43,13 +44,28 @@ for data_folder_num = 1:length(data_folders)
         
             filename_save = [results_folder, replace(filename,data_folder,'')];
             mkdir(filename_save)
+            if exist([filename_save 'nuclei_semgentaton.tif'],'file')
+                disp('continue')
+                continue;
+            end
+
             filename_save_examle= [results_folder_examle, replace(filename,data_folder,'')];
             mkdir(filename_save_examle)
 
             filename_save_res1= [results_folder_res1, replace(filename,data_folder,'')];
             
-        
-            data = read_ics_3_files(filename);
+            clear data;clear a;clear b;clear c;clear mask;clear mask_orig;
+
+            try 
+                data = read_ics_3_files(filename);
+            catch exception
+                save([error_folder '/' num2str(file_num) '.mat'])
+                continue
+            end
+            if length(size(data{1}))
+
+            end
+
 
 
             [a,b,c]=preprocess_filters(data{1},data{2},data{3},1);
@@ -77,6 +93,12 @@ for data_folder_num = 1:length(data_folders)
             visboundaries(max(mask,[],3))
             for out_chanel_index = 1:3
                 detected_points=detections.(outputs_detection_chanels{out_chanel_index});
+                if isempty(detected_points)
+                    detected_points = zeros(0,3);
+                end
+                if numel(detected_points)==3
+                    detected_points = detected_points';
+                end
                 factor = [337  454   48] ./ [505  681   48];
                 detected_points = detected_points .* repmat(factor,[size(detected_points,1),1]);
                 plot(detected_points(:,1),detected_points(:,2),'*')
@@ -88,8 +110,8 @@ for data_folder_num = 1:length(data_folders)
 
             imwrite_uint16_3D([filename_save 'nuclei_semgentaton.tif'],uint16(mask))
 
-       catch exception
-            save([error_folder '/' num2str(file_num) '.mat'])
+%        catch exception
+%             save([error_folder '/' num2str(file_num) '.mat'])
 
        end
 
