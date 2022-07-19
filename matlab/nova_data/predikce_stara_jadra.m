@@ -62,8 +62,9 @@ for data_folder_num = 1:length(data_folders)
                 save([error_folder '/' num2str(file_num) '.mat'])
                 continue
             end
-            if length(size(data{1}))
-
+            if length(size(data{1}))~=3
+                save([error_folder '/' num2str(file_num) 'size_error.mat']) 
+                continue
             end
 
 

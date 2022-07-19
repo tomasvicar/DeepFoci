@@ -59,8 +59,8 @@ for data_folder_num = 1:length(data_folders)
 
     
     for file_num = 1:length(filenames)
-        try
-%         while 1
+%         try
+        if 1
             disp(data_folder)
             disp([num2str(file_num) '/' num2str(length(filenames))])
 
@@ -81,39 +81,48 @@ for data_folder_num = 1:length(data_folders)
             filename_save_oldseg = [results_folder_oldseg, replace(filename,data_folder,'')];
             filename_save_res1= [results_folder_res1, replace(filename,data_folder,'')];
             
-            %%%% dodelani kanalu
-            name_fov_file = [filename 'fov.txt'];
-            chanel_names={};
-            fid = fopen(name_fov_file);
-            tline = 'dfdf';
-            while ischar(tline)
-                if contains(tline,'Name=')
-                    chanel_names=[chanel_names tline(6:end)];
-                end
-                tline = fgetl(fid);
-            end
-            fclose(fid);
-    
-            if contains(lower(chanel_names{1}),'gh2ax')
-                continue
-            elseif contains(lower(chanel_names{2}),'gh2ax')
-                
-            else
-                save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+%             %%%% dodelani kanalu
+%             name_fov_file = [filename 'fov.txt'];
+%             chanel_names={};
+%             fid = fopen(name_fov_file);
+%             tline = 'dfdf';
+%             while ischar(tline)
+%                 if contains(tline,'Name=')
+%                     chanel_names=[chanel_names tline(6:end)];
+%                 end
+%                 tline = fgetl(fid);
+%             end
+%             fclose(fid);
+%     
+%             if contains(lower(chanel_names{1}),'gh2ax')
+%                 continue
+%             elseif contains(lower(chanel_names{2}),'gh2ax')
+%                 
+%             else
+%                 save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+%                 continue;
+%             end
+%             %%%% dodelani kanalu
+
+            clear data;clear a;clear b;clear c;clear mask;clear mask_orig;
+            try
+                data = read_ics_2_files(filename);
+            catch exception
+                save([error_folder '/' num2str(file_num) '.mat'])
                 continue;
             end
-            %%%% dodelani kanalu
-
-
-        
-            data = read_ics_2_files(filename);
+            if length(size(data{1}))~=3
+                save([error_folder '/' num2str(file_num) 'size_error.mat']) 
+                continue
+            end
+            
             for channel_num = 1:2
                 data{channel_num} = imresize3(single(data{channel_num}),resized_img_size);
             end
 
-            %%%% dodelani kanalu
-            data = data([2,1]);
-            %%%% dodelani kanalu
+%             %%%% dodelani kanalu
+%             data = data([2,1]);
+%             %%%% dodelani kanalu
 
             detections = jsondecode(fileread([filename_save_res1 'detections.json']));
             detected_points = detections.(outputs_detection_chanels{3});
@@ -215,8 +224,8 @@ for data_folder_num = 1:length(data_folders)
 
 
 
-       catch exception
-            save([error_folder '/' num2str(file_num) '.mat'])
+%        catch exception
+%             save([error_folder '/' num2str(file_num) '.mat'])
 
        end
 
