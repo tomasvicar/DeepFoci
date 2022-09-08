@@ -4,8 +4,8 @@ addpath('../nuclei_segmentation_training')
 
 
 data_folders = {...
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\NANOREP';
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Late gH2AX+53BP1 foci - different IR types, doses, cell types';
+%     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\NANOREP';
+%     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Late gH2AX+53BP1 foci - different IR types, doses, cell types';
     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\15N 90st 4Gy NHDF+U87 gH2AX+53BP1';
     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení';
     };
@@ -35,7 +35,7 @@ for data_folder_num = 1:length(data_folders)
     
     
     for file_num = 25:length(filenames)
-        while 1
+        if 1
 %         try
         
             filename = filenames{file_num};

@@ -11,10 +11,10 @@ addpath('../utils')
 
 
 data_folders = {...
-    'Z:\000000-My Documents\FOR ANALYSIS\NANOREP';
-    'Z:\000000-My Documents\FOR ANALYSIS\Late gH2AX+53BP1 foci - different IR types, doses, cell types';
-    'Z:\000000-My Documents\FOR ANALYSIS\15N 90st 4Gy NHDF+U87 gH2AX+53BP1';
-    'Z:\000000-My Documents\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení';
+    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\NANOREP';
+    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Late gH2AX+53BP1 foci - different IR types, doses, cell types';
+    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\15N 90st 4Gy NHDF+U87 gH2AX+53BP1';
+    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení';
     };
 
 outputs_detection_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'}; 
@@ -29,7 +29,7 @@ for data_folder_num = 1:length(data_folders)
     data_folder = data_folders{data_folder_num};
     error_folder = split(data_folder,'\');
     error_folder = [error_folder{end} '_check_colors'];
-    mkdir(error_folder)
+%     mkdir(error_folder)
     
     results_folder_oldseg = [data_folder '_net_results_oldseg'];
     results_folder_fociseg = [data_folder '_fociseg'];
@@ -73,7 +73,7 @@ for data_folder_num = 1:length(data_folders)
             
         
        catch exception
-            save([error_folder '/' num2str(file_num) '.mat'])
+%             save([error_folder '/' num2str(file_num) '.mat'])
 
        end
 

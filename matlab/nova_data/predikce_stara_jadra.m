@@ -6,23 +6,57 @@ addpath('../3DNucleiSegmentation_training')
 
 
 data_folders = {...
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\NANOREP';
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Late gH2AX+53BP1 foci - different IR types, doses, cell types';
+%     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\NANOREP';
+%     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Late gH2AX+53BP1 foci - different IR types, doses, cell types';
     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\15N 90st 4Gy NHDF+U87 gH2AX+53BP1';
     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení';
     };
 
-outputs_detection_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'}; 
 
-load('dice_rot_new.mat','net')
 
 for_uniques = {};
 wholes = {};
 for data_folder_num = 1:length(data_folders)
 
     data_folder = data_folders{data_folder_num};
+    
+    
     error_folder = split(data_folder,'\');
-    error_folder = [error_folder{end} '_stara_jadra'];
+    error_folder = [error_folder{end} '_prediction_colorfix'];
+
+    listing = subdir([error_folder '/*.mat']);
+
+    for error_num = 1:length(listing)
+        error_name = listing(error_num).name;
+        
+        load(error_name,'filename')
+
+        tmp = split(filename,'\');
+        whole = join(tmp(end-5:end-1),'\');
+        whole = whole{1};
+        for_unique = join(tmp(end-5:end-3),'\');
+        for_unique = for_unique{1};
+
+        for_uniques = [for_uniques,for_unique];
+        wholes = [wholes,whole];
+    end
+
+
+end
+
+
+
+
+outputs_detection_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'}; 
+
+load('dice_rot_new.mat','net')
+
+
+for data_folder_num = 1:length(data_folders)
+
+    data_folder = data_folders{data_folder_num};
+    error_folder = split(data_folder,'\');
+    error_folder = [error_folder{end} '_dodelavky_stara_jadra'];
     mkdir(error_folder)
     
     results_folder = [data_folder '_net_results_oldseg'];
@@ -35,19 +69,23 @@ for data_folder_num = 1:length(data_folders)
 
     
     for file_num = 1:length(filenames)
-%         try
-        if 1
+        try
+%         if 1
             disp(file_num)
  
         
             filename = filenames{file_num};
+
+            if ~any(cellfun(@(x) contains(filename,x), wholes))
+                continue;
+            end
         
             filename_save = [results_folder, replace(filename,data_folder,'')];
             mkdir(filename_save)
-            if exist([filename_save 'nuclei_semgentaton.tif'],'file')
-                disp('continue')
-                continue;
-            end
+%             if exist([filename_save 'nuclei_semgentaton.tif'],'file')
+%                 disp('continue')
+%                 continue;
+%             end
 
             filename_save_examle= [results_folder_examle, replace(filename,data_folder,'')];
             mkdir(filename_save_examle)
@@ -55,6 +93,75 @@ for data_folder_num = 1:length(data_folders)
             filename_save_res1= [results_folder_res1, replace(filename,data_folder,'')];
             
             clear data;clear a;clear b;clear c;clear mask;clear mask_orig;
+
+            %%%% dodelani kanalu
+            if exist([filename 'fov.txt'],'file')
+                name_fov_file = [filename 'fov.txt'];
+            elseif exist([filename 'roi.txt'],'file')
+                name_fov_file = [filename 'roi.txt'];
+            else
+                error('no textfile')
+            end
+            chanel_names={};
+            fid = fopen(name_fov_file);
+            tline = 'dfdf';
+            while ischar(tline)
+                if contains(tline,'Name=')
+                    chanel_names=[chanel_names tline(6:end)];
+                end
+                tline = fgetl(fid);
+            end
+            fclose(fid);
+    
+            if length(chanel_names)~=3
+                save([error_folder '/' num2str(file_num) 'no_channels.mat'])
+                continue
+            end
+
+%             if contains(lower(chanel_names{1}),'dapi')
+% 
+%             else
+%                 continue;
+%             end
+            %%%% dodelani kanalu
+
+
+            order = [0,0,0];
+            if (contains(lower(chanel_names{1}),'53bp1')||contains(lower(chanel_names{1}),'rad51'))
+                order(1) = 1;
+            elseif (contains(lower(chanel_names{2}),'53bp1')||contains(lower(chanel_names{2}),'rad51'))
+                order(1) = 2;
+            elseif (contains(lower(chanel_names{3}),'53bp1')||contains(lower(chanel_names{3}),'rad51'))  
+                order(1) = 3;
+            else
+                save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+                continue;
+            end
+
+            if contains(lower(chanel_names{1}),'gh2ax')
+                order(2) = 1;
+            elseif contains(lower(chanel_names{2}),'gh2ax')
+                order(2) = 2;
+            elseif contains(lower(chanel_names{3}),'gh2ax') 
+                order(2) = 3;
+            else
+                save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+                continue;
+            end
+
+            if (contains(lower(chanel_names{1}),'dapi')||contains(lower(chanel_names{1}),'topro'))
+                order(3) = 1;
+            elseif (contains(lower(chanel_names{2}),'dapi')||contains(lower(chanel_names{2}),'topro'))
+                order(3) = 2;
+            elseif (contains(lower(chanel_names{3}),'dapi')||contains(lower(chanel_names{3}),'topro'))  
+                order(3) = 3;
+            else
+                save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+                continue;
+            end
+            disp('corrected order:')
+            disp(chanel_names(order))
+
 
             try 
                 data = read_ics_3_files(filename);
@@ -67,7 +174,10 @@ for data_folder_num = 1:length(data_folders)
                 continue
             end
 
-
+             %%%% dodelani kanalu
+            data = data([2,1,3]);
+            data = data(order);
+            %%%% dodelani kanalu
 
             [a,b,c]=preprocess_filters(data{1},data{2},data{3},1);
 
@@ -111,8 +221,8 @@ for data_folder_num = 1:length(data_folders)
 
             imwrite_uint16_3D([filename_save 'nuclei_semgentaton.tif'],uint16(mask))
 
-%        catch exception
-%             save([error_folder '/' num2str(file_num) '.mat'])
+       catch exception
+            save([error_folder '/' num2str(file_num) '.mat'])
 
        end
 
