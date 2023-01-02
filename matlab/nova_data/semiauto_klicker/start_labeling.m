@@ -37,7 +37,7 @@ filenames_sets = filenames_sets.filenames_sets;
 
 
 step = 3;
-for file_num = 19:step:length(filenames_sets)
+for file_num = 100:step:length(filenames_sets)
 
     a = 'saved';
     save(['completed/' num2str(file_num,'%04.f') '.mat'],'a')
