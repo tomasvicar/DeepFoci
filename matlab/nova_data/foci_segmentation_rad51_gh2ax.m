@@ -15,8 +15,8 @@ data_folders = {...
 %     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\15N 90st 4Gy NHDF+U87 gH2AX+53BP1';
 %     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení';
 %     'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\NANOREP2';
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení',
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení'
+    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení\53BP1 + gH2AX',
+    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení\RAD51 + gH2AX'
     };
 
 
@@ -53,7 +53,7 @@ data_folders = {...
 
 
 
-outputs_detection_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'}; 
+ 
 
 
 
@@ -79,15 +79,37 @@ MaxArea = 1000;
 channels_check = {};
 for data_folder_num = 1:length(data_folders)
 
+
+    
+
     data_folder = data_folders{data_folder_num};
+    if strcmp('C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení\53BP1 + gH2AX',data_folder)
+
+        outputs_detection_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'};
+        results_folder_res1 = [data_folder '_net_results_gH2AX'];
+    
+
+    elseif strcmp('C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení\RAD51 + gH2AX',data_folder)
+        
+        outputs_detection_chanels = {'points_RAD51','points_gH2AX','points_53BP1_gH2AX_overlap'};
+        results_folder_res1 = [data_folder '_net_results_RAD51'];
+
+    else
+        error('vcxvxcvxc')
+    end
+
     error_folder = split(data_folder,'\');
-    error_folder = [error_folder{end} 'dodelavky_foci_seg'];
+    error_folder = [error_folder{end} '_foci_seg_rad51_gh2ax'];
     mkdir(error_folder)
     
-    results_folder_oldseg = [data_folder '_net_results_oldseg'];
-    results_folder_fociseg = [data_folder '_fociseg'];
+    results_folder_oldseg = replace(data_folder,'\53BP1 + gH2AX', '_net_results_oldseg\53BP1 + gH2AX');
+    results_folder_oldseg = replace(results_folder_oldseg,'\RAD51 + gH2AX', '_net_results_oldseg\RAD51 + gH2AX');
+
+    results_folder_fociseg = [data_folder '_fociseg_rad51_gh2ax'];
     results_folder_examle_fociseg = [data_folder '_example_fociseg'];
-    results_folder_res1 = [data_folder '_net_results'];
+
+  
+
     
     filenames = subdir([data_folder '/*01.ics']);
     filenames = {filenames(:).name};

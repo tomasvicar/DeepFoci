@@ -3,8 +3,8 @@ addpath('../utils')
 
 
 names_53BP1 = {...
-    "C:/Data/Vicar/foky_final_cleaning/FOR ANALYSIS/Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení_resaved_labeled/RAD51 + gH2AX/FB_1,25 Gy_24h PI pěkné/rawdata/0004/data_RAD51.tif",
-%     "C:/Data/Vicar/foky_final_cleaning/FOR ANALYSIS/Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení_resaved_labeled/RAD51 + gH2AX/FB_1,25 Gy_24h PI pěkné/rawdata/0017/data_RAD51.tif",
+%     "C:/Data/Vicar/foky_final_cleaning/FOR ANALYSIS/Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení_resaved_labeled/RAD51 + gH2AX/FB_1,25 Gy_24h PI pěkné/rawdata/0004/data_RAD51.tif",
+    "C:/Data/Vicar/foky_final_cleaning/FOR ANALYSIS/Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení_resaved_labeled/RAD51 + gH2AX/FB_1,25 Gy_24h PI pěkné/rawdata/0017/data_RAD51.tif",
     };
 
 
