@@ -12,3 +12,5 @@ matlab/nova_data2/labeling_rad51/semiauto_klicker/two_colors_rad51_random
 matlab/nova_data2/labeling_rad51/klikac
 matlab/nova_data2/labeling_tracks_threshold/Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení_labeling_new
 matlab/nova_data/plots
+*.mat
+*.exe
