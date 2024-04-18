@@ -6,12 +6,15 @@ function [overlaped_points] = get_overlaped_points(points1,points2)
     distance_limit = 20; % distance limit for overlap
     
 
+
     points1(:,3) = points1(:,3) * z_scale_factor;
+
+
     points2(:,3) = points2(:,3) * z_scale_factor;
 
 
-    
-    
+
+
     D = pdist2(points1,points2);
     D(D>distance_limit)=Inf;
     
@@ -35,5 +38,6 @@ function [overlaped_points] = get_overlaped_points(points1,points2)
     end
     
     overlaped_points = double(overlaped_points);
+
 
 end

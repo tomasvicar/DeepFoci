@@ -1,6 +1,8 @@
 data_zenodo/*
 !data_zenodo/download_links.txt
 *.asv
-*tmp.mat
+*tmp
+*.mat
 *.hdf5
 *.pyc
+*.h5

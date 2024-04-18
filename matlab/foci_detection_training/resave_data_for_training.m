@@ -3,16 +3,16 @@ addpath('../utils')
 
 
 %% setup
-src_path = '../../data_zenodo/part2';
-dst_paht = '../../data_zenodo/part2_resaved';
+src_path = 'C:\Data\Vicar\foci_rad51_retrain\data\NANOREP_labeling_new_mask_resave';
+dst_paht = 'C:\Data\Vicar\foci_rad51_retrain\data\NANOREP_labeling_new_mask_resave_for_training';
 
 
-% load filenames for 53BP1, gH2AX and DAPI  - modify based on your data
-names_53BP1 = subdir([src_path '/data_53BP1.tif']);
-filenames.imgs_53BP1 = {names_53BP1(:).name};
-filenames.imgs_gH2AX = cellfun(@(x) replace(x,'53BP1','gH2AX'),filenames.imgs_53BP1,'UniformOutput',false);
-filenames.imgs_DAPI = cellfun(@(x) replace(x,'53BP1','DAPI'),filenames.imgs_53BP1,'UniformOutput',false);
-json_labels = cellfun(@(x) replace(x,'data_53BP1.tif','labels.json'),filenames.imgs_53BP1,'UniformOutput',false);
+% load filenames for RAD51, gH2AX and DAPI  - modify based on your data
+names_RAD51 = subdir([src_path '/data_RAD51.tif']);
+filenames.imgs_RAD51 = {names_RAD51(:).name};
+filenames.imgs_gH2AX = cellfun(@(x) replace(x,'RAD51','gH2AX'),filenames.imgs_RAD51,'UniformOutput',false);
+filenames.imgs_DAPI = cellfun(@(x) replace(x,'RAD51','DAPI'),filenames.imgs_RAD51,'UniformOutput',false);
+json_labels = cellfun(@(x) replace(x,'data_RAD51.tif','labels.json'),filenames.imgs_RAD51,'UniformOutput',false);
 
 
 resized_img_size = [505  681   48]; %image is resized to this size
@@ -21,7 +21,7 @@ normalization_percentile = 0.0001;  %image is normalized into this percentile ra
 
 
 %% resaving 
-for img_num = 1:length(filenames.imgs_53BP1)
+for img_num = 6:length(filenames.imgs_RAD51)
 
     %% resave images
     fields = fieldnames(filenames);
@@ -39,6 +39,8 @@ for img_num = 1:length(filenames.imgs_53BP1)
         data = norm_percentile_nocrop(data,normalization_percentile);
 
         img_filename = replace(img_filename,'\','/');
+        src_path  = replace(src_path,'\','/');
+        dst_paht  = replace(dst_paht,'\','/');
         dst_folder = fileparts(replace(img_filename,src_path,dst_paht));
         mkdir(dst_folder)
         
@@ -56,7 +58,13 @@ for img_num = 1:length(filenames.imgs_53BP1)
     lbls = jsondecode(fileread(lbls_filename));
 
     z_scale_factor = 2;
-    lbls.points_53BP1_gH2AX_overlap = get_overlaped_points(lbls.points_53BP1,lbls.points_gH2AX);%%%%%% get overlaped points
+    if size(lbls.points_RAD51, 2) < 3
+        lbls.points_RAD51 = zeros(0,3);
+    end
+    if size(lbls.points_gH2AX, 2) < 3
+        lbls.points_gH2AX = zeros(0,3);
+    end
+    lbls.points_RAD51_gH2AX_overlap = get_overlaped_points(lbls.points_RAD51,lbls.points_gH2AX);%%%%%% get overlaped points
     
 
     fields = fieldnames(lbls);
@@ -91,6 +99,8 @@ for img_num = 1:length(filenames.imgs_53BP1)
         end
         
         lbls_filename = replace(lbls_filename,'\','/');
+        src_path  = replace(src_path,'\','/');
+        dst_paht  = replace(dst_paht,'\','/');
         dst_folder = fileparts(replace(lbls_filename,src_path,dst_paht));
         mkdir(dst_folder)
         

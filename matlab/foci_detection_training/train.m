@@ -9,7 +9,7 @@ paralel_load = 1;
 
 
 
-data_path = '../../data_zenodo/part2_resaved';
+data_path = 'C:/Data/Vicar/foci_rad51_retrain/data/NANOREP_labeling_new_mask_resave_for_training';
 data_path = dir(data_path).folder; % convert to absolute path - requered for loading
 
 model_name = 'detection_model';
@@ -20,8 +20,8 @@ mkdir(tmp_folder)
 tmp_folder = dir(tmp_folder).folder; % convert to absolute path - requered for loading
 
 
-data_chanels = {'imgs_53BP1','imgs_gH2AX'}; %define image channels to read
-mask_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'}; %define mask channels to read
+data_chanels = {'imgs_RAD51','imgs_gH2AX'}; %define image channels to read
+mask_chanels = {'points_RAD51','points_gH2AX','points_RAD51_gH2AX_overlap'}; %define mask channels to read
 
 img_size=[505  681   48]; % define image size
 
@@ -46,9 +46,9 @@ matReaderMask = @(x) matReader(x,'mask',mask_chanels,data_path,tmp_path_train,im
 
 
 % get names of all folders with images
-file_folders = subdir([data_path '/*imgs_53BP1.mat']);
+file_folders = subdir([data_path '/*imgs_RAD51.mat']);
 file_folders = {file_folders(:).name};
-file_folders = cellfun(@(x) replace(x,'imgs_53BP1.mat',''),file_folders,'UniformOutput',false);
+file_folders = cellfun(@(x) replace(x,'imgs_RAD51.mat',''),file_folders,'UniformOutput',false);
 
 
 traing_split_fraction = 0.75;
@@ -139,8 +139,11 @@ mbq_val = minibatchqueue(dsValid,...
 'MiniBatchFormat',{'SSSCB','SSSCB'});
 
 
-lgraph = createUnet3d([patchSize in_layers],out_layers);
-dlnet = dlnetwork(lgraph);
+% lgraph = createUnet3d([patchSize in_layers],out_layers);
+% dlnet = dlnetwork(lgraph);
+
+dlnet = load('detection_model_old.mat');
+dlnet = dlnet.dlnet;
 
 
 figure();
