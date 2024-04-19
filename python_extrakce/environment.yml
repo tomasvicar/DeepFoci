@@ -11,5 +11,5 @@ dependencies:
   - bioformats_jar
   - h5py
   - "napari[all]"
-
+  - pytables
 
