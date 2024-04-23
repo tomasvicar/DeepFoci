@@ -20,7 +20,7 @@ from read_detections import read_detections
 
 resized_img_size = [505, 681, 48]
 voxel_size_um = [0.1650,0.1650,0.3]
-z_resize_faktor = 1.8182
+z_resize_faktor = voxel_size_um[2] / voxel_size_um[0]
 output_detection_channels = ['points_RAD51','points_gH2AX','points_RAD51_gH2AX_overlap']
 
 data_path = r"C:\Data\Vicar\foci_rad51_retrain\data\NANOREP"
@@ -183,7 +183,7 @@ for fnum, fname in enumerate(fnames):
         variable_names = [
         'median_r', 'median_g', 'median_b', 'median_rg',
         'percentile99_r', 'percentile99_g', 'percentile99_b', 'percentile99_rg',
-        'correlation', 'correlation_spearman'
+        'correlation', 'correlation_spearman', 'volume', 'volume_um',
     ]
         nuc_features = {name: np.zeros(N) for name in variable_names}
 
@@ -214,6 +214,9 @@ for fnum, fname in enumerate(fnames):
             else:
                 nuc_features['correlation'][cell_num - 1] = np.nan
                 nuc_features['correlation_spearman'][cell_num - 1] = np.nan
+
+            nuc_features['volume'][cell_num - 1] = np.sum(mask3d)
+            nuc_features['volume_um'][cell_num - 1] = np.sum(mask3d) * (voxel_size_um[0] * voxel_size_um[1] * voxel_size_um[2])
 
 
         for name in variable_names:
@@ -259,7 +262,7 @@ for fnum, fname in enumerate(fnames):
         def median_intensity(regionmask, intensity_image):
             return np.median(intensity_image[regionmask])
 
-        positive_negative_mask_replicate = np.repeat(positive_negative_mask[:, :, np.newaxis], data.shape[2], axis=2)
+        positive_negative_mask_replicate = np.repeat(positive_negative_mask[:, :, np.newaxis], data.shape[2], axis=2) > 1.5
         nuc_use = pd.DataFrame(regionprops_table(segmentation, positive_negative_mask_replicate, properties=[], extra_properties=[median_intensity, ]))
         nuc_use.rename(columns={'median_intensity': 'nuc_use'}, inplace=True)
         

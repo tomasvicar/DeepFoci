@@ -12,4 +12,5 @@ dependencies:
   - h5py
   - "napari[all]"
   - pytables
+  - openpyxl
 
