@@ -8,7 +8,7 @@ import os
 
 
 data_path = r"C:\Data\Vicar\foci_rad51_retrain\data\NANOREP"
-tmp_results_path = data_path + '_tmp_results'
+tmp_results_path = data_path + '_tmp_results3'
 
 
 # order_typenames = [
@@ -30,7 +30,7 @@ fnames = glob(tmp_results_path + '/**/*_features.h5', recursive=True)
 
 
 all_data = dict()
-for fname in fnames:
+for fnum, fname in enumerate(fnames):
     data_tmp = dict()
     with h5py.File(fname, 'r') as f:
         keys  = list(f.keys())
@@ -52,11 +52,25 @@ for fname in fnames:
             tmp_name = 'max_intensity_nuc_num'
         elif 'nuc_num' in df.columns:
             tmp_name = 'nuc_num'
+
+        #create new row with nan values if nuc_num is missing
+        for nuc_num in range(1, num_of_nuc + 1):
+            if nuc_num not in df[tmp_name].values:
+                new_row = {col: np.nan for col in df.columns}
+                new_row = pd.DataFrame(new_row, index=[0]) 
+                new_row[tmp_name] = float(nuc_num)
+                df = pd.concat([df, new_row], ignore_index=True)
+        # remove rows with nuc_num = 0
+        nuc_num = 0
+        df = df[df[tmp_name] != nuc_num]
+
         tmp = df.groupby(tmp_name).count()
         df = df.groupby(tmp_name).mean()
         df['foci_count'] = tmp.iloc[:, 0]
         df = df.reset_index()
         data[table_name] = df
+
+
 
     all_data[fname] = data
 
@@ -87,7 +101,7 @@ gys = []
 times = []
 folders = []
 groups = []
-for fname, data in all_data.items():
+for fnum, (fname, data) in enumerate(all_data.items()):
 
     if 'NHDF' in fname:
         cell_type = 'NHDF'
@@ -113,12 +127,12 @@ for fname, data in all_data.items():
         time = '1h'
     elif '2h' in fname.replace(' ', ''):
         time = '2h'
+    elif '24h' in fname.replace(' ', ''):
+        time = '24h'
     elif '4h' in fname.replace(' ', ''):
         time = '4h'
     elif '8h' in fname.replace(' ', ''):
         time = '8h'
-    elif '24h' in fname.replace(' ', ''):
-        time = '24h'
     elif 'control' in fname:
         time = 'control'
     else:
@@ -131,8 +145,9 @@ for fname, data in all_data.items():
 
 
     for ind in range(data['foci_features'].shape[0]):
-        counts_r.append(data['foci_features_points_channelpoints_gH2AX'].iloc[ind]['foci_count'])
-        counts_g.append(data['foci_features_points_channelpoints_RAD51'].iloc[ind]['foci_count'])
+
+        counts_r.append(data['foci_features_points_channelpoints_RAD51'].iloc[ind]['foci_count'])
+        counts_g.append(data['foci_features_points_channelpoints_gH2AX'].iloc[ind]['foci_count'])
         counts_rg.append(data['foci_features_points_channelpoints_RAD51_gH2AX_overlap'].iloc[ind]['foci_count'])
         tmp = data['foci_features'].iloc[ind]['volume_um'] * data['foci_features'].iloc[ind]['foci_count'] / data['nuc_features'].iloc[ind]['volume_um_nuc']
         volume_fractions.append(tmp)
@@ -170,6 +185,9 @@ for fname, data in all_data.items():
         folders.append(folder)
 
 
+
+
+
 df = pd.DataFrame({'counts_r': counts_r, 'counts_g': counts_g, 'counts_rg': counts_rg,
                     'volume_fraction': volume_fractions, 'foci_volume': foci_volumes,
                     'correlation': correlations, 'correlation_spearman': correlations_spearman,
@@ -181,7 +199,14 @@ df = pd.DataFrame({'counts_r': counts_r, 'counts_g': counts_g, 'counts_rg': coun
                     'time': times, 'gy': gys, 'cell_type': cell_types,
                     'folder': folders, 'group': groups,})
 
-df.to_excel(tmp_results_path + 'results.xlsx', index=False, engine='openpyxl')
+# replace nans for ones where required
+df['volume_fraction'] = df['volume_fraction'].fillna(0)
+df['foci_volume'] = df['foci_volume'].fillna(0)
+
+
+
+
+df.to_excel(tmp_results_path + '/results.xlsx', index=False, engine='openpyxl')
 
 
 

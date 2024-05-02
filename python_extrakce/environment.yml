@@ -13,4 +13,5 @@ dependencies:
   - "napari[all]"
   - pytables
   - openpyxl
+  - seaborn
 

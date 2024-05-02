@@ -29,18 +29,20 @@ positive_negative_label_path = r"C:\Data\Vicar\foci_rad51_retrain\RAD51 positive
 detection_path = data_path + '_net_results_rad51'
 cellseg_path = data_path + '_net_results_oldseg'
 fociseg_path = data_path + '_fociseg_rad51'
-tmp_results_path = data_path + '_tmp_results'
+tmp_results_path = data_path + '_tmp_results3'
 
 
 fnames = glob(data_path + '/**/01.ics', recursive=True)
 
 for fnum, fname in enumerate(fnames):
     print(f'{fnum+1}/{len(fnames)}: {fname}')
-    if fnum % 10 != 0:
+    # if fnum % 5 != 0:
+    #     continue
+    if (fnum + 1)  < 648:
         continue
 
-    # try:
-    if True:
+    try:
+    # if True:
         if fnum == 377:
             continue
         if fnum == 378:
@@ -288,10 +290,10 @@ for fnum, fname in enumerate(fnames):
         
 
 
-    # except Exception as e:
-    #     print(f'Error: {e}')
-    #     with open(tmp_results_path + str(fnum).zfill(5) +  '_error.txt', 'w') as file:
-    #         file.write(str(e))
+    except Exception as e:
+        print(f'Error: {e}')
+        with open(tmp_results_path + str(fnum).zfill(5) +  '_error.txt', 'w') as file:
+            file.write(str(e))
     
 
     # break
