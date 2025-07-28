@@ -10,10 +10,7 @@ addpath('../utils')
 
 
 data_folders = {...
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\NANOREP';
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Late gH2AX+53BP1 foci - different IR types, doses, cell types';
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\15N 90st 4Gy NHDF+U87 gH2AX+53BP1';
-    'C:\Data\Vicar\foky_final_cleaning\FOR ANALYSIS\Prioritně + 15N  ion tracks (originálně z Acquiarium) pro analýzu a nové učení';
+    'D:\martin_urgent\URGENT_Naoparticle Manuscript Toufar';
     };
 
 outputs_detection_chanels = {'points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap'}; 
@@ -59,8 +56,8 @@ for data_folder_num = 1:length(data_folders)
 
     
     for file_num = 1:length(filenames)
-%         try
-        if 1
+        try
+        % if 1
             disp(data_folder)
             disp([num2str(file_num) '/' num2str(length(filenames))])
 
@@ -70,10 +67,10 @@ for data_folder_num = 1:length(data_folders)
             filename = filenames{file_num};
         
             filename_save_fociseg = [results_folder_fociseg, replace(filename,data_folder,'')];
-            if exist([filename_save_fociseg 'foci_semgentaton.tif'],'file')
-                continue;
-                disp('continue')
-            end
+            % if exist([filename_save_fociseg 'foci_semgentaton.tif'],'file')
+            %     disp('continue')
+            %     continue;
+            % end
             mkdir(filename_save_fociseg)
 %             filename_save_examle_fociseg= [results_folder_examle_fociseg, replace(filename,data_folder,'')];
 %             mkdir(filename_save_examle_fociseg)
@@ -81,28 +78,26 @@ for data_folder_num = 1:length(data_folders)
             filename_save_oldseg = [results_folder_oldseg, replace(filename,data_folder,'')];
             filename_save_res1= [results_folder_res1, replace(filename,data_folder,'')];
             
-%             %%%% dodelani kanalu
-%             name_fov_file = [filename 'fov.txt'];
-%             chanel_names={};
-%             fid = fopen(name_fov_file);
-%             tline = 'dfdf';
-%             while ischar(tline)
-%                 if contains(tline,'Name=')
-%                     chanel_names=[chanel_names tline(6:end)];
-%                 end
-%                 tline = fgetl(fid);
-%             end
-%             fclose(fid);
-%     
-%             if contains(lower(chanel_names{1}),'gh2ax')
-%                 continue
-%             elseif contains(lower(chanel_names{2}),'gh2ax')
-%                 
-%             else
-%                 save([error_folder '/channelproblem' num2str(file_num) '.mat'])
-%                 continue;
-%             end
-%             %%%% dodelani kanalu
+            name_fov_file = [filename 'fov.txt'];
+            chanel_names={};
+            fid = fopen(name_fov_file);
+            tline = 'dfdf';
+            while ischar(tline)
+                if contains(tline,'Name=')
+                    chanel_names=[chanel_names tline(6:end)];
+                end
+                tline = fgetl(fid);
+            end
+            fclose(fid);
+    
+            if contains(lower(chanel_names{1}),'gh2ax')
+                order = [1, 2, 3];
+            elseif contains(lower(chanel_names{2}),'gh2ax')
+                order = [2, 1, 3];
+            else
+                save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+                continue;
+            end
 
             clear data;clear a;clear b;clear c;clear mask;clear mask_orig;
             try
@@ -115,6 +110,8 @@ for data_folder_num = 1:length(data_folders)
                 save([error_folder '/' num2str(file_num) 'size_error.mat']) 
                 continue
             end
+
+            data = data(order(1:2));
             
             for channel_num = 1:2
                 data{channel_num} = imresize3(single(data{channel_num}),resized_img_size);
@@ -224,8 +221,8 @@ for data_folder_num = 1:length(data_folders)
 
 
 
-%        catch exception
-%             save([error_folder '/' num2str(file_num) '.mat'])
+       catch exception
+            save([error_folder '/' num2str(file_num) '.mat'])
 
        end
 

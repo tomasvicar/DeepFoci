@@ -1,0 +1,17 @@
+name: micromamba_env
+channels:
+  - conda-forge
+dependencies:
+  - numpy
+  - matplotlib
+  - numba
+  - notebook
+  - scikit-image
+  - aicsimageio
+  - bioformats_jar
+  - h5py
+  - "napari[all]"
+  - pytables
+  - openpyxl
+  - seaborn
+

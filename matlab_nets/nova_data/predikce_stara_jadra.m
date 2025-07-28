@@ -32,8 +32,8 @@ for data_folder_num = 1:length(data_folders)
 
     
     for file_num = 1:length(filenames)
-%         try
-        if 1
+        try
+        % if 1
             disp(file_num)
  
         
@@ -53,6 +53,32 @@ for data_folder_num = 1:length(data_folders)
             
             clear data;clear a;clear b;clear c;clear mask;clear mask_orig;
 
+
+
+            name_fov_file = [filename 'fov.txt'];
+            chanel_names={};
+            fid = fopen(name_fov_file);
+            tline = 'dfdf';
+            while ischar(tline)
+                if contains(tline,'Name=')
+                    chanel_names=[chanel_names tline(6:end)];
+                end
+                tline = fgetl(fid);
+            end
+            fclose(fid);
+    
+            if contains(lower(chanel_names{1}),'gh2ax')
+                order = [1, 2, 3];
+            elseif contains(lower(chanel_names{2}),'gh2ax')
+                order = [2, 1, 3];
+            else
+                save([error_folder '/channelproblem' num2str(file_num) '.mat'])
+                continue;
+            end
+    
+
+
+        
             try 
                 data = read_ics_3_files(filename);
             catch exception
@@ -64,7 +90,7 @@ for data_folder_num = 1:length(data_folders)
                 continue
             end
 
-
+            data = data(order);
 
             [a,b,c]=preprocess_filters(data{1},data{2},data{3},1);
 
@@ -108,8 +134,8 @@ for data_folder_num = 1:length(data_folders)
 
             imwrite_uint16_3D([filename_save 'nuclei_semgentaton.tif'],uint16(mask))
 
-%        catch exception
-%             save([error_folder '/' num2str(file_num) '.mat'])
+       catch exception
+            save([error_folder '/' num2str(file_num) '.mat'])
 
        end
 

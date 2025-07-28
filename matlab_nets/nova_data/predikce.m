@@ -55,9 +55,14 @@ for file_num = 1:length(filenames)
     
         filename_save = [results_folder, replace(filename,data_folder,'')];
 
-%         if exist([filename_save 'nuclei_semgentaton.tif'],'file')
-%             continue;
-%         end
+        % if exist([filename_save 'nuclei_semgentaton.tif'],'file')
+        %     continue;
+        % end
+        if exist([filename_save 'detections.json'],'file')
+            continue;
+        end
+
+        
 
         mkdir(filename_save)
 
@@ -139,7 +144,7 @@ for file_num = 1:length(filenames)
         % imwrite_uint16_3D([filename_save 'nuclei_semgentaton.tif'],result_nuclei_segmentation)
 
     catch exception
-        save([error_folder '/' num2str(file_num) '.mat'], "save")
+        save([error_folder '/' num2str(file_num) '.mat'], "exception")
 
     end
 
