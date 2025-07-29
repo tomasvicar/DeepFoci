@@ -1,0 +1,17 @@
+In wsl install rclone 
+sudo apt install rclone
+
+rclone config
+- vse pomerne intuitivne nic zbytecneho nenstavovat
+
+rclone copy "gdrive:URGENT_Naoparticle Manuscript Toufar" "/mnt/d/martin_urgent/URGENT_Naoparticle Manuscript Toufar" --drive-team-drive=0ANYLW_e5rtsnUk9PVA --progress
+rclone check "gdrive:URGENT_Naoparticle Manuscript Toufar" "/mnt/d/martin_urgent/URGENT_Naoparticle Manuscript Toufar" --drive-team-drive=0ANYLW_e5rtsnUk9PVA
+
+haze nějaký quota error ale jde počkat...
+
+ale jde zkontrolovat soubory přes colab:
+
+from glob import glob
+folder_path = "/content/drive/Shareddrives/martin_data/URGENT_Naoparticle Manuscript Toufar"
+
+print(len(glob(folder_path + '/**/01.ics', recursive=True)))
