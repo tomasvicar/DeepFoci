@@ -8,10 +8,12 @@ dependencies:
   - notebook
   - scikit-image
   - aicsimageio
-  - bioformats_jar
   - h5py
   - "napari[all]"
   - pytables
   - openpyxl
   - seaborn
+  - pip:
+    - bioformats_jar
+    - scyjava
 

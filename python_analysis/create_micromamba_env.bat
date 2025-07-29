@@ -4,8 +4,8 @@ setlocal EnableDelayedExpansion
 REM 1) Define paths
 set "SCRIPT_DIR=%~dp0"
 set "MICROMAMBAPATH=%SCRIPT_DIR%..\..\micromamba"
-set "ENV_RELATIVE_PATH=..\..\"
 set "ENV_FILE=%SCRIPT_DIR%environment.yml"
+set "ENV_RELATIVE_PATH=..\..\"
 
 REM 2) Detect architecture
 if /I "%PROCESSOR_ARCHITECTURE%"=="AMD64" (
@@ -61,4 +61,6 @@ echo [3/3] Launching new shell with "!ENVNAME!" activated...
 echo You can install packages with micromamba command (isntead of conda/mamba)
 call "%MMB%" shell hook --shell cmd.exe | call
 call "%MMB%" run --prefix "%SCRIPT_DIR%%ENV_RELATIVE_PATH%!ENVNAME!" cmd.exe /k
+
+call "C:\\Users\\tomas\\AppData\\Roaming\\mamba\\condabin\\mamba_hook.bat"
 

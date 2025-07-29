@@ -23,13 +23,14 @@ voxel_size_um = [0.1650,0.1650,0.3]
 z_resize_faktor = voxel_size_um[2] / voxel_size_um[0]
 output_detection_channels = ['points_53BP1','points_gH2AX','points_53BP1_gH2AX_overlap']
 
-data_path = r"C:\Data\Vicar\foci_rad51_retrain\data\NANOREP"
-positive_negative_label_path = r"C:\Data\Vicar\foci_rad51_retrain\RAD51 positive nuclei_Labelled MF\labeled"
+data_path = r"D:\martin_urgent\URGENT_Naoparticle Manuscript Toufar"
 
-detection_path = data_path + '_net_results_rad51'
+# positive_negative_label_path = r"C:\Data\Vicar\foci_rad51_retrain\RAD51 positive nuclei_Labelled MF\labeled"
+
+detection_path = data_path + '_net_results'
 cellseg_path = data_path + '_net_results_oldseg'
-fociseg_path = data_path + '_fociseg_rad51'
-tmp_results_path = data_path + '_tmp_results3'
+fociseg_path = data_path + '_fociseg'
+tmp_results_path = data_path + '_tmp_results'
 
 
 fnames = glob(data_path + '/**/01.ics', recursive=True)
@@ -38,28 +39,30 @@ for fnum, fname in enumerate(fnames):
     print(f'{fnum+1}/{len(fnames)}: {fname}')
     # if fnum % 5 != 0:
     #     continue
-    if (fnum + 1)  < 648:
-        continue
+    # if (fnum + 1)  < 648:
+    #     continue
 
     try:
     # if True:
-        if fnum == 377:
-            continue
-        if fnum == 378:
-            continue
-        if fnum == 542:
-            continue
-        if fnum == 626:
-            continue
-        if fnum == 648:
-            continue
+        # if fnum == xxx:
+        #     continue
+        # if fnum < 68:
+        #     continue
 
 
         fname_detection = fname.replace(data_path, detection_path).replace('01.ics', 'detections.json')
         fname_cellseg = fname.replace(data_path, cellseg_path).replace('01.ics', 'nuclei_semgentaton.tif')
         fname_fociseg = fname.replace(data_path, fociseg_path).replace('01.ics', 'foci_semgentaton.tif')
         fname_tmp_results = fname.replace(data_path, tmp_results_path).replace('01.ics', 'res')
-        fname_positive_negative_label = positive_negative_label_path + '/' + f'img_and_mask_{str(fnum+1).zfill(3)}_label.h5'
+
+        save_name = fname_tmp_results + '_features.h5'
+        if os.path.exists(save_name):
+            print(f'Skipping {fname} as results already exist.')
+            continue
+
+
+
+        # fname_positive_negative_label = positive_negative_label_path + '/' + f'img_and_mask_{str(fnum+1).zfill(3)}_label.h5'
 
         data, channel_names = read_ics_file_ordered(fname, get_channel_names=True)
 
@@ -81,13 +84,13 @@ for fnum, fname in enumerate(fnames):
 
         detections, binary_detections = read_detections(fname_detection, data.shape[:-1], output_detection_channels, resized_img_size)
 
-        with h5py.File(fname_positive_negative_label, 'r') as file:
-            positive_negative_mask_tmp = file['mask_final'][:].T
+        # with h5py.File(fname_positive_negative_label, 'r') as file:
+        #     positive_negative_mask_tmp = file['mask_final'][:].T
 
         # positive_negative_mask_tmp = np.transpose(positive_negative_mask_tmp, [1, 0])
-        positive_negative_mask = np.zeros_like(positive_negative_mask_tmp)
-        positive_negative_mask[positive_negative_mask_tmp > 0] = 1
-        positive_negative_mask[positive_negative_mask_tmp > 100] = 2
+        # positive_negative_mask = np.zeros_like(positive_negative_mask_tmp)
+        # positive_negative_mask[positive_negative_mask_tmp > 0] = 1
+        # positive_negative_mask[positive_negative_mask_tmp > 100] = 2
 
         # from skimage.morphology import binary_dilation
         # from skimage.morphology import disk
@@ -261,12 +264,12 @@ for fnum, fname in enumerate(fnames):
 
 
 
-        def median_intensity(regionmask, intensity_image):
-            return np.median(intensity_image[regionmask])
+        # def median_intensity(regionmask, intensity_image):
+        #     return np.median(intensity_image[regionmask])
 
-        positive_negative_mask_replicate = np.repeat(positive_negative_mask[:, :, np.newaxis], data.shape[2], axis=2) > 1.5
-        nuc_use = pd.DataFrame(regionprops_table(segmentation, positive_negative_mask_replicate, properties=[], extra_properties=[median_intensity, ]))
-        nuc_use.rename(columns={'median_intensity': 'nuc_use'}, inplace=True)
+        # positive_negative_mask_replicate = np.repeat(positive_negative_mask[:, :, np.newaxis], data.shape[2], axis=2) > 1.5
+        # nuc_use = pd.DataFrame(regionprops_table(segmentation, positive_negative_mask_replicate, properties=[], extra_properties=[median_intensity, ]))
+        # nuc_use.rename(columns={'median_intensity': 'nuc_use'}, inplace=True)
         
 
 
@@ -278,22 +281,28 @@ for fnum, fname in enumerate(fnames):
         # os.makedirs(os.path.dirname(save_name_foci), exist_ok=True)
         # foci_features.to_csv(save_name_foci, index=False)
 
-        save_name = fname_tmp_results + '_features.h5'
+
         os.makedirs(os.path.dirname(save_name), exist_ok=True)
         nuc_features.to_hdf(save_name, key='nuc_features', mode='w')
         foci_features.to_hdf(save_name, key='foci_features', mode='a')
         for channel in channels:
             foci_features_points[channel].to_hdf(save_name, key='foci_features_points_channel' + channel, mode='a')
 
-        nuc_use.to_hdf(save_name, key='nuc_use', mode='a')
+        # nuc_use.to_hdf(save_name, key='nuc_use', mode='a')
 
         
 
 
     except Exception as e:
         print(f'Error: {e}')
-        with open(tmp_results_path + str(fnum).zfill(5) +  '_error.txt', 'w') as file:
+        with open(tmp_results_path + "/" +str(fnum).zfill(5) +  '_error.txt', 'w') as file:
             file.write(str(e))
+
+        os.makedirs('errors', exist_ok=True)
+        with open('errors/' + str(fnum).zfill(5) + '_error.txt', 'w') as file:
+            file.write(str(e))
+
+        
     
 
     # break

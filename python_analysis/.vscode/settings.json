@@ -1,0 +1,14 @@
+{
+  "python.terminal.activateEnvironment": false,
+  "terminal.integrated.defaultProfile.windows": "Micromamba PowerShell",
+  "terminal.integrated.profiles.windows": {
+    "Micromamba PowerShell": {
+      "path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": [
+        "-NoExit",
+        "-Command",
+        "cmd /c \"call C:\\Users\\tomas\\AppData\\Roaming\\mamba\\condabin\\mamba_hook.bat && activate\""
+      ]
+    }
+  }
+}

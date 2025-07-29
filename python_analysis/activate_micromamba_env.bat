@@ -5,11 +5,11 @@ REM ─────────────────────────�
 REM 1) Locate micromamba.exe
 REM ────────────────────────────────────────────────────
 set "SCRIPT_DIR=%~dp0"
-set "ENV_RELATIVE_PATH=..\..\"
 set "MMB=%SCRIPT_DIR%..\..\micromamba\micromamba.exe"
+set "ENV_RELATIVE_PATH=..\..\"
 
 if not exist "%MMB%" (
-    echo [ERROR] micromamba.exe not found at "%MMB%".
+    echo [ERROR] micromamba.exe not found at "%SCRIPT_DIR%..\micromamba\".
     echo Please run create_micromamba_env.bat first.
     pause
     exit /b 1
@@ -37,6 +37,6 @@ echo You can install packages with micromamba command (isntead of conda/mamba)
 call "%MMB%" shell hook --shell cmd.exe | call
 call "%MMB%" run --prefix "%SCRIPT_DIR%%ENV_RELATIVE_PATH%!ENVNAME!" cmd.exe /k
 
-
+call "C:\\Users\\tomas\\AppData\\Roaming\\mamba\\condabin\\mamba_hook.bat"
 
 endlocal
