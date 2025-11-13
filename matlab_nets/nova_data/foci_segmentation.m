@@ -77,6 +77,11 @@ for data_folder_num = 1:length(data_folders)
 
             filename_save_oldseg = [results_folder_oldseg, replace(filename,data_folder,'')];
             filename_save_res1= [results_folder_res1, replace(filename,data_folder,'')];
+
+            if exist([filename_save_fociseg 'foci_semgentaton.tif'],'file')
+                disp('continue')
+                continue;
+            end
             
             name_fov_file = [filename 'fov.txt'];
             chanel_names={};

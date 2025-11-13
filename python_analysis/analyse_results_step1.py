@@ -7,11 +7,13 @@ from scipy.ndimage import zoom
 import h5py
 import napari
 from scipy.ndimage import label, zoom
-from skimage.measure import regionprops_table
+from skimage.measure import regionprops_table, regionprops
 import pandas as pd
 from scipy.stats import pearsonr, spearmanr
 import os
 from scipy.ndimage import gaussian_filter
+from scipy.spatial import ConvexHull
+from skimage.morphology import convex_hull_image
 
 
 from read_ics_file import read_ics_file_ordered
@@ -43,12 +45,15 @@ for fnum, fname in enumerate(fnames):
     #     continue
 
     try:
+
     # if True:
         # if fnum == xxx:
         #     continue
         # if fnum < 68:
         #     continue
 
+
+        
 
         fname_detection = fname.replace(data_path, detection_path).replace('01.ics', 'detections.json')
         fname_cellseg = fname.replace(data_path, cellseg_path).replace('01.ics', 'nuclei_semgentaton.tif')
@@ -146,9 +151,75 @@ for fnum, fname in enumerate(fnames):
         # Nuclei number per region
         nuc_num_table = calculate_properties(fociseg, segmentation, 'nuc_num')
 
-        
+
+        # if fnum == 68:
+        #     plt.imshow(np.max(fociseg, axis=2))
+        #     plt.show()
+        #     print(fociseg.shape, fociseg_resize.shape)
+
+
+        def image_convex(mask):
+            return convex_hull_image(mask)
+     
+
+        # def area(mask):
+        #     return np.sum(mask)
+
+        # def area_convex(mask):
+        #     return np.sum(image_convex(mask))
+
+            
+        # def solidity_safe(mask):
+        #     try:
+        #         return area(mask) / area_convex(mask)
+        #     except Exception as e:
+        #         print(f"Error in solidity3d_safe: {e}")
+        #         return np.nan
+
+        def axis_major_length_safe(mask):
+            mask = mask.astype(np.uint8)  
+            try:
+                return regionprops(mask)[0].axis_major_length
+            except Exception as e:
+                print(f"Error in axis_major_length_safe: {e}")
+                return np.nan
+
+        def axis_minor_length_safe(mask):
+            mask = mask.astype(np.uint8) 
+            try:
+                return regionprops(mask)[0].axis_minor_length
+            except Exception as e:
+                print(f"Error in axis_minor_length_safe: {e}")
+                return np.nan
+
+        def solidity_safe(mask):
+            mask = mask.astype(np.uint8) 
+            try:
+                return regionprops(mask)[0].solidity
+            except Exception as e:
+                print(f"Error in solidity_safe: {e}")
+                return np.nan
+
         # Calculate shape properties for resized labels
-        shape_properties = regionprops_table(fociseg_resize, properties=['area', 'solidity', 'axis_major_length', 'axis_minor_length', 'equivalent_diameter'])
+
+        try:
+            shape_properties = regionprops_table(fociseg_resize, properties=['area', 'solidity', 'axis_major_length', 'axis_minor_length', 'equivalent_diameter'], 
+                                                  extra_properties=())
+        except Exception as e:
+            print(f"Error in shape properties calculation: {e}")
+
+            shape_properties = regionprops_table(fociseg_resize, properties=['area', 'equivalent_diameter'],
+                                                extra_properties=(solidity_safe, axis_major_length_safe, axis_minor_length_safe))
+            shape_properties['solidity'] = shape_properties['solidity_safe']
+            shape_properties['axis_major_length'] = shape_properties['axis_major_length_safe']
+            shape_properties['axis_minor_length'] = shape_properties['axis_minor_length_safe']
+            shape_properties['solidity'][shape_properties['solidity'] == np.inf] = np.nan
+            shape_properties['axis_major_length'][shape_properties['axis_major_length'] == np.inf] = np.nan
+            shape_properties['axis_minor_length'][shape_properties['axis_minor_length'] == np.inf] = np.nan
+
+
+
+
         shape_table = pd.DataFrame(shape_properties)
         shape_table.rename(columns={'area': 'volume'}, inplace=True)
 
